@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Naftan.Maintenance.Domain.Objects.MaintenanceObject">
+    <Position X="6.5" Y="1.25" Width="2.75" />
+    <AssociationLine Name="Group" Type="Naftan.Maintenance.Domain.Objects.ObjectGroup">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.318" Y="0.081" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="lastMaintenance" Type="Naftan.Maintenance.Domain.ObjectMaintenance.LastMaintenance">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.277" Y="0.07" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="usage" Type="Naftan.Maintenance.Domain.Usage.UsageActual">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.558" Y="0.07" Height="0.182" Width="0.839" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="maintenance" Type="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceActual">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.183" Y="0.081" Height="0.182" Width="1.235" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QigSAECCAAAAgCCAAaYIgIAEEABAgAIgAACTAAAAAAA=</HashCode>
+      <FileName>Objects\MaintenanceObject.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Group" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="lastMaintenance" />
+      <Field Name="usage" />
+      <Field Name="maintenance" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Objects.ObjectGroup" Collapsed="true">
+    <Position X="3.75" Y="1.25" Width="1.75" />
+    <AssociationLine Name="Intervals" Type="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceInterval">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.247" Y="0.11" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AgACAAAQAQAAIACAAIAAgASAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Objects\ObjectGroup.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Intervals" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceInterval">
+    <Position X="0.5" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>KAACAEAAAAQAAAAQAAQAAAAAAAAAAAAAABgAAAAAAAA=</HashCode>
+      <FileName>ObjectMaintenance\MaintenanceInterval.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.ObjectMaintenance.LastMaintenance" Collapsed="true">
+    <Position X="10.75" Y="1.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAQABABgAAIAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>ObjectMaintenance\LastMaintenance.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceActual" Collapsed="true">
+    <Position X="10.75" Y="3" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAADAAAAAAAAAAAgAAgAAAAAAAAAAAABAQAAAAAAEAA=</HashCode>
+      <FileName>ObjectMaintenance\MaintenanceActual.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Usage.UsageActual" Collapsed="true">
+    <Position X="10.75" Y="4" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAABIAAAgAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Usage\UsageActual.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

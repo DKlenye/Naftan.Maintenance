@@ -1,0 +1,65 @@
+﻿@font-face {
+    font-family: 'PFDinDisplayPro-Reg';
+    src: url('fonts/PFDinDisplayPro-Reg.ttf') format('truetype');
+}
+
+.webix_view.logo {
+    background: transparent;
+    height: 34px;
+    margin-top: -3px;
+}
+
+.webix_layout_toolbar.webix_toolbar.app_header {
+    background-color: #dfe8f6;
+}
+
+.webix_icon.webix_tab_close {
+    font-size: 12px;
+    float: right;
+    padding: 0px;
+    margin-top: -4px;
+    width: 15px;
+    font-size: 12px;
+}
+
+.webix_view.webix_control.webix_el_label.header_label {
+    font: 22px PFDinDisplayPro-Reg;
+    color: #2a668e;
+}
+
+.webix_layout_toolbar.webix_toolbar.app_header .webix_icon_btn, .webix_layout_toolbar.webix_toolbar.app_header .webix_icon_button .webix_icon {
+    color: #9fc3d2;
+}
+
+
+.logo .webix_template img{
+    margin-top:-5px;
+}
+
+.row-marked {
+    background-color: #ffa;
+}
+
+.row-inherited {
+    background-color: lavender;
+}
+
+.webix_hcell input[type=checkbox] {
+    width: 16px;
+    height: 16px;
+    margin-top: 12px;
+}
+
+.webix_table_checkbox {
+    width: 16px;
+    height: 16px;
+    margin-top: 5px;
+}
+
+.webix_popup .webix_tree_item.webix_selected {
+    background: #27ae60;
+}
+
+.webix_dtable.center_columns .webix_hcell {
+    text-align: center
+}
