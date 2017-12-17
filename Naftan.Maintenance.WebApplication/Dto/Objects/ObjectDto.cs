@@ -3,6 +3,7 @@ using Naftan.Maintenance.Domain.Objects;
 using System.Linq;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using System;
+using Naftan.Common.Domain;
 
 namespace Naftan.Maintenance.WebApplication.Dto.Objects
 {
@@ -20,12 +21,12 @@ namespace Naftan.Maintenance.WebApplication.Dto.Objects
         public int? UsageFromLastMaintenance { get; set; }
         
 
-        public override LastMaintenance GetEntity()
+        public override LastMaintenance GetEntity(IRepository repository)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void Merge(LastMaintenance entity)
+        public override void Merge(LastMaintenance entity,IRepository repository)
         {
             throw new System.NotImplementedException();
         }

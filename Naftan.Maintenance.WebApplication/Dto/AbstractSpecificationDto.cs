@@ -1,6 +1,7 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain.Specifications;
 using System;
+using System.Globalization;
 
 namespace Naftan.Maintenance.WebApplication.Dto
 {
@@ -11,43 +12,37 @@ namespace Naftan.Maintenance.WebApplication.Dto
         {
         }
 
-        protected object GetValue(SpecificationType type, string value)
-        {
+        public SpecificationType SpecificationType { get; set; }
 
-            if (string.IsNullOrEmpty(value))
+        protected string SetValue(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return null;
+            return value;
+        }
+
+        protected string GetValue(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return null;
+
+            switch (SpecificationType)
             {
-                return null;
-            }
-            else
-            {
-                switch (type)
-                {
-                    case SpecificationType.Boolean:
-                        {
-                            return bool.Parse(value);
-                        }
-                    case SpecificationType.Reference:
-                        {
-                            return int.Parse(value);
-                        }
-                    case SpecificationType.Int:
-                        {
-                            return int.Parse(value);
-                        }
-                    case SpecificationType.Decimal:
-                        {
-                            return decimal.Parse(value);
-                        }
-                    case SpecificationType.Date:
-                        {
-                            return DateTime.Parse(value);
-                        }
-                    default:
+                case SpecificationType.Date:
+                    {
+                        DateTime parsed;
+                        if (DateTime.TryParseExact(value as string, "dd'.'MM'.'yyyy",
+                            CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
                         {
                             return value;
                         }
-                }
+
+                        return null;
+                    }
+                default:
+                    {
+                        return value.ToString();
+                    }
             }
         }
+
     }
 }

@@ -76,6 +76,7 @@
     <Content Include="gulpfile.js" />
     <Content Include="src\app.js" />
     <Content Include="src\menu.js" />
+    <Content Include="src\rules\plant.js" />
     <Content Include="src\rules\measureUnit.js" />
     <Content Include="src\rules\maintenanceType.js" />
     <Content Include="src\rules\manufacturer.js" />

@@ -28,7 +28,7 @@
 
         var items = [];
 
-        while (id != 0) {
+        while (id) {
             items.push(tree.getItem(id)[property || "name"])
             id = tree.getParentId(id);
         }

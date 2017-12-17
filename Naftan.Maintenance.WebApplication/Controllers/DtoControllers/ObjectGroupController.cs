@@ -26,13 +26,13 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             return query.FindObjectGroups();
         }
 
-        public ObjectGroupDto Get(int id)
+        public GroupDto Get(int id)
         {
             var group = repository.Get<ObjectGroup>(id);
             return EntityToDto(group);
         }
 
-        public ObjectGroupDto Post([FromBody] ObjectGroupDto dto)
+        public GroupDto Post([FromBody] GroupDto dto)
         {
             var group = new ObjectGroup
             {
@@ -63,7 +63,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             return EntityToDto(group);
         }
 
-        public ObjectGroupDto Put(int id, [FromBody] ObjectGroupDto dto)
+        public GroupDto Put(int id, [FromBody] GroupDto dto)
         {
             var group = repository.Get<ObjectGroup>(id);
 
@@ -85,7 +85,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
                 if (map.ContainsKey(s.Id))
                 {
                     var _dto = map[s.Id];
-                    s.DefaultValue = _dto.DefaultValue?.ToString();
+                    _dto.Merge(s,repository);
                 }
                 else
                 {
@@ -94,7 +94,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             });
 
             deleted.ForEach(d => group.RemoveSpecification(d));
-            added.ForEach(a => group.AddSpecification(a.GetEntity()));
+            added.ForEach(a => group.AddSpecification(a.GetEntity(repository)));
 
 
             var added1 = dto.Intervals.Where(x => x.Id == 0).ToList();
@@ -135,9 +135,9 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             throw new System.NotImplementedException();
         }
         
-        private ObjectGroupDto EntityToDto(ObjectGroup group)
+        private GroupDto EntityToDto(ObjectGroup group)
         {
-            var dto = new ObjectGroupDto
+            var dto = new GroupDto
             {
                 Id = group.Id,
                 Name = group.Name,
@@ -153,7 +153,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
                 _group.Specifications.ToList().ForEach(s =>
                 {
                     dto.Specifications.Add(
-                        new ObjectGroupSpecificationDto(s.Id, _group.Id, s.Specification, s.DefaultValue, inherited )
+                        new GroupSpecificationDto(s.Id, _group.Id, s.Specification, s.DefaultValue, inherited )
                     );
                 });
 

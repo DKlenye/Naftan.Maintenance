@@ -23,7 +23,7 @@ namespace Naftan.Maintenance.Domain.Specifications
 
         public int Id { get; set; }
         public ObjectGroup Group { get; internal set; }
-        public Specification Specification { get; private set; }
+        public Specification Specification { get; set; }
         public string DefaultValue { get; set; }
     }
 }

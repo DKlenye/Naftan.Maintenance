@@ -8,38 +8,39 @@ using Naftan.Common.Domain;
 namespace Naftan.Maintenance.WebApplication.Dto.ObjectGroups
 {
 
-    public class ObjectGroupSpecificationDto:AbstractSpecificationDto<GroupSpecification>
+    public class GroupSpecificationDto:AbstractSpecificationDto<GroupSpecification>
     {
-        public ObjectGroupSpecificationDto() { }
+        public GroupSpecificationDto() { }
 
-        public ObjectGroupSpecificationDto(int id, int objectGroupId, Specification specification, string value, bool inherited)
+        public GroupSpecificationDto(int id, int objectGroupId, Specification specification, string value, bool inherited)
         {
             Id = id;
             SpecificationId = specification.Id;
             ObjectGroupId = objectGroupId;
             Inherited = inherited;
             SpecificationType = specification.Type;
-            DefaultValue = GetValue(specification.Type, value);
+            DefaultValue = SetValue(value);
         }
 
         public int ObjectGroupId { get; set; }
         public bool Inherited { get; set; }
         public int SpecificationId { get; set; }
-        public SpecificationType SpecificationType { get; set; }
-        public object DefaultValue { get; set; }
+        public string DefaultValue { get; set; }
 
-        public override GroupSpecification GetEntity()
+        public override GroupSpecification GetEntity(IRepository repository)
         {
-            return new GroupSpecification(new Specification { Id = SpecificationId })
+            return new GroupSpecification(repository.Get<Specification>(SpecificationId))
             {
                 Id = Id,
-                DefaultValue = DefaultValue?.ToString(),
+                DefaultValue = GetValue(DefaultValue)
             };
         }
 
-        public override void Merge(GroupSpecification entity)
+        public override void Merge(GroupSpecification entity,IRepository repository)
         {
-            throw new NotImplementedException();
+            entity.Id = Id;
+            entity.Specification = repository.Get<Specification>(SpecificationId);
+            entity.DefaultValue = GetValue(DefaultValue);
         }
 
         public override void SetEntity(GroupSpecification entity)
@@ -88,12 +89,12 @@ namespace Naftan.Maintenance.WebApplication.Dto.ObjectGroups
     }
 
 
-    public class ObjectGroupDto
+    public class GroupDto
     {
 
-        public ObjectGroupDto()
+        public GroupDto()
         {
-            Specifications = new List<ObjectGroupSpecificationDto>();
+            Specifications = new List<GroupSpecificationDto>();
             Intervals = new List<MaintenanceIntervalDto>();
         }
 
@@ -101,7 +102,7 @@ namespace Naftan.Maintenance.WebApplication.Dto.ObjectGroups
         public int? ParentGroupId { get; set; }
         public string Name { get; set; }
 
-        public IList<ObjectGroupSpecificationDto> Specifications { get; set; }
+        public IList<GroupSpecificationDto> Specifications { get; set; }
         public IList<MaintenanceIntervalDto> Intervals { get; set; }
 
     }

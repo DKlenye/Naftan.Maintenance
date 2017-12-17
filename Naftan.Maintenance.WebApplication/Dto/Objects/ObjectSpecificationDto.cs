@@ -1,4 +1,5 @@
-﻿using Naftan.Maintenance.Domain.Specifications;
+﻿using Naftan.Common.Domain;
+using Naftan.Maintenance.Domain.Specifications;
 
 namespace Naftan.Maintenance.WebApplication.Dto.Objects
 {
@@ -11,20 +12,20 @@ namespace Naftan.Maintenance.WebApplication.Dto.Objects
             ObjectId = objectId;
             SpecificationId = specification.Id;
             SpecificationType = specification.Type;
-            Value = GetValue(SpecificationType, value);
+            Value = GetValue(value);
         }
 
         public int ObjectId { get; set; }
         public int SpecificationId { get; set; }
-        public SpecificationType SpecificationType { get; set; }
-        public object Value { get; set; }
+        
+        public string Value { get; set; }
 
-        public override ObjectSpecification GetEntity()
+        public override ObjectSpecification GetEntity(IRepository repository)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void Merge(ObjectSpecification entity)
+        public override void Merge(ObjectSpecification entity, IRepository repository)
         {
             throw new System.NotImplementedException();
         }

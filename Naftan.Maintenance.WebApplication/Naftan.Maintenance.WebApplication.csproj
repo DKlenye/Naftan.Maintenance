@@ -187,7 +187,7 @@
     <Compile Include="Controllers\DtoControllers\ObjectGroupController.cs" />
     <Compile Include="Controllers\CrudControllers\ManufacturerController.cs" />
     <Compile Include="Controllers\DtoControllers\ObjectController.cs" />
-    <Compile Include="Controllers\CrudControllers\PlantController.cs" />
+    <Compile Include="Controllers\DtoControllers\PlantController.cs" />
     <Compile Include="Controllers\DtoControllers\ReferenceController.cs" />
     <Compile Include="Controllers\DtoControllers\SpecificationController.cs" />
     <Compile Include="Controllers\EnumControllers\TimePeriodController.cs" />
@@ -207,6 +207,7 @@
     <Compile Include="Dto\Objects\ObjectListDto.cs" />
     <Compile Include="Dto\ObjectGroups\ObjectGroupDto.cs" />
     <Compile Include="Dto\Objects\ObjectSpecificationDto.cs" />
+    <Compile Include="Dto\PlantDto.cs" />
     <Compile Include="Dto\ReferenceDto.cs" />
     <Compile Include="Dto\SpecificationDto.cs" />
     <Compile Include="Global.asax.cs">

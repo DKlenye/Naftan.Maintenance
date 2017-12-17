@@ -1,4 +1,5 @@
-﻿using Naftan.Maintenance.Domain.Objects;
+﻿using Naftan.Common.Domain;
+using Naftan.Maintenance.Domain.Objects;
 
 namespace Naftan.Maintenance.WebApplication.Dto.Objects
 {
@@ -19,12 +20,12 @@ namespace Naftan.Maintenance.WebApplication.Dto.Objects
         public int? ManufacturerId { get; set; }
         public string FactoryNumber { get; set; }
 
-        public override MaintenanceObject GetEntity()
+        public override MaintenanceObject GetEntity(IRepository repository)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void Merge(MaintenanceObject entity)
+        public override void Merge(MaintenanceObject entity, IRepository repository)
         {
             throw new System.NotImplementedException();
         }

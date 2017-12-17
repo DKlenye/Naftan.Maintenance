@@ -9,6 +9,8 @@ webix.i18n.locales["ru-RU"]={
 	longDateFormat:"%d %F %Y",
 	fullDateFormat:"%d.%m.%Y %H:%i",
 
+    
+
 	price:"{obj} руб.",
 	priceSettings:null, //use number defaults
 	

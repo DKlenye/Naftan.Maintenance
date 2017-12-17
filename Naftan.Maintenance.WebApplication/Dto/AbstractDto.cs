@@ -7,8 +7,9 @@ namespace Naftan.Maintenance.WebApplication.Dto
     {
         public int Id { get; set; }
 
-        public abstract void Merge(TEntity entity);
-        public abstract TEntity GetEntity();
+        public abstract void Merge(TEntity entity,IRepository repository);
+        public abstract TEntity GetEntity(IRepository repository);
         public abstract void SetEntity(TEntity entity);
+
     }
 }

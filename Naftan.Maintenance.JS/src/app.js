@@ -6,6 +6,27 @@
      };
 
      webix.i18n.setLocale("ru-RU");
+     webix.i18n.parseFormatStr = webix.Date.dateToStr("%d.%m.%Y");
+     webix.i18n.parseFormatDate = webix.Date.strToDate("%d.%m.%Y");
+
+
+    
+    // Хак, который предотвращает появление ошибки после динамической замены эдитора
+    
+     webix.editors.date.getInputNode = function () {
+         try {
+             return this.getPopup().getChildViews()[0];
+         }
+         catch (ex) {
+             return {
+                 isVisible: function () { return false}
+             }
+         }
+     }
+
+    //--
+
+
 
      webix.collection.tree(["objectGroup"]);
      //webix.debug_bind = true;

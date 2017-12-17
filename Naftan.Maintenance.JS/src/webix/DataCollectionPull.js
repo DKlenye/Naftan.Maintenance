@@ -19,7 +19,7 @@ webix.DataCollectionPull.prototype = {
         var store = this.pull[name];
         if (!store)
             store = this._initCollection(name);
-        return store
+        return store;
     },
 
     initCollections: function (names, loadCallback, errorCallback) {
@@ -28,7 +28,7 @@ webix.DataCollectionPull.prototype = {
         names = names || [];
 
         var afterLoad = function () {
-            if (++counter == names.length && loadCallback) loadCallback();
+            if (++counter === names.length && loadCallback) loadCallback();
         };
 
         var loadError = function () {
@@ -41,7 +41,7 @@ webix.DataCollectionPull.prototype = {
                 afterLoad();
             }
             else {
-                me._initCollection(name, webix.once(afterLoad), loadError)
+                me._initCollection(name, webix.once(afterLoad), loadError);
             }
 
         });
@@ -51,13 +51,13 @@ webix.DataCollectionPull.prototype = {
     _getUrl: function (name){
         return {
             url: this.templateUrl + name
-        }
+        };
     },
 
     _initCollection: function (name, loadCallback, errorCallback) {
 
         var me = this, store;
-        var isTree = this.trees.indexOf(name) != -1;
+        var isTree = this.trees.indexOf(name) !== -1;
 
         if (!isTree) {
             store = new webix.DataCollection({
@@ -69,13 +69,13 @@ webix.DataCollectionPull.prototype = {
             });
 
             webix.dp(store).attachEvent("onAfterSync", function (state, text, data, loader) {
-                var data = data.json() || {};
+                var _data = data.json() || {};
                 var id = state.id > 1e10 ? 0 : state.id;
-                me.hub.server.dataChange(name, id, state.status, data);
+                me.hub.server.dataChange(name, id, state.status, _data);
             });
         }
         else {
-            store = new webix.TreeCollection()
+            store = new webix.TreeCollection();
         }
 
         if (loadCallback) store.attachEvent("onAfterLoad", loadCallback);
@@ -125,12 +125,12 @@ webix.ready(function () {
 
         var fn = function (name) {
             return dataCollectionPull.getCollection(name);
-        }
+        };
 
         fn.tree = function (names) {
             names = names || [];
             dataCollectionPull.trees = dataCollectionPull.trees.concat(names.map(function (i) { return i.toLowerCase(); }));
-        }
+        };
 
         fn.options = function (name, textColumn, emptyValueEnable, filter) {
             var store = dataCollectionPull.getCollection(name);
@@ -141,23 +141,20 @@ webix.ready(function () {
             }
 
             store.data.each(function (i) {
-                if (filter && !filter(i)) {
-                }
-                else {
+                if (!filter || filter(i)) {
                     options.push({
                         id: i.id,
                         value: i[textColumn || "name"]
                     });
                 }
-                
             });
-            
+
             return options;
-        }
+        };
 
         fn.require = function (names, loadCallback, errorCallback) {
             dataCollectionPull.initCollections(names, loadCallback, errorCallback);
-        }
+        };
 
         fn.pull = dataCollectionPull;
         
