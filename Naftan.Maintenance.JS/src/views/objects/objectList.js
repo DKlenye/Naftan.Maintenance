@@ -273,52 +273,72 @@
         var me = this,
             specs = me.specificationsMap;
 
-        var template = function (obj, common, value, config) {
-            if (specs[obj.id] && specs[obj.id][specification.id]) {
-                return specs[obj.id][specification.id];
+        //получение тех характеристики для объекта
+        var getSpecification = function (objectId) {
+            if (specs[objectId]) {
+                var spec = specs[objectId][specification.id]
+                return spec || null;;
             }
-            return "";
-        };
+            return null;
+        }
 
+        var getColumn = function (filter, sort) {
+            return {
+                id: "specification_" + specification.id,
+                header: [specification.name, { content: filter }],
+                template: function (obj, common, value, config) {
+                    return getSpecification(obj.id) || "";
+                },
+                sort: function (a, b) {
+                    return webix.DataStore.prototype.sorting.as[sort](getSpecification(a.id), getSpecification(b.id));
+                }
+            }
+        }
+        
         switch (specification.type) {
             case 1: {
                 return {
-                    header: [specification.name, { content: "textFilter" }],
-                    sort: 'int',
-                    template:template
-                }
+                    id: "specification_" + specification.id,
+                    header: [specification.name, { content: "selectFilter", options:[{ id: "", value: "" }, { id: 0, value: "Нет" }, { id: 1, value: "Да" }] }],
+                    sort: function (a, b) {
+                        return webix.DataStore.prototype.sorting.as.int(getSpecification(a.id), getSpecification(b.id));
+                    },
+                    template: function (obj, common, value, config) {
+                        var item = { "": "", "0": "Нет", "1": "Да" }[getSpecification(obj.id)];
+                        if (!item) return "";
+                        return item;
+                    }
+                };
             }
             case 2: {
-                return {
-                    header: [specification.name, { content: "textFilter" }],
-                    sort: 'text',
-                    template: template
-                }
+                return getColumn('textFilter', 'string');
             }
             case 3: {
-                return {
-                    header: [specification.name, { content: "numberFilter" }],
-                    sort: 'int',
-                    template: template
-                }
+                return getColumn('numberFilter', 'int');
             }
             case 4: {
-                return {
-                    header: [specification.name, { content: "numberFilter" }],
-                    sort: 'int'
-                }
+                return getColumn('numberFilter', 'int');
             }
             case 5: {
                 return {
-                    header: [specification.name, { content: "dateFilter" }],
-                    sort: 'date'
+                    id: "specification_" + specification.id,
+                    header: [specification.name, { content: 'dateFilter' }],
+                    template: function (obj, common, value, config) {
+                        return getSpecification(obj.id) || "";
+                    },
+                    sort: function (a, b) {
+                        return webix.DataStore.prototype.sorting.as.date(
+                            webix.i18n.parseFormatDate(getSpecification(a.id)),
+                            webix.i18n.parseFormatDate(getSpecification(b.id))
+                        );
+                    }
                 }
             }
             case 6: {
-                var specs = webix.collection("specification");
+                var specCollection = webix.collection("specification");
                 var references = webix.collection("reference");
 
-                var spec = specs.getItem(specification.id);
+                var spec = specCollection.getItem(specification.id);
                 var options = [{ id: "", value: "" }].concat(references.getItem(spec.referenceId).values);
                 var map = {};
                 options.forEach(function (i) {
@@ -326,27 +346,22 @@
                 })
 
                 return {
+                    id: "specification_" + specification.id,
                     header: [specification.name, { content: "selectFilter",options:options }],
-                    sort: 'int'
-                    /*template: function (obj, common, value, config) {
-                        var item = map[value];
+                    sort: function (a, b) {
+                        return webix.DataStore.prototype.sorting.as.int(getSpecification(a.id), getSpecification(b.id));
+                    },
+                    template: function (obj, common, value, config) {
+                        var item = map[getSpecification(obj.id)];
                         if (!item) return "";
-                        return item.value;
-                    }*/
+                        return item;
+                    }
                 }
             }
         }
 
     },
-
-    loadSpecifications: function () {
-
-    },
-
-    onSpecificationsLoad: function () {
-
-    },
-
+       
     mask: function () {
 
     },
@@ -357,7 +372,6 @@
     onErrorHandler: function () {
 
     }
-
-        
+           
 
 }, webix.ui.layout);
