@@ -2,7 +2,7 @@
 
     name: 'view_objectlist',
 
-    requireCollections: ["department", "plant", "environment", "manufacturer","specification","reference", "ObjectGroup","object"],
+    requireCollections: ["department", "plant", "environment", "manufacturer", "specification", "reference", "ObjectGroup", "object"],
 
     $init: function (cfg) {
 
@@ -52,7 +52,7 @@
                     animate: false,
                     cells: [
                         {
-                            name:'objectsView',
+                            name: 'objectsView',
                             rows: [
                                 {
                                     view: 'toolbar',
@@ -145,7 +145,7 @@
                         {
                             view: "view_addSpecification",
                             on: {
-                                onSpecificationSelect:webix.bind(me.specificationSelectHandler,me)
+                                onSpecificationSelect: webix.bind(me.specificationSelectHandler, me)
                             }
                         }
                     ]
@@ -227,7 +227,7 @@
 
         var map = {};
         map[groupId] = {}
-        groups.data.eachSubItem(groupId,function (obj) {
+        groups.data.eachSubItem(groupId, function (obj) {
             map[obj.id] = obj;
         });
 
@@ -244,43 +244,62 @@
     },
 
     specificationSelectHandler: function (selections) {
-        console.log(selections);
         var me = this;
         this.queryView({ name: 'objectsView' }).show();
 
-        var table = this.queryView({ name: "objects" });
-        var columns = this.getColumns();
-        if (selections) {
-            selections.forEach(function (sel) {
-                columns.push(me.buildColumn(sel));
-            });
-        }
+        webix.ajax().headers({ "Content-Type": "application/json" })
+            .post("api/objectSpecification", { data: selections.map(function (o) { return o.id }) })
+            .then(function (data) {
+                me.specificationsMap = data.json();
 
-        table.define({ columns: columns });
-        table.refreshColumns();
-        table.filterByAll();
+                var table = me.queryView({ name: "objects" });
+                var columns = me.getColumns();
+                if (selections) {
+                    selections.forEach(function (sel) {
+                        columns.push(me.buildColumn(sel));
+                    });
+                }
+
+                table.define({ columns: columns });
+                table.refreshColumns();
+                table.filterByAll();
+
+            }, this.onErrorHandler);
 
     },
 
     buildColumn: function (specification) {
 
+        var me = this,
+            specs = me.specificationsMap;
+
+        var template = function (obj, common, value, config) {
+            if (specs[obj.id] && specs[obj.id][specification.id]) {
+                return specs[obj.id][specification.id];
+            }
+            return "";
+        };
+
         switch (specification.type) {
-            case 1:{
+            case 1: {
                 return {
                     header: [specification.name, { content: "textFilter" }],
-                    sort: 'text'
+                    sort: 'int',
+                    template:template
                 }
             }
             case 2: {
                 return {
                     header: [specification.name, { content: "textFilter" }],
-                    sort: 'text'
+                    sort: 'text',
+                    template: template
                 }
             }
             case 3: {
                 return {
                     header: [specification.name, { content: "numberFilter" }],
-                    sort: 'int'
+                    sort: 'int',
+                    template: template
                 }
             }
             case 4: {
@@ -292,8 +311,7 @@
             case 5: {
                 return {
                     header: [specification.name, { content: "dateFilter" }],
-                    sort: 'date',
-                    format: webix.Date.dateToStr("%d.%m.%Y")
+                    sort: 'date'
                 }
             }
             case 6: {
@@ -301,7 +319,7 @@
                 var references = webix.collection("reference");
 
                 var spec = specs.getItem(specification.id);
-                var options = references.getItem(spec.referenceId).values;
+                var options = [{ id: "", value: "" }].concat(references.getItem(spec.referenceId).values);
                 var map = {};
                 options.forEach(function (i) {
                     map[i.id] = i.value;
@@ -309,16 +327,15 @@
 
                 return {
                     header: [specification.name, { content: "selectFilter",options:options }],
-                    sort: 'date',
-                    template: function (obj, common, value, config) {
+                    sort: 'int'
+                    /*template: function (obj, common, value, config) {
                         var item = map[value];
                         if (!item) return "";
                         return item.value;
-                    }
+                    }*/
                 }
             }
         }
-        
 
     },
 
@@ -334,6 +351,10 @@
 
     },
     unmask: function () {
+
+    },
+
+    onErrorHandler: function () {
 
     }
 

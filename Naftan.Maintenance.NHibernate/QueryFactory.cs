@@ -5,6 +5,7 @@ using Naftan.Maintenance.Domain.Objects;
 using Naftan.Common.NHibernate;
 using NHibernate;
 using NHibernate.Linq;
+using Naftan.Maintenance.Domain.Specifications;
 
 namespace Naftan.Maintenance.NHibernate
 {
@@ -35,6 +36,14 @@ namespace Naftan.Maintenance.NHibernate
                 .Fetch(x=>x.Manufacturer).Eager
                 .Fetch(x=>x.Environment).Eager
                 .Fetch(x=>x.Group).Eager
+                .List();
+        }
+
+        public IEnumerable<ObjectSpecification> FindObjectSpecifications(int[] specificationId)
+        {
+            return session.QueryOver<ObjectSpecification>()
+                .WhereRestrictionOn(x => x.Specification.Id)
+                    .IsIn(specificationId)
                 .List();
         }
     }

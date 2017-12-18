@@ -180,6 +180,7 @@
     <Compile Include="Controllers\CrudController.cs" />
     <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\CrudControllers\DepartmentController.cs" />
+    <Compile Include="Controllers\DtoControllers\ObjectSpecificationController.cs" />
     <Compile Include="Controllers\EnumController.cs" />
     <Compile Include="Controllers\CrudControllers\MeasureUnitController.cs" />
     <Compile Include="Controllers\CrudControllers\EnvironmentController.cs" />

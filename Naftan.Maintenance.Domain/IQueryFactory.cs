@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Naftan.Maintenance.Domain.Objects;
+using Naftan.Maintenance.Domain.Specifications;
 
 namespace Naftan.Maintenance.Domain
 {
@@ -7,5 +8,6 @@ namespace Naftan.Maintenance.Domain
     {
         IEnumerable<ObjectGroup> FindObjectGroups();
         IEnumerable<MaintenanceObject> FindObjects();
+        IEnumerable<ObjectSpecification> FindObjectSpecifications(int[] specificationId);
     }
 }
