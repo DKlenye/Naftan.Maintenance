@@ -6,6 +6,7 @@ using Naftan.Common.NHibernate;
 using NHibernate;
 using NHibernate.Linq;
 using Naftan.Maintenance.Domain.Specifications;
+using NHibernate.Transform;
 
 namespace Naftan.Maintenance.NHibernate
 {
@@ -39,12 +40,46 @@ namespace Naftan.Maintenance.NHibernate
                 .List();
         }
 
-        public IEnumerable<ObjectSpecification> FindObjectSpecifications(int[] specificationId)
+        public class rezult
         {
-            return session.QueryOver<ObjectSpecification>()
-                .WhereRestrictionOn(x => x.Specification.Id)
-                    .IsIn(specificationId)
-                .List();
+            public int ObjectId { get; set; }
+            public int SpecificationId { get; set; }
+            public string Value { get; set; }
+        }
+
+        public Dictionary<int, Dictionary<int, string>> FindObjectSpecifications(int[] specificationId)
+        {
+
+           var rezult =  session.CreateSQLQuery
+                (@"SELECT 
+	                MaintenanceObjectId AS ObjectId,
+	                SpecificationId,
+	                [Value]
+                FROM ObjectSpecification where SpecificationId in (:id) ")
+                .SetParameterList("id",specificationId)
+                .SetResultTransformer(Transformers.AliasToBean<rezult>())
+                .List<rezult>();
+
+            Dictionary<int, Dictionary<int, string>> dictionary = new Dictionary<int, Dictionary<int, string>>();
+
+            rezult.ToList().ForEach(x =>
+            {
+                var specs = new Dictionary<int, string>();
+                if (dictionary.ContainsKey(x.ObjectId))
+                {
+                    specs = dictionary[x.ObjectId];
+                }
+                else
+                {
+                    dictionary.Add(x.ObjectId, specs);
+                }
+
+                specs.Add(x.SpecificationId, x.Value);
+
+            });
+
+            return dictionary;
+
         }
     }
 }

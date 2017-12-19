@@ -30,6 +30,14 @@ namespace Naftan.Maintenance.Domain.Objects
             ChangeOperatingState(OperatingState.Operating, startOperating);
         }
 
+        #region Поля используемые для интерации данных из dbf
+        public int? ReplicationKvo { get; private set; }
+        public int? ReplicationKg { get; private set; }
+        public int? ReplicationKu { get; private set; }
+        public int? ReplicationKc { get; private set; }
+        public int? ReplicationKmrk { get; private set; }
+        #endregion
+
         public int Id { get; set; }
         /// <summary>
         /// Группа объекта ремонта

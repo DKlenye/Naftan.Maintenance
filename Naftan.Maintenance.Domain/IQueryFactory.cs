@@ -8,6 +8,6 @@ namespace Naftan.Maintenance.Domain
     {
         IEnumerable<ObjectGroup> FindObjectGroups();
         IEnumerable<MaintenanceObject> FindObjects();
-        IEnumerable<ObjectSpecification> FindObjectSpecifications(int[] specificationId);
+        Dictionary<int, Dictionary<int, string>> FindObjectSpecifications(int[] specificationId);
     }
 }
