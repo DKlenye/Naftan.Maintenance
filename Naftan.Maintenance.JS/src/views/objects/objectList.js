@@ -9,71 +9,133 @@
         var me = this;
 
         webix.extend(cfg, {
-            cols: [
+            rows: [
                 {
-                    rows: [
+                    view: 'accordion',
+                    cols: [
                         {
-                            view: "toolbar",
-                            elements: [
-                                {
-                                    view: "icon", icon: "minus-square-o",
-                                    click: webix.bind(function () { me.queryView({ name: "groups" }).closeAll() }, this)
-                                },
-                                {
-                                    view: "icon", icon: "plus-square-o",
-                                    click: webix.bind(function () { me.queryView({ name: "groups" }).openAll() }, this)
-                                },
-                                {
-                                    view: "search",
-                                    placeholder: "Поиск...",
-                                    on: {
-                                        onKeyPress: function (code, e) {
-                                            //Esc
-                                            if (code === 27) {
-                                                this.$setValue('');
+                            header: 'Группы оборудования',
+                            body: {
+                                rows: [
+                                    {
+                                        view: "toolbar",
+                                        elements: [
+                                            {
+                                                view: "icon", icon: "minus-square-o",
+                                                click: webix.bind(function () { me.queryView({ name: "groups" }).closeAll() }, this)
+                                            },
+                                            {
+                                                view: "icon", icon: "plus-square-o",
+                                                click: webix.bind(function () { me.queryView({ name: "groups" }).openAll() }, this)
+                                            },
+                                            {
+                                                view: "search",
+                                                placeholder: "Поиск...",
+                                                on: {
+                                                    onKeyPress: function (code, e) {
+                                                        //Esc
+                                                        if (code === 27) {
+                                                            this.$setValue('');
+                                                        }
+                                                        me.queryView({ name: "groups" }).filter("#name#", this.getValue());
+                                                    }
+                                                }
                                             }
-                                            me.queryView({ name: "groups" }).filter("#name#", this.getValue());
-                                        }
+                                        ]
+                                    },
+                                    {
+                                        name: 'groups',
+                                        view: "tree",
+                                        template: "{common.icon()} {common.folder()}<span>#name#<span>",
+                                        select: true,
+                                        width: 400
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         },
+                        { view: "resizer" },
                         {
-                            name: 'groups',
-                            view: "tree",
-                            template: "{common.icon()} {common.folder()}<span>#name#<span>",
-                            select: true,
-                            width: 400
-                        }
-                    ]
-                },
-                { view: "resizer" },
-                {
-                    animate: false,
-                    cells: [
-                        {
-                            name: 'objectsView',
-                            rows: [
+                            animate: false,
+                            cells: [
                                 {
-                                    view: 'toolbar',
-                                    elements: [
+                                    name: 'objectsView',
+                                    rows: [
                                         {
-                                            view: "button", type: "iconButton", icon: "plus-circle", label: "Добавить", width: 100,
-                                            click: function () {
-                                                me.callEvent("onCreateView", [
-                                                    'Новое оборудование',
-                                                    {
-                                                        view: "view_objecteditor",
-                                                        mode: 'insert'
-                                                    },
-                                                    'plus-circle'
-                                                ]);
-                                            }
+                                            view: 'toolbar',
+                                            elements: [
+                                                {
+                                                    view: "button", type: "iconButton", icon: "plus-circle", label: "Добавить", width: 100,
+                                                    click: function () {
+                                                        me.callEvent("onCreateView", [
+                                                            'Новое оборудование',
+                                                            {
+                                                                view: "view_objecteditor",
+                                                                mode: 'insert'
+                                                            },
+                                                            'plus-circle'
+                                                        ]);
+                                                    }
+                                                },
+                                                {
+                                                    view: "button", type: "iconButton", icon: "edit", label: "Редактировать", width: 135, click: function () {
+                                                        var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
+                                                        if (item) {
+                                                            me.callEvent("onCreateView", [
+                                                                'Оборудование',
+                                                                {
+                                                                    view: "view_objecteditor",
+                                                                    mode: 'update',
+                                                                    itemId: item.id
+                                                                }
+                                                            ]);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    view: "button", type: "iconButton", icon: "trash", label: "Удалить", width: 100, click: function () {
+                                                        var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
+                                                        if (item) {
+                                                            webix.confirm(
+                                                                {
+                                                                    title: "Удаление записи",
+                                                                    text: "Вы действительно хотите удалить запись?",
+                                                                    ok: "Да",
+                                                                    cancel: "Нет",
+                                                                    callback: function (isOk) {
+                                                                        if (isOk) { }//todo delete}
+                                                                    }
+                                                                });
+                                                        }
+                                                    }
+                                                },
+                                                {},
+                                                {
+                                                    view: "button", type: "iconButton", icon: "check-square-o", label: "Характеристики", width: 150, click: function () {
+                                                        me.queryView({ view: 'view_addSpecification' }).show();
+                                                    }
+                                                },
+                                                {
+                                                    view: "button", type: "iconButton", label: "Экспорт", icon: "file-excel-o", width: 100, click: function () {
+                                                        webix.toExcel(me.queryView({ name: "objects" }));
+                                                    }
+                                                }
+                                            ]
                                         },
                                         {
-                                            view: "button", type: "iconButton", icon: "edit", label: "Редактировать", width: 135, click: function () {
-                                                var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
-                                                if (item) {
+
+                                            view: "datatable",
+                                            footer: true,
+                                            name: "objects",
+                                            select: "row",
+                                            navigation: true,
+                                            resizeColumn: true,
+                                            headermenu: { width: 200 },
+                                            columns: this.getColumns(),
+                                            leftSplit: 2,
+                                            on: {
+                                                onItemDblClick: function () {
+                                                    var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
+
                                                     me.callEvent("onCreateView", [
                                                         'Оборудование',
                                                         {
@@ -84,69 +146,16 @@
                                                     ]);
                                                 }
                                             }
-                                        },
-                                        {
-                                            view: "button", type: "iconButton", icon: "trash", label: "Удалить", width: 100, click: function () {
-                                                var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
-                                                if (item) {
-                                                    webix.confirm(
-                                                        {
-                                                            title: "Удаление записи",
-                                                            text: "Вы действительно хотите удалить запись?",
-                                                            ok: "Да",
-                                                            cancel: "Нет",
-                                                            callback: function (isOk) {
-                                                                if (isOk) { }//todo delete}
-                                                            }
-                                                        });
-                                                }
-                                            }
-                                        },
-                                        {},
-                                        {
-                                            view: "button", type: "iconButton", icon: "check-square-o", label: "Характеристики", width: 150, click: function () {
-                                                me.queryView({ view: 'view_addSpecification' }).show();
-                                            }
-                                        },
-                                        {
-                                            view: "button", type: "iconButton", label: "Экспорт", icon: "file-excel-o", width: 100, click: function () {
-                                                webix.toExcel(me.queryView({ name: "objects" }));
-                                            }
                                         }
                                     ]
                                 },
                                 {
-
-                                    view: "datatable",
-                                    footer: true,
-                                    name: "objects",
-                                    select: "row",
-                                    navigation: true,
-                                    resizeColumn: true,
-                                    headermenu: { width: 200 },
-                                    columns: this.getColumns(),
+                                    view: "view_addSpecification",
                                     on: {
-                                        onItemDblClick: function () {
-                                            var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
-
-                                            me.callEvent("onCreateView", [
-                                                'Оборудование',
-                                                {
-                                                    view: "view_objecteditor",
-                                                    mode: 'update',
-                                                    itemId: item.id
-                                                }
-                                            ]);
-                                        }
+                                        onSpecificationSelect: webix.bind(me.specificationSelectHandler, me)
                                     }
                                 }
                             ]
-                        },
-                        {
-                            view: "view_addSpecification",
-                            on: {
-                                onSpecificationSelect: webix.bind(me.specificationSelectHandler, me)
-                            }
                         }
                     ]
                 }
@@ -159,21 +168,35 @@
 
 
     initData: function () {
+
         var groups = this.queryView({ name: "groups" });
         groups.parse(webix.collection("ObjectGroup"));
 
         var objects = this.queryView({ name: "objects" });
         objects.parse(webix.collection("object"));
 
+        objects.data.attachEvent("onSyncApply", function () {
+            objects.filterByAll();
+        });
+
     },
 
     initEvents: function () {
+        var me = this;
         var groups = this.queryView({ name: "groups" });
         var objects = this.queryView({ name: "objects" });
 
         groups.attachEvent("onSelectChange", webix.bind(this.onGroupSelect, this));
 
-        this.objectsFilter = objects.filterByAll;
+        var objectsFilter = objects.filterByAll;
+
+        objects.filterByAll = function () {
+            objectsFilter.call(objects);
+
+            objects.filter(function (obj) {
+                return !me.selectedGroups || me.selectedGroups[obj.groupId];
+            }, null, true);
+        }
 
     },
 
@@ -230,22 +253,21 @@
         groups.data.eachSubItem(groupId, function (obj) {
             map[obj.id] = obj;
         });
-
-        objects.filterByAll = function () {
-            me.objectsFilter.call(objects);
-
-            objects.filter(function (obj) {
-                return !!map[obj.groupId];
-            }, null, true);
-        }
+        me.selectedGroups = map;
 
         objects.filterByAll();
-
     },
 
     specificationSelectHandler: function (selections) {
+
+       
+
         var me = this;
         this.queryView({ name: 'objectsView' }).show();
+
+        if (!selections) return;
+
+        me.mask();
 
         webix.ajax().headers({ "Content-Type": "application/json" })
             .post("api/objectSpecification", { data: selections.map(function (o) { return o.id }) })
@@ -263,6 +285,7 @@
                 table.define({ columns: columns });
                 table.refreshColumns();
                 table.filterByAll();
+                me.unmask();
 
             }, this.onErrorHandler);
 
@@ -282,57 +305,122 @@
             return null;
         }
 
-        var getColumn = function (filter, sort) {
-            return {
+        var getColumn = function (type, extensions, compare) {
+            return webix.extend({
                 id: "specification_" + specification.id,
-                header: [specification.name, { content: filter }],
+                adjust: "header",
+                header: [specification.name, { content: 'textFilter', compare: filters[type] }],
                 template: function (obj, common, value, config) {
                     return getSpecification(obj.id) || "";
                 },
                 sort: function (a, b) {
-                    return webix.DataStore.prototype.sorting.as[sort](getSpecification(a.id), getSpecification(b.id));
+                    return webix.DataStore.prototype.sorting.as[type](getSpecification(a.id), getSpecification(b.id));
                 }
-            }
+            }, extensions || {}, true)
         }
-        
+
+        var filters = {
+            int: (function () {
+                var cache = {};
+                var buildCache = function (filter) {
+                    var equality = (filter.indexOf("=") != -1) ? 1 : 0;
+                    var intvalue = filter.replace(/[^\-\.0-9]/g, "") * 1;
+                    if (filter.indexOf(">") != -1){
+                        cache[filter] = function (a) { return a * 1 > intvalue - equality }
+                    }
+                    else if (filter.indexOf("<") != -1) {
+                        cache[filter] = function (a) {
+                            return a !== null && a * 1 < (intvalue + equality);
+                        }
+                    }
+                    else {
+                        cache[filter] = function (a, b) { return a * 1 == intvalue }
+                    }
+                }
+                
+                return function (value, filter, object) {
+                    if (!cache[filter]) {
+                        buildCache(filter);
+                    }
+                    return cache[filter](getSpecification(object.id));                
+                }
+
+            })(),
+            string: (function () {
+                var cache = {};
+                var buildCache = function (filter) {
+                    cache[filter] = new RegExp(String(filter), 'ig');
+                }
+                return function (value, filter, object) {
+                    if (!cache[filter]) {
+                        buildCache(filter);
+                    }
+                    return cache[filter].test(getSpecification(object.id));
+                }
+            })(),
+            date: (function () {
+                var cache = {};
+                var buildCache = function (filter) {
+                    var equality = (filter.indexOf("=") != -1) ? 1 : 0;
+                    var intvalue = webix.i18n.dateFormatDate(filter.replace(/^[>< =]+/, "")).valueOf();
+                    if (filter.indexOf(">") != -1) {
+                        cache[filter] = function (a) { return a * 1 > intvalue - equality }
+                    }
+                    else if (filter.indexOf("<") != -1) {
+                        cache[filter] = function (a) {
+                            return a !== "" && a * 1 < (intvalue + equality);
+                        }
+                    }
+                    else {
+                        cache[filter] = function (a, b) { return a * 1 == intvalue }
+                    }
+                }
+
+                return function (value, filter, object) {
+                    if (!cache[filter]) {
+                        buildCache(filter);
+                    }
+                    return cache[filter](webix.i18n.dateFormatDate(getSpecification(object.id)).valueOf());
+                }
+
+            })(),
+
+        }
+
         switch (specification.type) {
             case 1: {
-                return {
-                    id: "specification_" + specification.id,
-                    header: [specification.name, { content: "selectFilter", options:[{ id: "", value: "" }, { id: 0, value: "Нет" }, { id: 1, value: "Да" }] }],
-                    sort: function (a, b) {
-                        return webix.DataStore.prototype.sorting.as.int(getSpecification(a.id), getSpecification(b.id));
-                    },
+                return getColumn('int', {
+                    header: [specification.name, {
+                        content: "selectFilter", options: [{ id: "", value: "" }, { id: 0, value: "Нет" }, { id: 1, value: "Да" }],
+                        compare: function (value, filter, object) {
+                            return filter == getSpecification(object.id)
+                        }
+                    }],
                     template: function (obj, common, value, config) {
                         var item = { "": "", "0": "Нет", "1": "Да" }[getSpecification(obj.id)];
                         if (!item) return "";
                         return item;
                     }
-                };
+                });
             }
             case 2: {
-                return getColumn('textFilter', 'string');
+                return getColumn('string');
             }
             case 3: {
-                return getColumn('numberFilter', 'int');
+                return getColumn('int');
             }
             case 4: {
-                return getColumn('numberFilter', 'int');
+                return getColumn('int');
             }
             case 5: {
-                return {
-                    id: "specification_" + specification.id,
-                    header: [specification.name, { content: 'dateFilter' }],
-                    template: function (obj, common, value, config) {
-                        return getSpecification(obj.id) || "";
-                    },
+                return getColumn('date', {
                     sort: function (a, b) {
                         return webix.DataStore.prototype.sorting.as.date(
                             webix.i18n.parseFormatDate(getSpecification(a.id)),
                             webix.i18n.parseFormatDate(getSpecification(b.id))
                         );
                     }
-                }
+                });
             }
             case 6: {
                 var specCollection = webix.collection("specification");
@@ -343,30 +431,29 @@
                 var map = {};
                 options.forEach(function (i) {
                     map[i.id] = i.value;
-                })
+                });
 
-                return {
-                    id: "specification_" + specification.id,
-                    header: [specification.name, { content: "selectFilter",options:options }],
-                    sort: function (a, b) {
-                        return webix.DataStore.prototype.sorting.as.int(getSpecification(a.id), getSpecification(b.id));
-                    },
+                return getColumn('int', {
+                    header: [specification.name, {
+                        content: "selectFilter", options: options, compare: function (value, filter, object) {
+                            return filter == getSpecification(object.id)
+                        }
+                    }],
                     template: function (obj, common, value, config) {
                         var item = map[getSpecification(obj.id)];
-                        if (!item) return "";
-                        return item;
+                        return item || "";
                     }
-                }
+                }); 
             }
         }
 
     },
        
     mask: function () {
-
+        this.disable();
     },
     unmask: function () {
-
+        this.enable();
     },
 
     onErrorHandler: function () {

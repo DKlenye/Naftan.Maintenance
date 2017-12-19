@@ -327,6 +327,20 @@
     onSaveHandler: function (e) {
         if (!e.json) e = e[0];
         this.onObjectLoad(e);
+
+        var collection = webix.collection('object');
+        var data = e.json();
+
+
+        var dp = webix.dp(collection);
+        dp.off();
+        var item = collection.getItem(data.id);
+        if (!item) {
+            collection.add(data);
+        }
+        else collection.updateItem(data.id, data);
+        dp.on();
+
         this.enable();
     },
 

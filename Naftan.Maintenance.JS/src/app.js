@@ -29,7 +29,8 @@
 
 
      webix.collection.tree(["objectGroup"]);
-     //webix.debug_bind = true;
+
+     //webix.debug = true;
 
      $.connection.hub.start();
 
