@@ -54,8 +54,6 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
 
             mapping.IgnoreProperty(x => x.Intervals);
 
-            mapping.References(x => x.Manufacturer).Fetch.Join();
-            mapping.References(x => x.Plant).Fetch.Join();
             mapping.References(x => x.Group).Fetch.Join();
         }
     }

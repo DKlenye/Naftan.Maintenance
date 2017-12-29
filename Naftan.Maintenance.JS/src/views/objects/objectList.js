@@ -2,7 +2,7 @@
 
     name: 'view_objectlist',
 
-    requireCollections: ["department", "plant", "environment", "manufacturer", "specification", "reference", "ObjectGroup", "object"],
+    requireCollections: ["department", "plant", "specification", "reference", "ObjectGroup", "object"],
 
     $init: function (cfg) {
 
@@ -222,21 +222,6 @@
                 template: webix.templates.collection("plant"),
                 width: 200
             },
-            {
-                id: 'environmentId',
-                header: ["Рабочая среда", { content: "selectFilter", options: webix.collection.options("environment", "name", true) }],
-                sort: 'int',
-                template: webix.templates.collection("environment"),
-                width: 200
-            },
-            {
-                id: 'manufacturerId',
-                header: ["Завод изготовитель", { content: "selectFilter", options: webix.collection.options("manufacturer", "name", true) }],
-                template: webix.templates.collection("manufacturer"),
-                sort: 'int',
-                width: 250
-            },
-            { id: 'factoryNumber', header: ["Заводской №", { content: "textFilter" }], sort: 'text', width: 120 },
             { id: 'inventoryNumber', header: ["Инв. №", { content: "textFilter" }], sort: 'text', width: 100 },
             { id: 'currentOperatingState', header: ["Состояние", { content: "textFilter" }], sort: 'text', width: 150 }
         ]

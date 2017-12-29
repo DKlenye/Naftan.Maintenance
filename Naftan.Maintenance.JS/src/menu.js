@@ -3,8 +3,6 @@
         icon: "book", value: "Справочники", data: [
             { value: "Цеха и производства", target: 'view_department' },
             { value: "Установки", target: 'view_plant' },
-            { value: "Рабочие среды", target: 'view_environment'},
-            { value: "Производители", target: 'view_manufacturer' },
             { value: "Тех. характеристики", target:'view_specification' },
             { value: "Виды обслуживания", target: 'view_maintenancetype' },
             { value: "Показатели наработки", target: 'view_measureunit' },

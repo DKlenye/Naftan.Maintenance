@@ -5,7 +5,6 @@ using Naftan.Maintenance.Domain.Objects;
 using Naftan.Common.NHibernate;
 using NHibernate;
 using NHibernate.Linq;
-using Naftan.Maintenance.Domain.Specifications;
 using NHibernate.Transform;
 
 namespace Naftan.Maintenance.NHibernate
@@ -34,8 +33,6 @@ namespace Naftan.Maintenance.NHibernate
             return session.QueryOver<MaintenanceObject>()
                 .Fetch(x => x.Plant).Eager
                 .Fetch(x=>x.Plant.Department).Eager
-                .Fetch(x=>x.Manufacturer).Eager
-                .Fetch(x=>x.Environment).Eager
                 .Fetch(x=>x.Group).Eager
                 .List();
         }
@@ -49,9 +46,13 @@ namespace Naftan.Maintenance.NHibernate
 
         public Dictionary<int, Dictionary<int, string>> FindObjectSpecifications(int[] specificationId)
         {
+            Dictionary<int, Dictionary<int, string>> dictionary = new Dictionary<int, Dictionary<int, string>>();
 
-           var rezult =  session.CreateSQLQuery
-                (@"SELECT 
+            if (!specificationId.Any()) return dictionary;
+
+            var rezult =  session.CreateSQLQuery
+                (@"
+                SELECT 
 	                MaintenanceObjectId AS ObjectId,
 	                SpecificationId,
 	                [Value]
@@ -59,8 +60,6 @@ namespace Naftan.Maintenance.NHibernate
                 .SetParameterList("id",specificationId)
                 .SetResultTransformer(Transformers.AliasToBean<rezult>())
                 .List<rezult>();
-
-            Dictionary<int, Dictionary<int, string>> dictionary = new Dictionary<int, Dictionary<int, string>>();
 
             rezult.ToList().ForEach(x =>
             {

@@ -36,6 +36,12 @@ namespace Naftan.Maintenance.Domain.Objects
         public int? ReplicationKu { get; private set; }
         public int? ReplicationKc { get; private set; }
         public int? ReplicationKmrk { get; private set; }
+        /// <summary>
+        /// Эксплуатируемость
+        /// 0-"Эксплуатируется"
+        /// 1-"Не эксплуатируется"
+        /// </summary>
+        public int? ReplicationFe { get; private set; } 
         #endregion
 
         public int Id { get; set; }
@@ -50,19 +56,18 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <summary>
         /// Рабочая среда
         /// </summary>
-        public Environment Environment { get; set; }
+        [Obsolete]
+        public int? EnvironmentId { get; private set; }
         /// <summary>
         /// Завод производитель
         /// </summary>
-        public Manufacturer Manufacturer { get; set; }
-        /// <summary>
-        ///Дата изготовления 
-        /// </summary>
-        public DateTime? ManufactureDate { get; set; }
+        [Obsolete]
+        public int? ManufacturerId { get; private set; }
         /// <summary>
         /// Заводской номер
         /// </summary>
-        public string FactoryNumber { get; set; }
+        [Obsolete]
+        public string FactoryNumber { get; private set; }
         /// <summary>
         /// Инвентарный номер
         /// </summary>

@@ -16,9 +16,6 @@ namespace Naftan.Maintenance.WebApplication.Dto.Objects
         public string TechIndex { get; set; }
         public int? DepartmentId { get; set; }
         public int? PlantId { get; set; }
-        public int? EnvironmentId { get; set; }
-        public int? ManufacturerId { get; set; }
-        public string FactoryNumber { get; set; }
 
         public override MaintenanceObject GetEntity(IRepository repository)
         {
@@ -37,9 +34,6 @@ namespace Naftan.Maintenance.WebApplication.Dto.Objects
             TechIndex = entity.TechIndex;
             DepartmentId = entity.Plant?.Department?.Id;
             PlantId = entity.Plant?.Id;
-            FactoryNumber = entity.FactoryNumber;
-            EnvironmentId = entity.Environment?.Id;
-            ManufacturerId = entity.Manufacturer?.Id;
         }
     }
 }

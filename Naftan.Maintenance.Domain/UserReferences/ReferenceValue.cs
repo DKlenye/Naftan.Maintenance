@@ -13,5 +13,8 @@ namespace Naftan.Maintenance.Domain.UserReferences
         /// Значение справочника
         /// </summary>
         public string Value { get; set; }
+
+        public int? ReplicationId { get; private set; }
+        public int? Replicationkmrk { get; private set; }
     }
 }

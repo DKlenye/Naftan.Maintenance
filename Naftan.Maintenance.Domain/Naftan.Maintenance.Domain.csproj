@@ -56,8 +56,6 @@
     <Compile Include="MeasureUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Objects\Department.cs" />
-    <Compile Include="Objects\Environment.cs" />
-    <Compile Include="Objects\Manufacturer.cs" />
     <Compile Include="Objects\Nomenclature.cs" />
     <Compile Include="Objects\ObjectOperatingState.cs" />
     <Compile Include="Objects\OperatingState.cs" />

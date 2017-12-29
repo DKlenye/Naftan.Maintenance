@@ -88,9 +88,7 @@
     <Content Include="src\ui\tabView.js" />
     <Content Include="src\views\addSpecification.js" />
     <Content Include="src\views\department.js" />
-    <Content Include="src\views\environment.js" />
     <Content Include="src\views\maintenanceType.js" />
-    <Content Include="src\views\manufacturer.js" />
     <Content Include="src\views\measureUnit.js" />
     <Content Include="src\views\objectGroup\objectGroup.js" />
     <Content Include="src\views\objectGroup\objectGroupEditor.js" />

@@ -76,7 +76,6 @@ namespace Naftan.Maintenance.Domain.Tests
 
             ElectroMotor = new MaintenanceObject(eMotorModel, "К-401В", DateTime.Now)
             {
-                FactoryNumber = "3452",
                 InventoryNumber = "123456678"
             };
 
@@ -191,7 +190,7 @@ namespace Naftan.Maintenance.Domain.Tests
             bridgeCranes.AddIntervals(fullTO, partialTO, O, T, K);
             repository.Save(gpm);
 
-            Crane = new MaintenanceObject(bridgeCranes, "", DateTime.Now) { FactoryNumber = "13505" };
+            Crane = new MaintenanceObject(bridgeCranes, "", DateTime.Now) ;
             Crane.AddSpecificationsFromGroup();
             repository.Save(Crane);
         }

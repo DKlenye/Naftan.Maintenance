@@ -183,10 +183,8 @@
     <Compile Include="Controllers\DtoControllers\ObjectSpecificationController.cs" />
     <Compile Include="Controllers\EnumController.cs" />
     <Compile Include="Controllers\CrudControllers\MeasureUnitController.cs" />
-    <Compile Include="Controllers\CrudControllers\EnvironmentController.cs" />
     <Compile Include="Controllers\CrudControllers\MaintenanceTypeController.cs" />
     <Compile Include="Controllers\DtoControllers\ObjectGroupController.cs" />
-    <Compile Include="Controllers\CrudControllers\ManufacturerController.cs" />
     <Compile Include="Controllers\DtoControllers\ObjectController.cs" />
     <Compile Include="Controllers\DtoControllers\PlantController.cs" />
     <Compile Include="Controllers\DtoControllers\ReferenceController.cs" />

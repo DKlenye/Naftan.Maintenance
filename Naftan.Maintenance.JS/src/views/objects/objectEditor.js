@@ -2,7 +2,7 @@
 
     name: "view_objecteditor",
 
-    requireCollections: ["reference","maintenanceType", "specification", "plant", "environment","manufacturer","objectGroup"],
+    requireCollections: ["reference","maintenanceType", "specification", "plant", "objectGroup"],
 
     $init: function (cfg) {
 
@@ -31,9 +31,6 @@
                                             { id: "techIndex", label: "Тех. индекс", type: "text" },
                                             { id: "departmentId", label: "Цех\Производство", type: "combo", options: webix.collection.options("department", "name", true) },
                                             { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true) },
-                                            { id: "environmentId", label: "Рабочая среда", type: "combo", options: webix.collection.options("environment", "name", true) },
-                                            { id: "manufacturerId", label: "Производитель", type: "combo", options: webix.collection.options("manufacturer", "name", true) },
-                                            { id: "factoryNumber", label: "Заводской №", type: "text" },
                                             { id: "inventoryNumber", label: "Инв. №", type: "text" },
                                             {
                                                 id: "groupId",
@@ -77,7 +74,6 @@
                                                                 template: webix.templates.collection("plant"),
                                                                 width: 200
                                                             },
-                                                            { id: 'factoryNumber', header: ["Заводской №", { content: "textFilter" }], sort: 'text', width: 120 },
                                                             { id: 'inventoryNumber', header: ["Инв. №", { content: "textFilter" }], sort: 'text', width: 100 }
                                                         ],
                                                         data: webix.collection("object"),

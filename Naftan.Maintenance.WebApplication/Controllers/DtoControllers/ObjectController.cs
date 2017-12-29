@@ -38,10 +38,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
                 dto.TechIndex,
                 DateTime.Now)
             {
-                Plant = repository.Get<Plant>(dto.PlantId.Value),
-                Manufacturer = dto.ManufacturerId == null ? null : repository.Get<Manufacturer>(dto.ManufacturerId.Value),
-                Environment = dto.EnvironmentId == null ? null : repository.Get<Domain.Objects.Environment>(dto.EnvironmentId.Value),
-                FactoryNumber = dto.FactoryNumber
+                Plant = repository.Get<Plant>(dto.PlantId.Value)
             };
 
             if (dto.ParentId != null)
@@ -61,10 +58,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         {
             var entity = repository.Get<MaintenanceObject>(id);
             entity.TechIndex = dto.TechIndex;
-            entity.FactoryNumber = dto.FactoryNumber;
             entity.Plant = repository.Get<Plant>(dto.PlantId.Value);
-            entity.Manufacturer = dto.ManufacturerId == null ? null : repository.Get<Manufacturer>(dto.ManufacturerId.Value);
-            entity.Environment = dto.EnvironmentId == null ? null : repository.Get<Domain.Objects.Environment>(dto.EnvironmentId.Value);
 
             //Если родитель был
             if (entity.Parent != null)

@@ -54,6 +54,7 @@
     <Compile Include="QueryFactory.cs" />
     <Compile Include="RepairObjects\RepairObjectGroupMappingOverride.cs" />
     <Compile Include="RepairObjects\RepairObjectMappingOverride.cs" />
+    <Compile Include="Specifications\ObjectSpecificationMappingOverride.cs" />
     <Compile Include="UserReferences\ReferenceMappingOverride.cs" />
   </ItemGroup>
   <ItemGroup>
