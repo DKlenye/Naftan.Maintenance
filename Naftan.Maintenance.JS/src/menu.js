@@ -1,18 +1,18 @@
 ﻿var menu_data = [
     {
-        icon: "book", value: "Справочники", data: [
-            { value: "Цеха и производства", target: 'view_department' },
-            { value: "Установки", target: 'view_plant' },
-            { value: "Тех. характеристики", target:'view_specification' },
-            { value: "Виды обслуживания", target: 'view_maintenancetype' },
-            { value: "Показатели наработки", target: 'view_measureunit' },
-            { value: "Пользовательские", target: 'view_reference' }
+        icon: "book", open: true, value: "Справочники", data: [
+            { icon: "industry", value: "Цеха и производства", target: 'view_department' },
+            { icon: "building-o", value: "Установки", target: 'view_plant' },
+            { icon:"list-alt", value: "Тех. характеристики", target:'view_specification' },
+            { icon: "cog", value: "Виды обслуживания", target: 'view_maintenancetype' },
+            { icon: "tachometer", value: "Показатели наработки", target: 'view_measureunit', width:200 },
+            { icon: "address-book-o", value: "Пользовательские", target: 'view_reference' }
         ]
     },
     {
-        icon: "table", value: "Объекты ремонта", data: [
-            { value: "Группы", target:"view_objectgroup" },
-            { value: "Список оборудования", target: "view_objectlist" }
+        icon: "table", open:true, value: "Объекты ремонта", data: [
+            { icon: "sitemap", value: "Группы", target:"view_objectgroup" },
+            { icon: "superpowers", value: "Оборудование", target: "view_objectlist" }
         ]
     }
     /*,

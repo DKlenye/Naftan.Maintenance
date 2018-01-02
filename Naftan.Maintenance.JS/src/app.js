@@ -80,6 +80,7 @@
                 cols: [
                     {
                         view: "sidebar",
+                        multipleOpen:true,
                         width: 250,
                         data: menu_data,
                         on: {
@@ -109,7 +110,7 @@
                                 var view = $$(viewId);
 
                                 if (!view) {
-                                    addView(item.value, config, item.icon);
+                                    addView(item.value, config, item.icon, item.width);
                                 }
                                 else {
                                     tab.setValue(viewId);
@@ -135,7 +136,7 @@
      });
 
 
-    var addView = function (header, cfg, icon, ignoreLoadCollections) {
+    var addView = function (header, cfg, icon, width, ignoreLoadCollections) {
 
         var viewName = cfg.view;
         if (!ignoreLoadCollections && viewName) {
@@ -153,7 +154,7 @@
                 mask();
                 webix.collection.require(collections, function () {
                     unmask();
-                    addView(header, cfg, icon, true);
+                    addView(header, cfg, icon, width, true);
                 });
                 return;
             }
@@ -171,7 +172,8 @@
         var id = tab.addView({
             header: getTitle(header, icon),
             close: true,
-            body: cfg
+            body: cfg,
+            width: width
         });
 
         view = $$(id);

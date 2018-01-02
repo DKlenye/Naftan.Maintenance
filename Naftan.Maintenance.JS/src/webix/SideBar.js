@@ -226,6 +226,7 @@
 
         if (!value) {
             width = this._fullWidth;
+            this.openAll();
         }
         else {
             width = this.config.collapsedWidth;

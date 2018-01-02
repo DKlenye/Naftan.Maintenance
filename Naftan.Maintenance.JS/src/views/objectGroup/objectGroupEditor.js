@@ -139,11 +139,11 @@
                                                             fillspace: 1
                                                         },
                                                         {
-                                                            id: 'maxUsage',
+                                                            id: 'minUsage',
                                                             header: ['', 'Минимальная', { content: "textFilter" }], editor:'text', fillspace: 1
                                                         },
                                                         {
-                                                            id: 'minUsage',
+                                                            id: 'maxUsage',
                                                             header: ['', 'Максимальная', { content: "textFilter" }], editor: 'text', fillspace: 1
                                                         },
                                                         {
