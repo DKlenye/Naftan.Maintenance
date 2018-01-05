@@ -178,9 +178,12 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AbstractController.cs" />
     <Compile Include="Controllers\CrudController.cs" />
+    <Compile Include="Controllers\CrudControllers\MaintenanceReasonController.cs" />
     <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\CrudControllers\DepartmentController.cs" />
     <Compile Include="Controllers\DtoControllers\ObjectSpecificationController.cs" />
+    <Compile Include="Controllers\DtoControllers\OperationalReportController.cs" />
+    <Compile Include="Controllers\DtoControllers\UserController.cs" />
     <Compile Include="Controllers\EnumController.cs" />
     <Compile Include="Controllers\CrudControllers\MeasureUnitController.cs" />
     <Compile Include="Controllers\CrudControllers\MaintenanceTypeController.cs" />

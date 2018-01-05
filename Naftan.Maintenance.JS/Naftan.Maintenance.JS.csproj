@@ -76,6 +76,7 @@
     <Content Include="gulpfile.js" />
     <Content Include="src\app.js" />
     <Content Include="src\menu.js" />
+    <Content Include="src\rules\maintenanceReason.js" />
     <Content Include="src\rules\plant.js" />
     <Content Include="src\rules\measureUnit.js" />
     <Content Include="src\rules\maintenanceType.js" />
@@ -87,11 +88,12 @@
     <Content Include="src\ui\editDataTable.js" />
     <Content Include="src\ui\tabView.js" />
     <Content Include="src\views\addSpecification.js" />
+    <Content Include="src\views\maintenanceReason.js" />
     <Content Include="src\views\department.js" />
     <Content Include="src\views\maintenanceType.js" />
     <Content Include="src\views\measureUnit.js" />
-    <Content Include="src\views\objectGroup\objectGroup.js" />
-    <Content Include="src\views\objectGroup\objectGroupEditor.js" />
+    <Content Include="src\views\groups\objectGroup.js" />
+    <Content Include="src\views\groups\objectGroupEditor.js" />
     <Content Include="src\views\objects\objectEditor.js" />
     <Content Include="src\views\objects\objectList.js" />
     <Content Include="src\views\objects\specificationsEditor.js" />
@@ -99,6 +101,7 @@
     <Content Include="src\views\plant.js" />
     <Content Include="src\views\reference.js" />
     <Content Include="src\views\specification.js" />
+    <Content Include="src\views\usage\operationalReport.js" />
     <Content Include="src\webix\columns.js" />
     <Content Include="src\webix\DataCollectionPull.js" />
     <Content Include="src\webix\sidebar.js" />

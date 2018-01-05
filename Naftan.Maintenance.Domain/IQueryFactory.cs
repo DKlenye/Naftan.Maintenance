@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Naftan.Maintenance.Domain.Objects;
-using Naftan.Maintenance.Domain.Specifications;
+using Naftan.Maintenance.Domain.Users;
 
 namespace Naftan.Maintenance.Domain
 {
@@ -9,5 +9,6 @@ namespace Naftan.Maintenance.Domain
         IEnumerable<ObjectGroup> FindObjectGroups();
         IEnumerable<MaintenanceObject> FindObjects();
         Dictionary<int, Dictionary<int, string>> FindObjectSpecifications(int[] specificationId);
+        User FindUserByLogin(string login);
     }
 }

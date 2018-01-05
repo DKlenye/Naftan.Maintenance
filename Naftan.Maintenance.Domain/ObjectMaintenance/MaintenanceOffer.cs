@@ -12,7 +12,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         public int Id { get; set; }
         public MaintenanceObject Object { get; set; }
         public Period Period { get; set; }
-        private MaintenanceType MaintenanceType { get; set; }
-        private MaintenanceReason Reason { get; set; }
+        public MaintenanceType MaintenanceType { get; set; }
+        public MaintenanceReason Reason { get; set; }
     }
 }

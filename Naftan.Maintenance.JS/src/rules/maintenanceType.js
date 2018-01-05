@@ -1,3 +1,4 @@
 ﻿webix.rules.maintenancetype = {
-    name: "isNotEmpty"
+    name: "isNotEmpty",
+    designation:"isNotEmpty"
 };

@@ -1,6 +1,6 @@
 ﻿using Naftan.Common.Domain;
 
-namespace Naftan.Maintenance.Domain.Objects
+namespace Naftan.Maintenance.Domain.SpareParts
 {
     public class Nomenclature:TreeNode<Nomenclature>,IEntity
     {

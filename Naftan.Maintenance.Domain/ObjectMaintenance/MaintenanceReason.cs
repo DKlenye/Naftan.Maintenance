@@ -8,6 +8,13 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     public class MaintenanceReason:IEntity
     {
         public int Id { get; set; }
+        /// <summary>
+        /// Наименование
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Обозначение
+        /// </summary>
+        public string Designation { get; set; }
     }
 }

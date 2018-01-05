@@ -11,7 +11,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     {
         public int Id { get; set; }
         public MaintenanceObject Object { get; internal set; }
-        public MaintenanceType Type { get; internal set; }
+        public MaintenanceType MaintenanceType { get; internal set; }
         public DateTime StartMaintenance { get; internal set; }
         public DateTime? EndMaintenance { get; internal set; }
         public MaintenanceReason UnplannedReason { get; internal set; }

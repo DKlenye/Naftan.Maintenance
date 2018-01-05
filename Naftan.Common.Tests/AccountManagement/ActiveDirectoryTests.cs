@@ -36,7 +36,7 @@ namespace Naftan.Common.Tests.AccountManagement
         [Test]
         public void GetAccount()
         {
-            var account = ActiveDirectory.GetAccount("v_gur");
+            var account = ActiveDirectory.GetAccount("kdn");
             PrintAccount(account);
         }
 

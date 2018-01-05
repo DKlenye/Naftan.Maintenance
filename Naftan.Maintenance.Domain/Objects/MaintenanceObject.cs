@@ -252,7 +252,7 @@ namespace Naftan.Maintenance.Domain.Objects
             var newMaintenance = new MaintenanceActual
             {
                 Object = this,
-                Type = maintenanceType,
+                MaintenanceType = maintenanceType,
                 StartMaintenance = start,
                 UnplannedReason = unplannedReason
             };
@@ -279,7 +279,7 @@ namespace Naftan.Maintenance.Domain.Objects
                 CurrentMaintenance.EndMaintenance = end;
 
                 //Взять интересующий интервал по типу обслуживания
-                var targetInterval = Intervals.SingleOrDefault(x => x.MaintenanceType == CurrentMaintenance.Type);
+                var targetInterval = Intervals.SingleOrDefault(x => x.MaintenanceType == CurrentMaintenance.MaintenanceType);
 
 
                 /* Выбрать интервалы для сброса. Сюда попадает интересующий нас интервал и более мелкие.
@@ -292,10 +292,10 @@ namespace Naftan.Maintenance.Domain.Objects
                     .ToDictionary(i => i.MaintenanceType);
 
                 //Если последнего обслуживания нет, то добавляем его
-                if (lastMaintenance.All(x => x.MaintenanceType != CurrentMaintenance.Type))
+                if (lastMaintenance.All(x => x.MaintenanceType != CurrentMaintenance.MaintenanceType))
                 {
                     var newLastMaintenance = new LastMaintenance(
-                            CurrentMaintenance.Type,
+                            CurrentMaintenance.MaintenanceType,
                             end,
                             UsageFromStartup
                         );

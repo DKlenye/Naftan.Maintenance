@@ -6,6 +6,7 @@ using Naftan.Common.NHibernate;
 using NHibernate;
 using NHibernate.Linq;
 using NHibernate.Transform;
+using Naftan.Maintenance.Domain.Users;
 
 namespace Naftan.Maintenance.NHibernate
 {
@@ -79,6 +80,12 @@ namespace Naftan.Maintenance.NHibernate
 
             return dictionary;
 
+        }
+
+        public User FindUserByLogin(string login)
+        {
+            return session.Query<User>()
+                .Where(x => x.Login == login).FirstOrDefault();
         }
     }
 }

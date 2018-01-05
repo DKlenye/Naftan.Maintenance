@@ -1,6 +1,7 @@
 ﻿using Naftan.Common.Domain;
+using Naftan.Maintenance.Domain.Objects;
 
-namespace Naftan.Maintenance.Domain.Objects
+namespace Naftan.Maintenance.Domain.SpareParts
 {
     public class SparePart:IEntity
     {
