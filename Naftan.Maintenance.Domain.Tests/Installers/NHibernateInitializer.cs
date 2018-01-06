@@ -32,7 +32,7 @@ namespace Naftan.Maintenance.Domain.Tests
             FluentConfiguration cfg = Fluently.Configure()
                 .Database(msSqlDatabase)
                 .Mappings(x => x.AutoMappings.Add(automapping)
-                    .ExportTo("D:\\Mappings\\")
+                   // .ExportTo("D:\\Mappings\\")
             );
                         
             var configuration = cfg.BuildConfiguration();

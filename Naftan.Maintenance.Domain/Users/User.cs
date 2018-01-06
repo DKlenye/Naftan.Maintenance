@@ -1,6 +1,7 @@
 ﻿using Naftan.Common.AccountManagement;
 using Naftan.Common.Domain;
 using Naftan.Common.Extensions;
+using Naftan.Maintenance.Domain.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,14 @@ namespace Naftan.Maintenance.Domain.Users
             Enum.GetNames(typeof(UserRoles))
                 .ToDictionary(x => x.ConvertToEnum<UserRoles>());
         }
+        
+        protected User() {
+            Plants = new HashSet<Plant>();
+            ObjectGroups = new HashSet<ObjectGroup>();
+        }
 
-
-        protected User() { }
-
-        public User(string login, string name, string phone, string email)
+        
+        public User(string login, string name, string phone, string email): this()
         {
             Login = login;
             Name = name;
@@ -53,6 +57,17 @@ namespace Naftan.Maintenance.Domain.Users
         public string Email { get; private set; }
 
         /// <summary>
+        /// Установки, разрешённые для пользователя
+        /// </summary>
+        public ISet<Plant> Plants { get; set; }
+
+        /// <summary>
+        /// Группы, оазрешённые для пользователя
+        /// </summary>
+        public ISet<ObjectGroup> ObjectGroups { get; set; }
+
+
+        /// <summary>
         /// Роли пользователя
         /// </summary>
         /// <returns></returns>
@@ -64,6 +79,6 @@ namespace Naftan.Maintenance.Domain.Users
                 .Select(x => x.ConvertToEnum<UserRoles>());
 
         }
-
+                
     }
 }

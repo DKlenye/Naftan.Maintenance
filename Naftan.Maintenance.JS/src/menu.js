@@ -21,6 +21,11 @@
             { icon: "file-text-o", value: "Оперативный отчёт", target: "view_operationalreport" },
             { icon: "calendar", value: "График ППР", target: "view_objectgroup" }
         ]
+    },
+    {
+        icon: "server", open: true, value: "Настройки", data: [
+            { icon: "user", value: "Пользователи", target: "view_userlist" }
+        ]
     }
     /*,
     {

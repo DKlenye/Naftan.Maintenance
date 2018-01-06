@@ -5,6 +5,7 @@ using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Maintenance.Domain.Specifications;
 using Naftan.Common.Domain;
+using Naftan.Maintenance.Domain.Tests.RepairObjectFactories;
 
 namespace Naftan.Maintenance.Domain.Tests
 {
@@ -24,6 +25,7 @@ namespace Naftan.Maintenance.Domain.Tests
             new MaintenanceTypeFactory(repository);
             new SpecificationFactory(repository);
             new MeasureUnitFactory(repository);
+            new PlantFactory(repository);
 
             BuildElectromotor(repository);
             BuildCompressor(repository);

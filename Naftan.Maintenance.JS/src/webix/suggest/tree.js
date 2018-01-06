@@ -33,7 +33,7 @@
     },
 
     _initData: function () {
-        this.getBody().parse(webix.collection(this.defaults.collection));
+        this.getBody().sync(webix.collection(this.defaults.collection), function () { });
     },
 
     _getText: function (item, common) {

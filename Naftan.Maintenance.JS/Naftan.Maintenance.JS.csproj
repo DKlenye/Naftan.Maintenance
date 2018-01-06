@@ -102,6 +102,8 @@
     <Content Include="src\views\reference.js" />
     <Content Include="src\views\specification.js" />
     <Content Include="src\views\usage\operationalReport.js" />
+    <Content Include="src\views\users\userEditor.js" />
+    <Content Include="src\views\users\userList.js" />
     <Content Include="src\webix\columns.js" />
     <Content Include="src\webix\DataCollectionPull.js" />
     <Content Include="src\webix\sidebar.js" />

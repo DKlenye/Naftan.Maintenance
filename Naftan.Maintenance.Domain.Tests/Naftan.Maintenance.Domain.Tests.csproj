@@ -75,8 +75,10 @@
     <Compile Include="RepairObjectFactories\AbstractFactory.cs" />
     <Compile Include="RepairObjectFactories\MaintenanceTypeFactory.cs" />
     <Compile Include="RepairObjectFactories\MeasureUnitFactory.cs" />
+    <Compile Include="RepairObjectFactories\PlantFactory.cs" />
     <Compile Include="RepairObjectFactories\RepairObjectFactory.cs" />
     <Compile Include="RepairObjectFactories\SpecificationFactory.cs" />
+    <Compile Include="Users\UserPermissionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

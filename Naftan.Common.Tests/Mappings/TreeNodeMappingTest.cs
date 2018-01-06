@@ -17,7 +17,7 @@ namespace NHibernate.Tests.Mappings
             var msSqlDatabase = MsSqlConfiguration.MsSql2008
                 .ShowSql()
                 .FormatSql()
-                .ConnectionString("data source=.; initial catalog=cmms_tests; integrated security=SSPI;");
+                .ConnectionString("data source=.; initial catalog=maintenance; integrated security=SSPI;");
 
             var cfg = Fluently.Configure()
                 .Database(msSqlDatabase)

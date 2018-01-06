@@ -170,7 +170,7 @@
     initData: function () {
 
         var groups = this.queryView({ name: "groups" });
-        groups.parse(webix.collection("ObjectGroup"));
+        groups.sync(webix.collection("ObjectGroup"), function () { });
 
         var objects = this.queryView({ name: "objects" });
         objects.parse(webix.collection("object"));
