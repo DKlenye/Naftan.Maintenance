@@ -9,8 +9,8 @@ namespace Naftan.Maintenance.NHibernate.Users
         public void Override(AutoMapping<User> mapping)
         {
             mapping.Table("Users");
-            mapping.HasManyToMany(x => x.Plants).AsSet().Cascade.AllDeleteOrphan().LazyLoad();
-            mapping.HasManyToMany(x => x.ObjectGroups).AsSet().Cascade.AllDeleteOrphan().LazyLoad();
+            mapping.HasManyToMany(x => x.Plants).AsSet().Cascade.SaveUpdate().LazyLoad();
+            mapping.HasManyToMany(x => x.ObjectGroups).AsSet().Cascade.SaveUpdate().LazyLoad();
         }
     }
 }

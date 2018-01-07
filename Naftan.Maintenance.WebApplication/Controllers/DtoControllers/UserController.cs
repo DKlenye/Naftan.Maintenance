@@ -2,6 +2,7 @@
 using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Users;
+using Naftan.Maintenance.WebApplication.Dto;
 using System.Collections.Generic;
 using System.Web.Http;
 
@@ -21,6 +22,20 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         public IEnumerable<User> Get()
         {
             return repository.All<User>();
+        }
+
+        public UserDto Get(int id)
+        {
+            var user = repository.Get<User>(id);
+            return new UserDto(user);
+        }
+
+        public UserDto Put(int id, [FromBody] UserDto dto)
+        {
+            var entity = repository.Get<User>(id);
+            dto.Merge(entity, repository);
+            repository.Save(entity);
+            return new UserDto(entity);
         }
 
         [HttpGet, Route("api/user/current")]

@@ -39,7 +39,7 @@ namespace Naftan.Maintenance.Domain.Users
         /// <summary>
         /// Фио
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Имя пользователя (логин)
@@ -49,12 +49,12 @@ namespace Naftan.Maintenance.Domain.Users
         /// <summary>
         /// Телефон
         /// </summary>
-        public string Phone { get; private set; }
+        public string Phone { get; set; }
         
         /// <summary>
         /// Электронная почта
         /// </summary>
-        public string Email { get; private set; }
+        public string Email { get; set; }
 
         /// <summary>
         /// Установки, разрешённые для пользователя

@@ -23,7 +23,7 @@
                             width:400,
                             elements: [
                                 { label: "Код", id: "id" },
-                                { label: "Логин", type: "text", id: "login" },
+                                { label: "Логин", id: "login" },
                                 { label: "Фио", type: "text", id: "name" },
                                 { label: "Телефон", type: "text", id: "phone" }, 
                                 { label: "Эл.почта", type: "text", id: "email" }
@@ -77,15 +77,22 @@
     },
 
     initData: function () {
-        var groups = this.queryView({ name: "objectGroups" });
-        groups.sync(webix.collection("ObjectGroup"), function () { })
 
-        //groups.data.unsync();
+        webix.extend(this, {
+            groups: this.queryView({ name: "objectGroups" }),
+            plants: this.queryView({ name: "plants" }),
+            property: this.queryView({ view: 'property' })
+        });
 
-        var plants = this.queryView({ name: "plants" });
-        plants.parse(this.buildPlants());
-        
+        /*this.groups.sync(webix.collection("ObjectGroup"), function () { })
+        this.groups.data.unsync();*/
 
+        this.groups.data.importData(webix.collection("ObjectGroup"), true);
+
+        this.plants.parse(this.buildPlants());
+
+        var id = this.config.itemId;
+        this.load(id);
     },
 
     buildPlants: function () {
@@ -94,15 +101,62 @@
         var plants = webix.collection('plant').data;
 
         webix.collection("department").data.each(function (d) {
-            var _department = webix.copy(d);
-            _department.data = plants.find(function (e) { return e.departmentId == d.id }).map(function (e) { return { plantId: e.id, name: e.name } });
+            var _department = { name: d.name };
+            _department.data = plants.find(function (e) { return e.departmentId == d.id }).map(function (e) { return { id: e.id, name: e.name } });
             data.push(_department);
         });
 
         return data;
     },
 
+    load: function (id) {
+        webix.ajax()
+            .get("/api/user/" + id)
+            .then(
+            webix.bind(this.onLoadHandler, this),
+            this.onErrorHandler
+            );
+    },
+
+    onLoadHandler: function (data) {
+        this.setData(data.json());
+    },
+
     save: function () {
+
+        this.property.editStop();
+
+        var data = this.getData();
+        webix.ajax().headers({ "Content-Type": "application/json" }).put("/api/user/" + data.id, data)
+            .then(
+            webix.bind(this.onLoadHandler, this),
+            this.onErrorHandler
+            );
+    },
+
+    setData: function (json) {
+        var me = this;
+        this.property.setValues(json);
+        json.groups.forEach(function (g) {
+            me.groups.checkItem(g);
+        });
+        json.plants.forEach(function (p) {
+            me.plants.checkItem(p);
+        })
+    },
+
+    getData: function () {
+        var me = this;
+        var item = this.property.getValues();
+        item.groups = this.groups.getChecked();
+
+        item.plants = me.plants.getChecked()
+            .filter(function (id) { return me.plants.getItem(id).$level > 1 });
+
+        return item;
+    },
+
+    onErrorHandler: function () {
 
     }
 

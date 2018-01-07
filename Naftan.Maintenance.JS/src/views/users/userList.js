@@ -14,18 +14,7 @@
                     view: "toolbar", elements: [
                         {
                             view: "button", type: "iconButton", icon: "edit", label: "Редактировать", width: 135,
-                            click: function () {
-                                var item = me.queryView({ view: "datatable" }).getSelectedItem() || {};
-                                if (!item) return;
-                                me.callEvent("onCreateView", [
-                                    'Пользователь',
-                                    {
-                                        view: "view_usereditor",
-                                        mode: 'update',
-                                        itemId: item.id
-                                    }
-                                ]);
-                            }
+                            click: webix.bind(me.edit,me)
                         }
                     ]
                 },
@@ -41,18 +30,7 @@
                         { id: 'email', header: ['Эл.почта', { content: "textFilter" }], sort: "string", fillspace: true }
                     ],
                     on: {
-                        onItemDblClick: function () {
-                            var item = me.queryView({ view: "datatable" }).getSelectedItem() || {};
-
-                            me.callEvent("onCreateView", [
-                                'Пользователь',
-                                {
-                                    view: "view_usereditor",
-                                    mode: 'update',
-                                    itemId: item.id
-                                }
-                            ]);
-                        }
+                        onItemDblClick: webix.bind(me.edit, me)
                     }
                 }
             ]
@@ -61,6 +39,20 @@
 
         this.$ready.push(this.initData);
 
+    },
+
+    edit: function () {
+        var item = this.queryView({ view: "datatable" }).getSelectedItem() || {};
+        if (!item) return;
+        this.callEvent("onCreateView", [
+            item.login,
+            {
+                view: "view_usereditor",
+                mode: 'update',
+                itemId: item.id
+            },
+            'user-circle-o'
+        ]);
     },
 
     initData: function () {

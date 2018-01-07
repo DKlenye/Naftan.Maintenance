@@ -212,6 +212,7 @@
     <Compile Include="Dto\PlantDto.cs" />
     <Compile Include="Dto\ReferenceDto.cs" />
     <Compile Include="Dto\SpecificationDto.cs" />
+    <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
