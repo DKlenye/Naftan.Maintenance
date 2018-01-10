@@ -1,12 +1,12 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain.Objects;
 
-namespace Naftan.Maintenance.WebApplication.Dto.Objects
+namespace Naftan.Maintenance.Domain.Dto.Objects
 {
-    public class ObjectListDto : AbstractDto<MaintenanceObject>
+    public class ObjectListDto:EntityDto<MaintenanceObject>
     {
-
         public ObjectListDto() { }
+        
         public ObjectListDto(MaintenanceObject obj)
         {
             SetEntity(obj);

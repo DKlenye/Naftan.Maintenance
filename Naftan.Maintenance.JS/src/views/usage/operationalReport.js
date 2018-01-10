@@ -77,6 +77,20 @@
             ]
         });
 
+        this.$ready.push(this.initData);
+
+    },
+
+    initData: function () {
+        webix.extend(this,{
+            reportTable: this.queryView({ view: "datatable" })
+        });
+
+        this.reportTable.parse(this.getCollection());
+    },
+
+    getCollection: function () {
+        return webix.collection('operationalReport');
     }
 
 }, webix.ui.layout);

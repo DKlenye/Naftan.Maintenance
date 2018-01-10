@@ -1,9 +1,9 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain.Specifications;
 
-namespace Naftan.Maintenance.WebApplication.Dto.Objects
+namespace Naftan.Maintenance.Domain.Dto.Objects
 {
-    public class ObjectSpecificationDto:AbstractSpecificationDto<ObjectSpecification>
+    public class ObjectSpecificationDto : AbstractSpecificationDto<ObjectSpecification>
     {
         public ObjectSpecificationDto() { }
 
@@ -17,7 +17,7 @@ namespace Naftan.Maintenance.WebApplication.Dto.Objects
 
         public int ObjectId { get; set; }
         public int SpecificationId { get; set; }
-        
+
         public string Value { get; set; }
 
         public override ObjectSpecification GetEntity(IRepository repository)

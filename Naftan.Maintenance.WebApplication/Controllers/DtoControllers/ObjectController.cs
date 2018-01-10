@@ -1,8 +1,8 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain;
+using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Maintenance.Domain.Specifications;
-using Naftan.Maintenance.WebApplication.Dto.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
         public IEnumerable<ObjectListDto> Get()
         {
-            return query.FindObjects().Select(x => new ObjectListDto(x));
+            return query.FindObjects();
         }
 
         public ObjectDto Get(int id) {

@@ -206,10 +206,7 @@
     <Compile Include="Dto\AbstractDto.cs" />
     <Compile Include="Dto\AbstractSpecificationDto.cs" />
     <Compile Include="Dto\EntityDto.cs" />
-    <Compile Include="Dto\Objects\ObjectDto.cs" />
-    <Compile Include="Dto\Objects\ObjectListDto.cs" />
     <Compile Include="Dto\ObjectGroups\ObjectGroupDto.cs" />
-    <Compile Include="Dto\Objects\ObjectSpecificationDto.cs" />
     <Compile Include="Dto\PlantDto.cs" />
     <Compile Include="Dto\ReferenceDto.cs" />
     <Compile Include="Dto\SpecificationDto.cs" />

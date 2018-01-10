@@ -5,6 +5,7 @@ using FluentNHibernate.Cfg.Db;
 using Naftan.Common.NHibernate;
 using NHibernate.Cfg;
 using Naftan.Maintenance.NHibernate;
+using System.IO;
 
 namespace Naftan.Maintenance.Domain.Tests
 {
@@ -32,7 +33,7 @@ namespace Naftan.Maintenance.Domain.Tests
             FluentConfiguration cfg = Fluently.Configure()
                 .Database(msSqlDatabase)
                 .Mappings(x => x.AutoMappings.Add(automapping)
-                    .ExportTo("D:\\Mappings\\")
+                   // .ExportTo(Path.GetTempPath()+"Mappings\\")
             );
                         
             var configuration = cfg.BuildConfiguration();

@@ -6,7 +6,7 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
 {
     public class RepairObjectGroupMappingOverride:TreeNodeMappingOverride<ObjectGroup>
     {
-        protected override string HierarchyTableName => "MintenanceObjectGroup_HIERARCHY";
+        protected override string HierarchyTableName => "ObjectGroup_HIERARCHY";
 
         public override void Override(AutoMapping<ObjectGroup> mapping)
         {

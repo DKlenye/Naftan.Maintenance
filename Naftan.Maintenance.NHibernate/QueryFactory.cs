@@ -7,6 +7,7 @@ using NHibernate;
 using NHibernate.Linq;
 using NHibernate.Transform;
 using Naftan.Maintenance.Domain.Users;
+using Naftan.Maintenance.Domain.Dto.Objects;
 
 namespace Naftan.Maintenance.NHibernate
 {
@@ -29,14 +30,21 @@ namespace Naftan.Maintenance.NHibernate
                 .ToArray();
         }
 
-        public IEnumerable<MaintenanceObject> FindObjects()
+        public IEnumerable<ObjectListDto> FindObjects()
         {
-            return session.QueryOver<MaintenanceObject>()
-                .Fetch(x => x.Plant).Eager
-                .Fetch(x => x.Plant.Department).Eager
-                .Fetch(x => x.Group).Eager
-                .Fetch(x => x.Report).Eager
-                .List();
+            var sql = @"
+             select 
+                o.MaintenanceObjectId as Id,
+	            o.ObjectGroupId as GroupId,
+	            o.TechIndex,
+	            p.DepartmentId,
+	            o.PlantId
+            from MaintenanceObject o
+            left join Plant p on p.PlantId = o.PlantId";
+
+            return session.CreateSQLQuery(sql)
+                .SetResultTransformer(Transformers.AliasToBean<ObjectListDto>())
+                .List<ObjectListDto>();
         }
 
         public class rezult
@@ -87,6 +95,31 @@ namespace Naftan.Maintenance.NHibernate
         {
             return session.Query<User>()
                 .Where(x => x.Login == login).FirstOrDefault();
+        }
+
+        public IEnumerable<OperationalReportDto> FindOperationalReport()
+        {
+            var sql = @"
+                select
+	                MaintenanceObjectId as Id,
+	                StartMaintenance,
+	                EndMaintenance,
+	                UsageBeforeMaintenance,
+	                UsageAfterMaintenance,
+	                State,
+	                PlannedMaintenanceType,
+	                ActualMaintenanceType,
+	                UnplannedReason,
+	                OfferForPlan,
+	                ReasonForOffer,
+	                period as Period
+                from OperationalReport
+            ";
+
+            return session.CreateSQLQuery(sql)
+               .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
+               .List<OperationalReportDto>();
+
         }
     }
 }
