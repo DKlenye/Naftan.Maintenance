@@ -1,12 +1,13 @@
 ﻿using FluentNHibernate.Automapping;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Common.NHibernate.Mappings;
+using FluentNHibernate.Mapping;
 
 namespace Naftan.Maintenance.NHibernate.RepairObjects
 {
     public class RepairObjectMappingOverride:TreeNodeMappingOverride<MaintenanceObject>
     {
-        protected override string HierarchyTableName => "RepairObject_HIERARCHY";
+        protected override string HierarchyTableName => "MaintenanceObject_HIERARCHY";
 
         public override void Override(AutoMapping<MaintenanceObject> mapping)
         {
@@ -52,9 +53,19 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
               .LazyLoad()
               .BatchSize(250);
 
+            mapping.HasMany(x => x.Offers)
+            .Access.ReadOnlyPropertyThroughCamelCaseField()
+            .Cascade.AllDeleteOrphan()
+            .Inverse()
+            .AsSet()
+            .LazyLoad()
+            .BatchSize(250);
+
+
             mapping.IgnoreProperty(x => x.Intervals);
 
-            mapping.References(x => x.Group).Fetch.Join();
+            mapping.HasOne(x => x.Report).PropertyRef(x => x.MaintenanceObject).LazyLoad(Laziness.Proxy).Cascade.All();
+
         }
     }
     

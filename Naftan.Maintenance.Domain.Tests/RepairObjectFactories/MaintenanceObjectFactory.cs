@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
-using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Maintenance.Domain.Specifications;
 using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain.Tests.RepairObjectFactories;
 
-namespace Naftan.Maintenance.Domain.Tests
+namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
 {
-    public class RepairObjectFactory:AbstractFactory<MaintenanceObject>
+    public class MaintenanceObjectFactory:AbstractFactory<MaintenanceObject>
     {
-        public RepairObjectFactory(IRepository repository) : base(repository)
+        public MaintenanceObjectFactory(IRepository repository) : base(repository)
         {
         }
 
@@ -26,6 +25,7 @@ namespace Naftan.Maintenance.Domain.Tests
             new SpecificationFactory(repository);
             new MeasureUnitFactory(repository);
             new PlantFactory(repository);
+            new MaintenanceReasonFactory(repository);
 
             BuildElectromotor(repository);
             BuildCompressor(repository);

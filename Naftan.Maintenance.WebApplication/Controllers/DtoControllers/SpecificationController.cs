@@ -16,7 +16,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
         public override void Delete(int id)
         {
-            throw new System.NotImplementedException();
+            repository.Remove<Specification>(id);
         }
 
         public override IEnumerable<SpecificationDto> Get()

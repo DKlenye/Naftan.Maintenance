@@ -2,22 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using Naftan.Maintenance.Domain.Objects;
+using Naftan.Maintenance.Domain.Tests.RepairObjectFactories;
 using Naftan.Maintenance.Domain.Usage;
 using NUnit.Framework;
 
 namespace Naftan.Maintenance.Domain.Tests
 {
-    public class MaintenanceObjectTest :BaseTest
+    public class MaintenanceObjectTests :BaseTest
     {
-        //Ввод наработки объекту ремонта
+        /// <summary>
+        /// Ввод наработки объекту ремонта
+        /// </summary>
         [Test]
         public void AddUsageTest()
         {
 
             using (var uow = uowf.Create())
             {
-                RepairObjectFactory.Car.AddUsage(DateTime.Now.AddDays(-1), DateTime.Now, 100);
-                repository.Save(RepairObjectFactory.Car);
+                MaintenanceObjectFactory.Car.AddUsage(DateTime.Now.AddDays(-1), DateTime.Now, 100);
+                repository.Save(MaintenanceObjectFactory.Car);
                 uow.Commit();
             }
 
@@ -26,7 +29,7 @@ namespace Naftan.Maintenance.Domain.Tests
 
             using (var uow = uowf.Create())
             {
-                repairObject = repository.Get<MaintenanceObject>(RepairObjectFactory.Car.Id);
+                repairObject = repository.Get<MaintenanceObject>(MaintenanceObjectFactory.Car.Id);
                 repairObjectUsage = repairObject.Usage;
                 uow.Commit();
             }
@@ -39,8 +42,10 @@ namespace Naftan.Maintenance.Domain.Tests
 
         }
 
-
-        //Ввод обслуживания с типом, которого нет в интервалах объекта ремонта приводит к ошибке
+        
+        /// <summary>
+        /// Ввод обслуживания с типом, которого нет в интервалах объекта ремонта приводит к ошибке
+        /// </summary>
         [Test]
         public void AddMaintenanceWithNotExistsTypeShouldBeExcept()
         {
@@ -49,7 +54,7 @@ namespace Naftan.Maintenance.Domain.Tests
                 {
                     using (var uow = uowf.Create())
                     {
-                        RepairObjectFactory.Car.AddMaintenance(
+                        MaintenanceObjectFactory.Car.AddMaintenance(
                             //У автомобиля нет интервала на осмотр
                             MaintenanceTypeFactory.O_Repair,
                             DateTime.Now
@@ -61,13 +66,15 @@ namespace Naftan.Maintenance.Domain.Tests
         }
 
 
-        //Ввод незаконченного ремонта
+        /// <summary>
+        /// Ввод незаконченного ремонта
+        /// </summary>
         [Test]
         public void AddNotFinalizedMaintenanceTest()
         {
             using (var uow = uowf.Create())
             {
-                RepairObjectFactory.Car.AddMaintenance(
+                MaintenanceObjectFactory.Car.AddMaintenance(
                         MaintenanceTypeFactory.TO1_Repair,
                         DateTime.Now
                     );
@@ -78,7 +85,7 @@ namespace Naftan.Maintenance.Domain.Tests
             MaintenanceObject repairObject;
             using (var uow = uowf.Create())
             {
-                repairObject = repository.Get<MaintenanceObject>(RepairObjectFactory.Car.Id);
+                repairObject = repository.Get<MaintenanceObject>(MaintenanceObjectFactory.Car.Id);
                 uow.Commit();
             }
 
@@ -94,13 +101,15 @@ namespace Naftan.Maintenance.Domain.Tests
         }
 
 
-        //Ввод законченного ремонта
+        /// <summary>
+        /// Ввод законченного ремонта
+        /// </summary>
         [Test]
         public void AddFinalizeMaintenance()
         {
             using (var uow = uowf.Create())
             {
-                RepairObjectFactory.Car.AddMaintenance(
+                MaintenanceObjectFactory.Car.AddMaintenance(
                         MaintenanceTypeFactory.TO1_Repair,
                         DateTime.Now.AddDays(-10),
                         DateTime.Now
@@ -112,7 +121,7 @@ namespace Naftan.Maintenance.Domain.Tests
             MaintenanceObject repairObject;
             using (var uow = uowf.Create())
             {
-                repairObject = repository.Get<MaintenanceObject>(RepairObjectFactory.Car.Id);
+                repairObject = repository.Get<MaintenanceObject>(MaintenanceObjectFactory.Car.Id);
                 uow.Commit();
             }
 
@@ -134,7 +143,7 @@ namespace Naftan.Maintenance.Domain.Tests
         {
             using (var uow = uowf.Create())
             {
-                var compressor = RepairObjectFactory.Compressor;
+                var compressor = MaintenanceObjectFactory.Compressor;
                 var now = DateTime.Now.Date;
 
                 var counter = 100;
@@ -181,7 +190,7 @@ namespace Naftan.Maintenance.Domain.Tests
             MaintenanceObject repairObject;
             using (var uow = uowf.Create())
             {
-                repairObject = repository.Get<MaintenanceObject>(RepairObjectFactory.Compressor.Id);
+                repairObject = repository.Get<MaintenanceObject>(MaintenanceObjectFactory.Compressor.Id);
                 uow.Commit();
             }
             
@@ -189,13 +198,11 @@ namespace Naftan.Maintenance.Domain.Tests
             var lastTRepair = repairObject.LastMaintenance.FirstOrDefault(x => x.MaintenanceType == MaintenanceTypeFactory.T_Repair);
 
             Assert.AreEqual(lastORepair.UsageFromLastMaintenance, 0);
-
             Assert.Greater(lastTRepair.UsageFromLastMaintenance, 0);
-
             Assert.Less(lastTRepair.LastMaintenanceDate, lastORepair.LastMaintenanceDate);
         }
-        
-
+       
+      
         [Test]
         public void PlanningMaintenanceTest()
         {
@@ -205,6 +212,23 @@ namespace Naftan.Maintenance.Domain.Tests
                 2. Плановая наработка
                 3. 
              */
+
+
+            /*
+             1. Создать план
+             2. Выбрать оборудование для планирования
+             3. Проверить планировалась ли оборудование ранее (есть ли текущий план)
+             4. Вызвать метод планирования у объекта на планируемый период и получить плановые работы
+             5. Записать детализацию работ в план
+             6. Проставить текущий план по оборудованию
+             
+             */
+
+
+
         }
+
+
+
     }
 }

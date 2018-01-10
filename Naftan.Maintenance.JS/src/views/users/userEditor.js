@@ -36,10 +36,25 @@
                                     view: 'toolbar',
                                     elements: [
                                         {
+                                            view: "icon", icon: "minus-square-o",
+                                            click: function () {
+                                                var name = me.queryView({ view: "segmented" }).getValue();
+                                                me.queryView({ name: name }).closeAll();
+                                            }
+                                        },
+                                        {
+                                            view: "icon", icon: "plus-square-o",
+                                            click:function () {
+                                                var name = me.queryView({ view: "segmented" }).getValue();
+                                                me.queryView({ name: name }).openAll();
+                                            }
+                                        },
+                                        {
                                             view: "segmented", options: [
                                                 { id: "objectGroups", value: "Группы" },
                                                 { id: "plants", value: "Установки" }
                                             ],
+                                            width: 300,
                                             on: {
                                                 onAfterTabClick: function (id) {
                                                     var view = me.queryView({ name: id });
@@ -50,6 +65,7 @@
                                     ]
                                 },
                                 {
+                                    animate: false,
                                     cells: [
                                         {
                                             name: 'objectGroups',
@@ -127,11 +143,10 @@
         this.property.editStop();
 
         var data = this.getData();
-        webix.ajax().headers({ "Content-Type": "application/json" }).put("/api/user/" + data.id, data)
-            .then(
-            webix.bind(this.onLoadHandler, this),
-            this.onErrorHandler
-            );
+        webix.ajax()
+            .headers({ "Content-Type": "application/json" })
+            .put("/api/user/" + data.id, data)
+            .then(webix.bind(this.onLoadHandler, this), this.onErrorHandler);
     },
 
     setData: function (json) {

@@ -192,6 +192,7 @@
     <Compile Include="Controllers\DtoControllers\PlantController.cs" />
     <Compile Include="Controllers\DtoControllers\ReferenceController.cs" />
     <Compile Include="Controllers\DtoControllers\SpecificationController.cs" />
+    <Compile Include="Controllers\EnumControllers\OperatingStateController.cs" />
     <Compile Include="Controllers\EnumControllers\TimePeriodController.cs" />
     <Compile Include="Controllers\EnumControllers\SpecificationTypeController.cs" />
     <Compile Include="Controllers\ListSerializer.cs" />

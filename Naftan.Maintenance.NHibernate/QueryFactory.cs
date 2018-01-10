@@ -33,8 +33,9 @@ namespace Naftan.Maintenance.NHibernate
         {
             return session.QueryOver<MaintenanceObject>()
                 .Fetch(x => x.Plant).Eager
-                .Fetch(x=>x.Plant.Department).Eager
-                .Fetch(x=>x.Group).Eager
+                .Fetch(x => x.Plant.Department).Eager
+                .Fetch(x => x.Group).Eager
+                .Fetch(x => x.Report).Eager
                 .List();
         }
 

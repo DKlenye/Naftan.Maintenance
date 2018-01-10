@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Naftan.Common.Domain;
 
-namespace Naftan.Maintenance.Domain.Tests
+namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
 {
     public abstract class AbstractFactory<T>
         where T:IEntity

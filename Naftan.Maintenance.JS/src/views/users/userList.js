@@ -42,7 +42,7 @@
     },
 
     edit: function () {
-        var item = this.queryView({ view: "datatable" }).getSelectedItem() || {};
+        var item = this.queryView({ view: "datatable" }).getSelectedItem() ;
         if (!item) return;
         this.callEvent("onCreateView", [
             item.login,

@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dto\OperationalReport.cs" />
     <Compile Include="IQueryFactory.cs" />
     <Compile Include="ObjectMaintenance\LastMaintenance.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceActual.cs" />
@@ -54,6 +53,7 @@
     <Compile Include="ObjectMaintenance\MaintenanceReason.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceType.cs" />
     <Compile Include="MeasureUnit.cs" />
+    <Compile Include="Objects\OperationalReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Objects\Department.cs" />
     <Compile Include="SpareParts\Nomenclature.cs" />
@@ -85,5 +85,6 @@
     <None Include="ObjectMaintenance\maintenance.cd" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

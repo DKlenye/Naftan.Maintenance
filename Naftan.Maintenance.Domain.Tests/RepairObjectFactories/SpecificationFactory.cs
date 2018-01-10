@@ -2,7 +2,7 @@
 using Naftan.Maintenance.Domain.UserReferences;
 using Naftan.Common.Domain;
 
-namespace Naftan.Maintenance.Domain.Tests
+namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
 {
     public class SpecificationFactory:AbstractFactory<Reference>
     {

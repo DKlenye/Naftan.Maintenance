@@ -5,6 +5,7 @@ using Naftan.Maintenance.Domain.Specifications;
 using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Usage;
+using Naftan.Common.Domain.EntityComponents;
 
 namespace Naftan.Maintenance.Domain.Objects
 {
@@ -13,7 +14,6 @@ namespace Naftan.Maintenance.Domain.Objects
     /// </summary>
     public class MaintenanceObject : TreeNode<MaintenanceObject>, IEntity
     {
-
         protected MaintenanceObject() { }
 
         private readonly ICollection<ObjectSpecification> specifications = new HashSet<ObjectSpecification>();
@@ -21,6 +21,7 @@ namespace Naftan.Maintenance.Domain.Objects
         private readonly ICollection<LastMaintenance> lastMaintenance = new HashSet<LastMaintenance>();
         private readonly ICollection<MaintenanceActual> maintenance = new HashSet<MaintenanceActual>();
         private readonly ICollection<UsageActual> usage = new HashSet<UsageActual>();
+        private readonly ICollection<MaintenanceOffer> offers = new HashSet<MaintenanceOffer>();
 
         public MaintenanceObject(ObjectGroup group, string techIndex, DateTime startOperating)
         {
@@ -28,6 +29,13 @@ namespace Naftan.Maintenance.Domain.Objects
             TechIndex = techIndex;
             StartOperating = startOperating;
             ChangeOperatingState(OperatingState.Operating, startOperating);
+            Report = new OperationalReport
+            {
+                MaintenanceObject = this,
+                Period = Period.Now(),
+                UsageBeforeMaintenance = Period.Now().Hours(),
+                State = CurrentOperatingState.Value
+            };
         }
 
         #region Поля используемые для интерации данных из dbf
@@ -36,6 +44,7 @@ namespace Naftan.Maintenance.Domain.Objects
         public int? ReplicationKu { get; private set; }
         public int? ReplicationKc { get; private set; }
         public int? ReplicationKmrk { get; private set; }
+
         /// <summary>
         /// Эксплуатируемость
         /// 0-"Эксплуатируется"
@@ -81,6 +90,133 @@ namespace Naftan.Maintenance.Domain.Objects
         /// Дата ввода в эксплуатацию
         /// </summary>
         public DateTime? StartOperating { get; private set; }
+
+        #region Оперативный отчёт
+        /// <summary>
+        /// Оперативный отчёт о работе за месяц
+        /// </summary>
+        public OperationalReport Report { get; set; }
+
+        /// <summary>
+        /// Применить отчёт (добавить информацию о ремонтах и наработке в соответствующие журналы)
+        /// </summary>
+        public void ApplyReport()
+        {
+
+            var CurrentPeriod = Report.Period;
+            var NextPeriod = CurrentPeriod.Next();
+            
+            //Если оборудование списано то в расчёт больше не берётся
+            if (CurrentOperatingState == OperatingState.WriteOff) return;
+
+            //Если оборудование было списано, то меняем состояние и больше не берём в расчёт
+            if (Report.State == OperatingState.WriteOff)
+            {
+                ChangeOperatingState(OperatingState.WriteOff, CurrentPeriod.End());
+                return;
+            }
+
+
+            // 1 Добавить наработку до ремонта, а если его не было, то за весь период
+            if (Report.UsageBeforeMaintenance != 0)
+            {
+                AddUsage(CurrentPeriod.Start(), Report.StartMaintenance ??CurrentPeriod.End(), Report.UsageBeforeMaintenance);
+                Report.UsageBeforeMaintenance = 0;
+            }
+
+            //2 Добавить информацию о ремонте, если он был.
+            
+            // Если был неоконченный ремонт, то завершить его
+            if (CurrentMaintenance != null)
+            {
+                FinalizeMaintenance(Report.EndMaintenance.Value);
+            }
+            // Если новый ремонт, то добавляем его в журнал ремонтов
+            else if (Report.ActualMaintenanceType!=null && Report.StartMaintenance != null)
+            {
+                AddMaintenance(Report.ActualMaintenanceType, Report.StartMaintenance.Value, Report.EndMaintenance, Report.UnplannedReason);
+            }
+
+            //3 если ремонт окончен и наработка после ремонта есть то добавляем её в журнал наработки
+            if (Report.EndMaintenance != null && Report.UsageAfterMaintenance != 0)
+            {
+                AddUsage(Report.EndMaintenance.Value, CurrentPeriod.End(), Report.UsageAfterMaintenance);
+            }
+
+            //Добавляем предложения для плана следующего периода
+            if (Report.OfferForPlan != null)
+            {
+                offers.Add(new MaintenanceOffer
+                {
+                    Object = this,
+                    MaintenanceType = Report.OfferForPlan,
+                    Period = NextPeriod,
+                    Reason = Report.ReasonForOffer
+                });
+            }
+
+
+            /* Очищение информации в отчёте для следующего месяца */
+                        
+            // Если ремонт окончен, то обнуляем информацию по фактическому ремонту
+            if (Report.EndMaintenance != null)
+            {
+                Report.ActualMaintenanceType = null;
+                Report.StartMaintenance = null;
+                Report.EndMaintenance = null;
+            }
+
+            Report.OfferForPlan = null;
+            Report.ReasonForOffer = null;
+
+            if (CurrentOperatingState == OperatingState.Operating)
+            {
+                Report.UsageBeforeMaintenance = NextPeriod.Hours();
+            }
+            else
+            {
+                Report.UsageBeforeMaintenance = 0;
+            }
+            
+            Report.UsageAfterMaintenance = 0;
+            Report.State = this.CurrentOperatingState.Value;
+
+            //Переходим на следующий период
+            Report.Period = NextPeriod;
+
+            //Если у объекта есть действующий план, то проверяем остаётся ли он актуален
+            if (CurrentPlan != null)
+            {
+                //Если срок плана истёк, то убираем его из объекта
+                if (NextPeriod.Start() > CurrentPlan.EndDate)
+                {
+                    CurrentPlan = null;
+                }
+                //иначе добавляем планируемые работы в отчёт
+                else
+                {
+                    /*todo 
+                        здесь предполагается что планируется один вид работ на период, и более мелкие виды работ входят в состав более крупного ремонта, 
+                        но возможно в будущем появится оборудование, у которого будет несколько видов работ за период, тогда нужно пересматривать вообще всю работу по оперативному отчёту
+                     */
+                    var plan = CurrentPlan.Details.SingleOrDefault(x => x.Object == this && x.MaintenanceDate >= NextPeriod.Start() && x.MaintenanceDate <= NextPeriod.End());
+                    if (plan != null)
+                    {
+                        Report.PlannedMaintenanceType = plan.MaintenanceType;
+                    }
+                }
+            }
+            
+        }
+
+        public void DiscardReport()
+        {
+
+        }
+
+
+        #endregion
+
 
         #region Рабочее состояние
 
@@ -194,8 +330,14 @@ namespace Naftan.Maintenance.Domain.Objects
             });
 
             //Добавить наработку с начала эксплуатации
-            UsageFromStartup  = UsageFromStartup??0+ usage;
+            UsageFromStartup  = (UsageFromStartup??0) + usage;
         }
+
+        /// <summary>
+        /// Наработка с начала экслуатации
+        /// </summary>
+        public int? UsageFromStartup { get; private set; }
+
 
         #endregion
 
@@ -326,9 +468,21 @@ namespace Naftan.Maintenance.Domain.Objects
 
         #endregion
 
+        #region Планирование
+
         /// <summary>
-        /// Наработка с начала экслуатации
+        /// Предложения к плану
         /// </summary>
-        public int? UsageFromStartup { get; private set; }
+        public IEnumerable<MaintenanceOffer> Offers => offers;
+
+        /// <summary>
+        /// Действующий план
+        /// </summary>
+        public MaintenancePlan CurrentPlan { get; set; }
+
+
+        
+        #endregion
+
     }
 }

@@ -3,6 +3,7 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using Naftan.Common.Domain;
 using Naftan.Common.NHibernate;
+using Naftan.Maintenance.Domain.Tests.RepairObjectFactories;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 using System.IO;
@@ -37,7 +38,7 @@ namespace Naftan.Maintenance.Domain.Tests
 
             using (var uow = uowf.Create())
             {
-                new RepairObjectFactory(repository);
+                new MaintenanceObjectFactory(repository);
                 uow.Commit();
             }
 

@@ -1,7 +1,7 @@
 ﻿using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Common.Domain;
 
-namespace Naftan.Maintenance.Domain.Tests
+namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
 {
     public class MaintenanceTypeFactory : AbstractFactory<MaintenanceType>
     {

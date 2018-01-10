@@ -7,7 +7,6 @@ namespace Naftan.Common.Domain.EntityComponents
     /// </summary>
     public class Period:IEntityComponent
     {
-        [Obsolete("ORM Required")]
         protected Period() { }
 
         /// <summary>
@@ -15,13 +14,23 @@ namespace Naftan.Common.Domain.EntityComponents
         /// </summary>
         public int period { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="period">период в формате yyyymm</param>
-        public Period(int period)
-        {
-            this.period = period;
-        }
+
+        public Period(int period) => this.period = period;
+        public Period(DateTime date) => period = date.Year * 100 + date.Month;
+        
+        public static Period Now() => new Period(DateTime.Now);
+        
+        public DateTime Start() => new DateTime(Year(), Month(), 1);
+        public DateTime End() => Start().AddMonths(1).AddDays(-1);
+
+        public int Days() => DateTime.DaysInMonth(Year(), Month());
+        public int Hours() => Days() * 24;
+
+        public int Month() => period % 100;
+        public int Year() => period / 100;
+
+        public Period Next() => new Period(Start().AddMonths(1));
+        public Period Prev() => new Period(Start().AddMonths(-1));
+
     }
 }

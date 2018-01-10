@@ -11,7 +11,7 @@ namespace Naftan.Maintenance.Domain.Tests.Users
         {
             var user = new User("kdn", "ФИО", "1234", "mail@gmail.com");
             user.Plants.Add(PlantFactory.Unikreking);
-            user.ObjectGroups.Add(RepairObjectFactory.Car.Group);
+            user.ObjectGroups.Add(MaintenanceObjectFactory.Car.Group);
 
             repository.Save(user);
         }

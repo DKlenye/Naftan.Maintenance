@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountManagement\ActiveDirectoryTests.cs" />
+    <Compile Include="Domain\PeriodTests.cs" />
     <Compile Include="Extensions\AttributeExtensionsTests.cs" />
     <Compile Include="Extensions\EnumExtensionsTests.cs" />
     <Compile Include="Mappings\ClassMap.cs" />

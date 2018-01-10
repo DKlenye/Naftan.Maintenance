@@ -68,6 +68,7 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\StringConvertToEnumExtension.cs" />
     <Compile Include="NHibernate\AutomappingConfiguration.cs" />
+    <Compile Include="NHibernate\Conventions\DateConvention.cs" />
     <Compile Include="NHibernate\Conventions\EnumConvention.cs" />
     <Compile Include="NHibernate\Conventions\ForeignKeyColumnNameConvention.cs" />
     <Compile Include="NHibernate\Conventions\ForeignKeyConstraintNameConvention.cs" />
