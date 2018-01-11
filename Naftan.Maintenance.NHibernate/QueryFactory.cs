@@ -101,19 +101,24 @@ namespace Naftan.Maintenance.NHibernate
         {
             var sql = @"
                 select
-	                MaintenanceObjectId as Id,
-	                StartMaintenance,
-	                EndMaintenance,
-	                UsageBeforeMaintenance,
-	                UsageAfterMaintenance,
-	                State,
-	                PlannedMaintenanceType,
-	                ActualMaintenanceType,
-	                UnplannedReason,
-	                OfferForPlan,
-	                ReasonForOffer,
-	                period as Period
-                from OperationalReport
+	                r.MaintenanceObjectId as Id,
+	                mo.TechIndex,
+	                p.DepartmentId,
+	                mo.PlantId,
+	                r.StartMaintenance,
+	                r.EndMaintenance,
+	                r.UsageBeforeMaintenance,
+	                r.UsageAfterMaintenance,
+	                r.[State],
+	                r.PlannedMaintenanceType,
+	                r.ActualMaintenanceType,
+	                r.UnplannedReason,
+	                r.OfferForPlan,
+	                r.ReasonForOffer,
+	                r.period as Period
+                from OperationalReport r
+                LEFT JOIN MaintenanceObject mo ON mo.MaintenanceObjectId = r.MaintenanceObjectId
+                LEFT JOIN Plant p ON p.PlantId = mo.PlantId
             ";
 
             return session.CreateSQLQuery(sql)

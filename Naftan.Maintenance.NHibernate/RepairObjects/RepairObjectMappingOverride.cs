@@ -1,7 +1,6 @@
 ﻿using FluentNHibernate.Automapping;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Common.NHibernate.Mappings;
-using FluentNHibernate.Mapping;
 
 namespace Naftan.Maintenance.NHibernate.RepairObjects
 {
@@ -61,11 +60,8 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
             .LazyLoad()
             .BatchSize(250);
 
-
             mapping.IgnoreProperty(x => x.Intervals);
-
-            mapping.HasOne(x => x.Report).PropertyRef(x => x.MaintenanceObject).LazyLoad(Laziness.Proxy).Cascade.All();
-
+            mapping.HasOne(x => x.Report).PropertyRef(x => x.MaintenanceObject).Cascade.All().Fetch.Join();
         }
     }
     

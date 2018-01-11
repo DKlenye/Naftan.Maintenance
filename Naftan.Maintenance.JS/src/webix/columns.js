@@ -5,7 +5,7 @@
 };
 
 webix.columns = {
-    id: { id: 'id', header: ["Код", { content: "numberFilter" }], template: function (o, c, value) { return (value < 1e10) ? value : "" }, width: 80, sort: "int" },
+    id: { id: 'id', header: ["Код", { content: "numberFilter" }], template: function (o, c, value) { return (value < 1e10) ? value : "" }, width: 60, sort: "int" },
     trash : { id: "trash", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-trash-o'></span>" }
 };
 

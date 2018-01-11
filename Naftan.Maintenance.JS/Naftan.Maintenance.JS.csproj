@@ -96,12 +96,12 @@
     <Content Include="src\views\groups\objectGroupEditor.js" />
     <Content Include="src\views\objects\objectEditor.js" />
     <Content Include="src\views\objects\objectList.js" />
+    <Content Include="src\views\objects\operationalReport.js" />
     <Content Include="src\views\objects\specificationsEditor.js" />
     <Content Include="src\views\objects\usageEditor.js" />
     <Content Include="src\views\plant.js" />
     <Content Include="src\views\reference.js" />
     <Content Include="src\views\specification.js" />
-    <Content Include="src\views\usage\operationalReport.js" />
     <Content Include="src\views\users\userEditor.js" />
     <Content Include="src\views\users\userList.js" />
     <Content Include="src\webix\columns.js" />

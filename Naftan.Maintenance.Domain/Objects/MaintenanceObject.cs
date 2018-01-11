@@ -103,6 +103,11 @@ namespace Naftan.Maintenance.Domain.Objects
         public void ApplyReport()
         {
 
+            if (CurrentOperatingState == null)
+            {
+                ChangeOperatingState(OperatingState.Operating, Report.Period.Start());
+            }
+
             var CurrentPeriod = Report.Period;
             var NextPeriod = CurrentPeriod.Next();
             
@@ -179,7 +184,7 @@ namespace Naftan.Maintenance.Domain.Objects
             }
             
             Report.UsageAfterMaintenance = 0;
-            Report.State = this.CurrentOperatingState.Value;
+            Report.State = CurrentOperatingState.Value;
 
             //Переходим на следующий период
             Report.Period = NextPeriod;

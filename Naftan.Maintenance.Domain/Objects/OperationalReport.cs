@@ -16,12 +16,12 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <summary>
         /// Объект 
         /// </summary>
-        public MaintenanceObject MaintenanceObject { get; internal set; }
+        public MaintenanceObject MaintenanceObject { get; set; }
 
         /// <summary>
         /// Период отчёта
         /// </summary>
-        public Period Period { get; internal set; }
+        public Period Period { get; set; }
 
         /// <summary>
         /// Вид обслуживания план
