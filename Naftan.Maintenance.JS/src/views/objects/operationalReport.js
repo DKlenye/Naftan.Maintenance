@@ -1,7 +1,7 @@
 ﻿webix.protoUI({
 
     name: 'view_operationalreport',
-    requireCollections: ["department", "plant", "operatingState", "maintenanceReason"],
+    requireCollections: ["department", "plant", "operatingState", "maintenanceReason","maintenanceType"],
 
     $init: function (cfg) {
 
@@ -57,7 +57,7 @@
                         },
                         {
                             id: 'usageBeforeMaintenance',
-                            header: [{ text:"Наработка", colspan:2}, "До"],
+                            header: [{ text: "Наработка", colspan: 2, css: { "background": "#bbcbf1" } }, { text: "До", css: { "background": "#bbcbf1" } }],
                             sort: 'int',
                             editor: "text",
                             editFormat: intFormatter,
@@ -66,7 +66,7 @@
                         },
                         {
                             id: 'usageAfterMaintenance',
-                            header: ['','После'],
+                            header: ['', { text: 'После', css: { "background": "#bbcbf1" } }],
                             sort: 'int',
                             editor: "text",
                             editFormat: intFormatter,
@@ -75,13 +75,13 @@
                         },
                         {
                             id: 'plannedMaintenanceType',
-                            header: [{ text: "Ремонт/обслуживание", colspan: 5 }, "План"],
+                            header: [{ text: "Ремонт/обслуживание", colspan: 5, css: { "background": "#c8d0a7" } }, { text: "План", css: { "background": "#c8d0a7" } }],
                             template: webix.templates.collection("maintenanceType"),
                             width: 120
                         },
                         {
                             id: 'actualMaintenanceType',
-                            header: ["", "Факт"],
+                            header: ["", { text: "Факт", css: { "background": "#c8d0a7" } }],
                             editor: 'combo',
                             template: webix.templates.collection("maintenanceType"),
                             options: webix.collection.options("maintenanceType"),
@@ -89,7 +89,7 @@
                         },
                         {
                             id: 'unplannedReason',
-                            header: ["", "Причина"],
+                            header: ["", { text: "Причина", css: { "background": "#c8d0a7" } }],
                             editor: 'combo',
                             options: webix.collection.options("maintenanceReason"),
                             template: webix.templates.collection("maintenanceReason"),
@@ -97,7 +97,7 @@
                         },
                         {
                             id: 'startMaintenance',
-                            header: ["","Начало"],
+                            header: ["", { text: "Начало", css: { "background": "#c8d0a7" } }],
                             editFormat: webix.i18n.dateFormatStr,
                             editParse: webix.i18n.dateFormatStr,
                             editor:'date',
@@ -105,7 +105,7 @@
                         },
                         {
                             id: 'endMaintenance',
-                            header: ["","Окончание"],
+                            header: ["", { text: "Окончание", css: { "background": "#c8d0a7" } }],
                             editFormat : webix.i18n.dateFormatStr,
                             editParse : webix.i18n.dateFormatStr,
                             editor:'date',
@@ -113,7 +113,7 @@
                         },
                         {
                             id: 'offerForPlan',
-                            header: ["Предложение к плану", { content: "textFilter" }],
+                            header: [{ text: "Предложение к плану", colspan: 2, css: { "background": "#f6e2ad" } }, { text: "Вид", css: { "background": "#f6e2ad" }}],
                             editor: 'combo',
                             template: webix.templates.collection("maintenanceType"),
                             options: webix.collection.options("maintenanceType"),
@@ -121,7 +121,7 @@
                         },
                         {
                             id: 'reasonForOffer',
-                            header: ["Причина ремонта", { content: "textFilter" }],
+                            header: ["", { text: "Причина", css: { "background": "#f6e2ad" } }],
                             editor: 'combo',
                             options: webix.collection.options("maintenanceReason"),
                             template: webix.templates.collection("maintenanceReason"),
