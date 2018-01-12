@@ -17,7 +17,7 @@ namespace Naftan.Maintenance.WebApplication
             var serializer = GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings;
             serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
             serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            serializer.Converters.Add(new IsoDateTimeConverter { DateTimeFormat =  "dd.MM.yyyy HH:mm:ss" });
+            serializer.Converters.Add(new IsoDateTimeConverter { DateTimeFormat =  "dd.MM.yyyy" });
 
             var container = new WindsorContainer();
             container.Install(FromAssembly.This());

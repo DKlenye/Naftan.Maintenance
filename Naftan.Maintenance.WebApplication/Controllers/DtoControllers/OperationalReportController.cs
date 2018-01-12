@@ -3,6 +3,9 @@ using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.Objects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -24,6 +27,14 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         {
             return query.FindOperationalReport();
         }
+
+        public OperationalReportDto Put(int id, [FromBody] OperationalReportDto dto)
+        {
+
+            return dto;
+
+        }
+
 
         [HttpGet, Route("api/object/addReports")]
         public void AddReports()
@@ -48,6 +59,9 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         }
 
 
+
+
+
         [HttpGet, Route("api/object/applyReports")]
         public void ApplyReports()
         {
@@ -63,6 +77,10 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
             });
         }
+
+
+
+
 
 
     }
