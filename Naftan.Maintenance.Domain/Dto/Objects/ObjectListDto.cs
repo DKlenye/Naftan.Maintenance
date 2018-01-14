@@ -16,6 +16,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public string TechIndex { get; set; }
         public int? DepartmentId { get; set; }
         public int? PlantId { get; set; }
+        public int Period { get; set; }
 
         public override MaintenanceObject GetEntity(IRepository repository)
         {

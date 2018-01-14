@@ -5,6 +5,8 @@
 
     $init: function (cfg) {
 
+        var me = this;
+
         var intFormatter = function (value) {
             value = (value + "").replace(",", ".");
             var number = webix.Number.format(value, { decimalDelimiter: ".", decimalSize: 0 });
@@ -17,23 +19,36 @@
             offer: '#f6e2ad'
         };
 
-
         webix.extend(cfg, {
             rows: [
                 {
                     view: "toolbar", elements: [
-                        { view: "datepicker", align: "right", label: "Период:", labelWidth: 70, type: "month", width: 220, format:'%F %Y' },
+                        { view: "button", type: "iconButton", icon: "refresh", label: "", width: 30, click: webix.bind(this.reload, this)},
+                        {
+                            view: "datepicker", name:"period", align: "right", label: "Период:", labelWidth: 70, type: "month", width: 220, format: '%F %Y',
+                            value: new Date(),
+                            on: {
+                                onChange: webix.bind(this.reload, this)
+                            }
+                        },
+                        { view: 'combo', options: webix.collection.options('department', "name", true), width: 200 },
+                        { view: 'combo', options: webix.collection.options('plant', "name", true), width: 200 },
+                        {},
+                        { view: "button", type: "iconButton", icon: "share-square-o", label: "Провести", width: 100, click: webix.bind(this.applyReport, this) },
                         /*{ view: "button", type: "iconButton", icon: "floppy-o", label: "Сохранить", width: 110 }*/
                     ]   
                 },
                 {
                     view: "datatable",
                     css: "center_columns",
-                    select:'cell',
+                    select: 'cell',
+                    leftSplit: 2,
                     navigation: true,
                     editable: true,
+                    rules: webix.rules.operationalreport,
                     columns: [
-                        webix.column("id"),
+                        //webix.column("id"),
+                        { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
                         {
                             id: 'techIndex',
                             header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
@@ -134,7 +149,23 @@
                             template: webix.templates.collection("maintenanceReason"),
                             width: 120
                         }
-                    ]
+                    ],
+                    onClick: {
+                        "fa-edit": webix.bind(function (e, target) {
+
+                            var item = me.reportTable.getItem(target.row);
+                            me.callEvent("onCreateView", [
+                                'Оборудование',
+                                {
+                                    view: "view_objecteditor",
+                                    mode: 'update',
+                                    itemId: item.id
+                                }
+                            ]);
+
+                            return false;
+                        })
+                    }
                 }
             ]
         });
@@ -142,6 +173,62 @@
         this.$ready.push(this.initData);
         this.$ready.push(this.initEvents);
 
+    },
+
+    initData: function () {
+        webix.extend(this, {
+            reportTable: this.queryView({ view: "datatable" })
+        });
+        
+       // this.reportTable.parse(this.getCollection());
+    },
+
+    
+    initEvents: function () {
+
+        var me = this;
+        var table = me.reportTable;
+
+
+        webix.UIManager.addHotKey("enter", function (view) {
+            var pos = view.getSelectedId();
+            view.edit(pos);
+        }, this.reportTable);
+
+        table.attachEvent("onBeforeLoad", function () {
+            me.mask("Загрузка...");
+        });
+
+        table.attachEvent("onAfterLoad", function () {
+            me.unmask();
+        });
+
+
+        table.attachEvent("onBeforeEditStart", webix.bind(this.onEditStart, this));
+        table.attachEvent("onAfterEditStart", webix.bind(this.onAfterEditStart, this));
+        table.attachEvent("onBeforeEditStop", webix.bind(this.onEditStop, this));
+
+        this.reload();
+    },
+
+    mask: function (text) {
+        this.disable();
+        this.reportTable.showOverlay(text + "<span class='webix_icon fa-spinner fa-spin'></span>");
+    },
+
+    unmask: function () {
+        this.enable();
+        this.reportTable.hideOverlay();
+    },
+
+
+    reload: function () {
+        this.reportTable.clearAll();
+        this.reportTable.load("json->api/operationalReport/"+this.getPeriod())
+    },
+
+    getPeriod: function () {
+        return webix.Date.dateToStr("%Y%m")(this.queryView({ name: "period" }).getValue());
     },
 
     getStart: function (period) {
@@ -166,26 +253,6 @@
     getHoursBetweenDates:function(date1, date2) {
         var parser = webix.Date.strToDate("%d.%m.%Y");
         return Math.round((parser(date2) - parser(date1)) / (1000 * 60 * 60 * 24)) * 24;
-    },
-    
-    initData: function () {
-        webix.extend(this,{
-            reportTable: this.queryView({ view: "datatable" })
-        });
-
-        this.reportTable.parse(this.getCollection());
-    },
-
-    initEvents: function () {
-
-        webix.UIManager.addHotKey("enter", function (view) {
-            var pos = view.getSelectedId();
-            view.edit(pos);
-        }, this.reportTable);
-
-        this.reportTable.attachEvent("onBeforeEditStart", webix.bind(this.onEditStart, this));
-        this.reportTable.attachEvent("onAfterEditStart", webix.bind(this.onAfterEditStart, this));
-        this.reportTable.attachEvent("onBeforeEditStop", webix.bind(this.onEditStop, this));
     },
 
     onEditStart: function (obj) {
@@ -267,9 +334,11 @@
         var hoursAfter = this.getHoursBetweenDates(item.endMaintenance, this.getEnd(item.period));
         var value = values.value;
         var old = values.old;
+        var parser = webix.Date.strToDate("%d.%m.%Y");
 
         switch (obj.column) {
             case "state": {
+                item.state = value;
                 break;
             }
             case "usageBeforeMaintenance": {
@@ -331,6 +400,10 @@
                     item.endMaintenance = null;
                 }
                 else {
+                    if (parser(item.startMaintenance) > parser(value)) {
+                        value = parser(item.startMaintenance);
+                    }
+                    
                     hoursAfter = this.getHoursBetweenDates(value, this.getEnd(item.period));
                     item.usageAfterMaintenance = hoursAfter;
                     item.endMaintenance = value;
@@ -350,17 +423,36 @@
                 break;
             }
             case "reasonForOffer": {
-
+                item.reasonForOffer = value;
                 break;
             }
         }
 
         this.reportTable.updateItem(item.id, item);
-
     },
     
-    getCollection: function () {
+   /* getCollection: function () {
         return webix.collection('operationalReport');
+    },*/
+
+    applyReport: function () {
+        var objects = [];
+        this.reportTable.data.each(function (e) { objects.push(e.id) });
+
+        this.mask("Проведение отчёта...")
+
+        webix.ajax().headers({ "Content-Type": "application/json" })
+            .post("/api/operationalReport/applyReports", { data: objects})
+            .then(webix.bind(this.onApplyHandler, this), this.onErrorHandler)
+    },
+
+    onApplyHandler: function () {
+        this.unmask();
+    },
+
+    onErrorHandler: function () {
+
     }
+
 
 }, webix.ui.layout);

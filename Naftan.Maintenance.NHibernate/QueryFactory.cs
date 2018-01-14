@@ -38,8 +38,10 @@ namespace Naftan.Maintenance.NHibernate
 	            o.ObjectGroupId as GroupId,
 	            o.TechIndex,
 	            p.DepartmentId,
-	            o.PlantId
+	            o.PlantId,
+                r.Period
             from MaintenanceObject o
+            left join OperationalReport r on r.MaintenanceObjectId = o.MaintenanceObjectId
             left join Plant p on p.PlantId = o.PlantId";
 
             return session.CreateSQLQuery(sql)
@@ -97,9 +99,7 @@ namespace Naftan.Maintenance.NHibernate
                 .Where(x => x.Login == login).FirstOrDefault();
         }
 
-        public IEnumerable<OperationalReportDto> FindOperationalReport()
-        {
-            var sql = @"
+        private string operationalReportQuery = @"
                 select
 	                r.MaintenanceObjectId as Id,
 	                mo.TechIndex,
@@ -119,11 +119,32 @@ namespace Naftan.Maintenance.NHibernate
                 from OperationalReport r
                 LEFT JOIN MaintenanceObject mo ON mo.MaintenanceObjectId = r.MaintenanceObjectId
                 LEFT JOIN Plant p ON p.PlantId = mo.PlantId
-            ";
+        ";
 
-            return session.CreateSQLQuery(sql)
+        public IEnumerable<OperationalReportDto> FindOperationalReportAll()
+        {
+            return session.CreateSQLQuery(operationalReportQuery)
                .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
                .List<OperationalReportDto>();
+
+        }
+
+        public OperationalReportDto FindOperationalReportByObjectId(int objectId)
+        {
+            return session.CreateSQLQuery(operationalReportQuery + " WHERE mo.MaintenanceObjectId = :id")
+                .SetParameter("id", objectId)
+                .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
+                .List<OperationalReportDto>().FirstOrDefault();
+        }
+
+        public IEnumerable<OperationalReportDto> FindOperationalReportByParams(int period, IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants)
+        {
+                return session.CreateSQLQuery(operationalReportQuery+ " WHERE r.period = :period AND mo.PlantId in (:plants) AND mo.ObjectGroupId in (:groups)")
+                .SetParameter("period",period)
+                .SetParameterList("plants",plants.Select(x=>x.Id))
+                .SetParameterList("groups",groups.Select(x=>x.Id))
+                .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
+                .List<OperationalReportDto>();
 
         }
     }

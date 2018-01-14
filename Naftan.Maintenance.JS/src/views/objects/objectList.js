@@ -223,6 +223,7 @@
                 width: 200
             },
             { id: 'inventoryNumber', header: ["Инв. №", { content: "textFilter" }], sort: 'text', width: 100 },
+            { id: 'period', header: ["Период", { content: "numberFilter" }], sort: 'int', width: 100},
             { id: 'currentOperatingState', header: ["Состояние", { content: "textFilter" }], sort: 'text', width: 150 }
         ]
     },

@@ -3,7 +3,8 @@
 
 var paths = {
     jsDestination: "../Naftan.Maintenance.WebApplication/Scripts/",
-    jsWebixExtensionsSrc:"./src/webix/*.js",
+    jsWebixExtensionsSrc: "./src/webix/*.js",
+    jsUi:"./src/ui/*.js",
     jsSrc: "./src/**/*.js",
     content: "../Naftan.Maintenance.WebApplication/Content/",
     cssSrc:"./css/**/*.css"
@@ -16,7 +17,7 @@ var gulp = require('gulp'),
 
 
 var getJS = function () {
-    return [paths.jsWebixExtensionsSrc, paths.jsSrc];
+    return [paths.jsWebixExtensionsSrc, paths.jsUi, paths.jsSrc];
 }
 
 gulp.task("js.min", function () {

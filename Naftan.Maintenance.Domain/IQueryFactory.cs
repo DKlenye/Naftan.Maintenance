@@ -9,7 +9,9 @@ namespace Naftan.Maintenance.Domain
     {
         IEnumerable<ObjectGroup> FindObjectGroups();
         IEnumerable<ObjectListDto> FindObjects();
-        IEnumerable<OperationalReportDto> FindOperationalReport();
+        IEnumerable<OperationalReportDto> FindOperationalReportAll();
+        IEnumerable<OperationalReportDto> FindOperationalReportByParams(int period, IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants);
+        OperationalReportDto FindOperationalReportByObjectId(int objectId);
         Dictionary<int, Dictionary<int, string>> FindObjectSpecifications(int[] specificationId);
         User FindUserByLogin(string login);
     }

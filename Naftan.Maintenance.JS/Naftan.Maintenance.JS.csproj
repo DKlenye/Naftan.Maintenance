@@ -83,6 +83,7 @@
     <Content Include="src\rules\manufacturer.js" />
     <Content Include="src\rules\department.js" />
     <Content Include="src\rules\reference.js" />
+    <Content Include="src\rules\operationalReport.js" />
     <Content Include="src\rules\specification.js" />
     <Content Include="src\ui\dataTable.js" />
     <Content Include="src\ui\editDataTable.js" />

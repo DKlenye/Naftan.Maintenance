@@ -1,11 +1,9 @@
-﻿using Naftan.Common.Domain;
-using Naftan.Common.Domain.EntityComponents;
+﻿using Naftan.Common.AccountManagement;
+using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto.Objects;
+using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -23,58 +21,45 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             this.repository = repository;
         }
 
-        public IEnumerable<OperationalReportDto> Get()
+        [HttpGet, Route("api/operationalReport/{period}")]
+        public IEnumerable<OperationalReportDto> Get(int period)
         {
-            return query.FindOperationalReport();
+            var account = ActiveDirectory.CurrentAccount;
+            var user = query.FindUserByLogin(account.Login);
+                        
+            return query.FindOperationalReportByParams(period ,user.ObjectGroups, user.Plants);
         }
 
         public OperationalReportDto Put(int id, [FromBody] OperationalReportDto dto)
         {
+            var entity = repository.Get<MaintenanceObject>(id);
+            var report = entity.Report;
 
-            return dto;
+            report.StartMaintenance = dto.StartMaintenance;
+            report.EndMaintenance = dto.EndMaintenance;
+            report.UsageBeforeMaintenance = dto.UsageBeforeMaintenance;
+            report.UsageAfterMaintenance = dto.UsageAfterMaintenance;
+            report.State = dto.State;
+            report.OfferForPlan = dto.OfferForPlan==null? null : repository.Get<MaintenanceType>(dto.OfferForPlan.Value);
+            report.ReasonForOffer = dto.ReasonForOffer==null? null: repository.Get<MaintenanceReason>(dto.ReasonForOffer.Value);
+            report.PlannedMaintenanceType = dto.PlannedMaintenanceType==null? null:repository.Get<MaintenanceType>(dto.PlannedMaintenanceType.Value);
+            report.UnplannedReason = dto.UnplannedReason==null? null: repository.Get<MaintenanceReason>(dto.UnplannedReason.Value);
+            report.ActualMaintenanceType = dto.ActualMaintenanceType == null ? null : repository.Get<MaintenanceType>(dto.ActualMaintenanceType.Value);
 
+            repository.Save(entity);
+
+            return query.FindOperationalReportByObjectId(entity.Id);
         }
 
 
-        [HttpGet, Route("api/object/addReports")]
-        public void AddReports()
+        [HttpPost, Route("api/operationalReport/applyReports")]
+        public void ApplyReports([FromBody] ListSerializer<int> list)
         {
-            var objects = query.FindObjects();
-
-            objects.ToList().ForEach(x =>
+            list.data.ToList().ForEach(x =>
             {
-                var o = repository.Get<MaintenanceObject>(x.Id);
-
-                o.Report = new OperationalReport
-                {
-                    MaintenanceObject = o,
-                    Period = Period.Now(),
-                    UsageBeforeMaintenance = Period.Now().Hours(),
-                    State = o.CurrentOperatingState??OperatingState.Operating
-                };
-
-                repository.Save(o);
-
-            });
-        }
-
-
-
-
-
-        [HttpGet, Route("api/object/applyReports")]
-        public void ApplyReports()
-        {
-            var objects = query.FindObjects().Take(200);
-
-            objects.ToList().ForEach(x =>
-            {
-                var o = repository.Get<MaintenanceObject>(x.Id);
-
+                var o = repository.Get<MaintenanceObject>(x);
                 o.ApplyReport();
-
                 repository.Save(o);
-
             });
         }
 

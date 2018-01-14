@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Naftan.Maintenance.Domain.Objects;
+using System;
 
 namespace Naftan.Maintenance.Domain.Dto.Objects
 {
@@ -12,7 +13,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public DateTime? EndMaintenance { get; set; }
         public int UsageBeforeMaintenance { get; set; }
         public int UsageAfterMaintenance { get; set; }
-        public int State { get; set; }
+        public OperatingState State { get; set; }
         public int? OfferForPlan { get; set; }
         public int? PlannedMaintenanceType { get; set; }
         public int? ActualMaintenanceType { get; set; }
