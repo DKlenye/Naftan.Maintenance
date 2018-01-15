@@ -23,7 +23,7 @@ namespace Naftan.Maintenance.Domain.Objects
         private readonly ICollection<UsageActual> usage = new HashSet<UsageActual>();
         private readonly ICollection<MaintenanceOffer> offers = new HashSet<MaintenanceOffer>();
 
-        public MaintenanceObject(ObjectGroup group, string techIndex, DateTime startOperating)
+        public MaintenanceObject(ObjectGroup group, string techIndex, DateTime startOperating, IEnumerable<LastMaintenance> last = null)
         {
             Group = group;
             TechIndex = techIndex;
@@ -36,6 +36,31 @@ namespace Naftan.Maintenance.Domain.Objects
                 UsageBeforeMaintenance = Period.Now().Hours(),
                 State = CurrentOperatingState.Value
             };
+
+            if (last != null)
+            {
+                last.ToList().ForEach(x =>
+                {
+                    x.Object = this;
+                    lastMaintenance.Add(x);
+                });
+            }
+            else{
+
+                Intervals.ToList().ForEach(x =>
+                {
+                    lastMaintenance.Add(new LastMaintenance(
+                        x.MaintenanceType,
+                        null,
+                        x.MinUsage != null ? (int?)0 : null
+                        )
+                    {
+                        Object = this
+                    });
+                });
+
+            }
+
         }
 
         #region Поля используемые для интерации данных из dbf
@@ -508,40 +533,63 @@ namespace Naftan.Maintenance.Domain.Objects
 
             while (period.End() <= plan.EndDate)
             {
+
+                //todo пока-что реализован алгоритм для часов, если учитывать что-то другое, с другим показателем наработки, то нужно вводить понятие плановой наработки и брать её из справочника, либо рассчитывать среднее
                 var hours = period.Hours();
-                
+
+                //признак того, что за период работы уже запланированы
+                var maintenanceFlag = false;  
+
                 intervals.ForEach(interval =>
                 {
                     var type = interval.MaintenanceType.Id;
 
-                    //проверка по наработке
-                    if (interval.MinUsage != null && interval.MinUsage.Value > (lastUsageMap[type].Value + hours))
+                    if (!maintenanceFlag)
                     {
-                        //дата проведения обслуживания
-                        var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
-
-                        plan.Details.Add(new MaintenancePlanDetail
+                        //проверка по наработке
+                        if (interval.MinUsage != null && (lastUsageMap[type].Value + hours) >= interval.MinUsage.Value )
                         {
-                            Object = this,
-                            MaintenanceType = interval.MaintenanceType,
-                            Plan = plan,
-                            MaintenanceDate = date
-                        });
+                            maintenanceFlag = true;
 
+                            //дата проведения обслуживания
+                            var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
+
+                            plan.Details.Add(new MaintenancePlanDetail
+                            {
+                                Object = this,
+                                MaintenanceType = interval.MaintenanceType,
+                                Plan = plan,
+                                MaintenanceDate = date
+                            });
+
+                            //todo здесь не совсем понятно если планировать на последующие периоды, то сколько времени занимает ремонт
+                            //может это отражать в каком нибудь справочнике
+                            //пока временем ремонта будем пренебрегать
+
+                            intervals.Where(x => x.QuantityInCycle >= interval.QuantityInCycle).ToList().ForEach(x =>
+                            {
+                                lastUsageMap[x.MaintenanceType.Id] = (int)(period.End() - date).TotalDays * 24;
+                                lastDateMap[x.MaintenanceType.Id] = date;
+                            });
+
+                        }
+
+                        //проверка по времени
+                        else if (interval.PeriodQuantity != null)
+                        {
+                            //todo сделать проверку интервалов по времени
+                        }
+
+                        else
+                        {
+                            lastUsageMap[type] += hours;
+                        }
                     }
-                    //проверка по времени
-                    else if (interval.PeriodQuantity!=null)
-                    {
-                        //todo сделать проверку интервалов по времени
-                    }
-                    
-
-
 
                 });
 
                 period = period.Next();
-
+                maintenanceFlag = false;
             }
         }
         

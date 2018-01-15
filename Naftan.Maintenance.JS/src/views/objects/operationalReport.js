@@ -316,16 +316,17 @@
     onAfterEditStart: function (obj) {
 
         var item = this.reportTable.getItem(obj.row);
+        var calendar;
 
         if (obj.column == 'startMaintenance') {
-            var calendar = this.reportTable.getEditor().getPopup().getBody();
+            calendar = this.reportTable.getEditor().getPopup().getBody();
             calendar.define("minDate", this.getStart(item.period));
             calendar.define("maxDate", this.getEnd(item.period));
             calendar.refresh();
         }
 
         if (obj.column == 'endMaintenance') {
-            var calendar = this.reportTable.getEditor().getPopup().getBody();
+            calendar = this.reportTable.getEditor().getPopup().getBody();
             calendar.define("minDate", item.startMaintenance);
             calendar.define("maxDate", this.getEnd(item.period));
             calendar.refresh();

@@ -10,6 +10,11 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     /// </summary>
     public class MaintenancePlan:IEntity
     {
+
+        public MaintenancePlan() {
+            Details = new HashSet<MaintenancePlanDetail>();
+        }
+
         public int Id { get; set; }
         public User User { get; set; }
         public DateTime StartDate { get; set; }

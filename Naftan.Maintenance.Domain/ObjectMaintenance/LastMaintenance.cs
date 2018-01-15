@@ -11,7 +11,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     {
         protected LastMaintenance() { }
 
-        internal LastMaintenance(MaintenanceType maintenanceType, DateTime date,int? usage = null)
+        internal LastMaintenance(MaintenanceType maintenanceType, DateTime? date,int? usage = null)
         {
             MaintenanceType = maintenanceType;
             LastMaintenanceDate = date;
@@ -33,7 +33,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         /// <summary>
         /// Дата с последнего обслуживания
         /// </summary>
-        public DateTime LastMaintenanceDate { get; private set; }
+        public DateTime? LastMaintenanceDate { get; private set; }
 
         /// <summary>
         /// Наработка с последнего обслуживания, если межремонтный интервал по времени, то наработка не учитывается
