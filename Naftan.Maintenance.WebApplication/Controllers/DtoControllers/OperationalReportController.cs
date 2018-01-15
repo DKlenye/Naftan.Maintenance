@@ -26,10 +26,18 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         {
             var account = ActiveDirectory.CurrentAccount;
             var user = query.FindUserByLogin(account.Login);
-                        
-            return query.FindOperationalReportByParams(period ,user.ObjectGroups, user.Plants);
+
+
+            if (user.Plants.Any() && user.ObjectGroups.Any())
+            {
+                return query.FindOperationalReportByParams(period, user.ObjectGroups, user.Plants);
+            }
+
+            return new List<OperationalReportDto>();
+
         }
 
+        [HttpPut, Route("api/operationalReport/{id}")]
         public OperationalReportDto Put(int id, [FromBody] OperationalReportDto dto)
         {
             var entity = repository.Get<MaintenanceObject>(id);
@@ -53,7 +61,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
 
         [HttpPost, Route("api/operationalReport/applyReports")]
-        public void ApplyReports([FromBody] ListSerializer<int> list)
+        public IEnumerable<int> ApplyReports([FromBody] ListSerializer<int> list)
         {
             list.data.ToList().ForEach(x =>
             {
@@ -61,6 +69,9 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
                 o.ApplyReport();
                 repository.Save(o);
             });
+
+            return list.data;
+
         }
 
 

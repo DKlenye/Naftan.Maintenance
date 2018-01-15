@@ -132,13 +132,9 @@ webix.ready(function () {
             dataCollectionPull.trees = dataCollectionPull.trees.concat(names.map(function (i) { return i.toLowerCase(); }));
         };
 
-        fn.options = function (name, textColumn, emptyValueEnable, filter) {
+        fn.options = function (name, textColumn, emptyValueEnable, filter, sort) {
             var store = dataCollectionPull.getCollection(name);
             var options = [];
-
-            if (emptyValueEnable === true) {
-                options.push({ id: "", value: "" });
-            }
 
             store.data.each(function (i) {
                 if (!filter || filter(i)) {
@@ -148,6 +144,23 @@ webix.ready(function () {
                     });
                 }
             });
+
+            if (sort === true) {
+                options.sort(
+                    function (a, b) {
+                        if (a.value > b.value) {
+                            return 1;
+                        }
+                        if (a.value < b.value) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+            }
+
+            if (emptyValueEnable === true) {
+                options.unshift({ id: "", value: "" });
+            }
 
             return options;
         };

@@ -486,6 +486,64 @@ namespace Naftan.Maintenance.Domain.Objects
         public MaintenancePlan CurrentPlan { get; set; }
 
 
+        /// <summary>
+        /// Спланировать работы по обслуживанию
+        /// </summary>
+        /// <param name="plan">План</param>
+        public void PlanningMaintenance(MaintenancePlan plan)
+        {
+            var intervals = Intervals.ToList();
+            intervals.Sort();
+            var intervalsMap = intervals.ToDictionary(x => x.MaintenanceType.Id);
+            var lastDateMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id, x => x.LastMaintenanceDate);
+            var lastUsageMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id, x=>x.UsageFromLastMaintenance);
+
+            //Проверить можно ли планировать, существует ли текущий план, можно ли планировать на указанный период?
+
+            //Удаляем из плана работы, запланированные ранее (в случае пересчёта плана)
+            plan.Details.ToList().Where(x => x.Object == this).ToList().ForEach(x => plan.Details.Remove(x));
+
+            CurrentPlan = plan;
+            var period = new Period(plan.StartDate);
+
+            while (period.End() <= plan.EndDate)
+            {
+                var hours = period.Hours();
+                
+                intervals.ForEach(interval =>
+                {
+                    var type = interval.MaintenanceType.Id;
+
+                    //проверка по наработке
+                    if (interval.MinUsage != null && interval.MinUsage.Value > (lastUsageMap[type].Value + hours))
+                    {
+                        //дата проведения обслуживания
+                        var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
+
+                        plan.Details.Add(new MaintenancePlanDetail
+                        {
+                            Object = this,
+                            MaintenanceType = interval.MaintenanceType,
+                            Plan = plan,
+                            MaintenanceDate = date
+                        });
+
+                    }
+                    //проверка по времени
+                    else if (interval.PeriodQuantity!=null)
+                    {
+                        //todo сделать проверку интервалов по времени
+                    }
+                    
+
+
+
+                });
+
+                period = period.Next();
+
+            }
+        }
         
         #endregion
 

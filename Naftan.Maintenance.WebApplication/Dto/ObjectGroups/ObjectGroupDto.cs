@@ -72,7 +72,7 @@ namespace Naftan.Maintenance.WebApplication.Dto.ObjectGroups
         public int? MaxUsage { get; set; }
         public TimePeriod? TimePeriod { get; set; }
         public int? PeriodQuantity { get; set; }
-        public int? QuantityInCycle { get; set; }
+        public int QuantityInCycle { get; set; }
 
         public MaintenanceInterval Entity(IRepository repository)
         {

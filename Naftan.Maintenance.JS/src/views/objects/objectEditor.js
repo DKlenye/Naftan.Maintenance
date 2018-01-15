@@ -30,7 +30,7 @@
                                             { id: "id", label: "Код" },
                                             { id: "techIndex", label: "Тех. индекс", type: "text" },
                                             { id: "departmentId", label: "Цех\Производство", type: "combo", options: webix.collection.options("department", "name", true) },
-                                            { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true) },
+                                            { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true,null,true) },
                                             { id: "inventoryNumber", label: "Инв. №", type: "text" },
                                             {
                                                 id: "groupId",
@@ -69,7 +69,7 @@
                                                             },
                                                             {
                                                                 id: 'plantId',
-                                                                header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true) }],
+                                                                header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true,null,true) }],
                                                                 sort: "int",
                                                                 template: webix.templates.collection("plant"),
                                                                 width: 200

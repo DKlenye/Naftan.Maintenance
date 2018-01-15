@@ -19,8 +19,20 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         }
 
         public int Id { get; set; }
+        
+        /// <summary>
+        /// Объект обслуживания
+        /// </summary>
         public MaintenanceObject Object { get; internal set; }
+        
+        /// <summary>
+        /// Вид обслуживания
+        /// </summary>
         public MaintenanceType MaintenanceType { get; private set; }
+
+        /// <summary>
+        /// Дата с последнего обслуживания
+        /// </summary>
         public DateTime LastMaintenanceDate { get; private set; }
 
         /// <summary>

@@ -217,14 +217,22 @@
             },
             {
                 id: 'plantId',
-                header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true) }],
+                header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true,null,true) }],
                 sort: "int",
                 template: webix.templates.collection("plant"),
                 width: 200
             },
             { id: 'inventoryNumber', header: ["Инв. №", { content: "textFilter" }], sort: 'text', width: 100 },
-            { id: 'period', header: ["Период", { content: "numberFilter" }], sort: 'int', width: 100},
-            { id: 'currentOperatingState', header: ["Состояние", { content: "textFilter" }], sort: 'text', width: 150 }
+            { id: 'period', header: ["Период", { content: "numberFilter" }], sort: 'int', width: 100 },
+            {
+                id: 'currentOperatingState',
+                header: ['Состояние', { content: "selectFilter", options: webix.collection.options("operatingState", "name", true) }],
+                sort: "int",
+                template: webix.templates.collection("operatingState"),
+                editor: "combo",
+                options: webix.collection.options("operatingState"),
+                width: 160
+            }
         ]
     },
 
@@ -442,8 +450,9 @@
         this.enable();
     },
 
-    onErrorHandler: function () {
-
+    onErrorHandler: function (e) {
+        unmask();
+        webix.message(e);
     }
            
 

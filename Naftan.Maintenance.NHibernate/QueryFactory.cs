@@ -39,6 +39,7 @@ namespace Naftan.Maintenance.NHibernate
 	            o.TechIndex,
 	            p.DepartmentId,
 	            o.PlantId,
+                o.CurrentOperatingState,
                 r.Period
             from MaintenanceObject o
             left join OperationalReport r on r.MaintenanceObjectId = o.MaintenanceObjectId

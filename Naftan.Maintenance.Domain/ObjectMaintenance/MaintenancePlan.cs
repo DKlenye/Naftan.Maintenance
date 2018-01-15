@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Naftan.Common.Domain;
+using Naftan.Maintenance.Domain.Users;
 
 namespace Naftan.Maintenance.Domain.ObjectMaintenance
 {
@@ -10,8 +11,9 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     public class MaintenancePlan:IEntity
     {
         public int Id { get; set; }
+        public User User { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public IEnumerable<MaintenancePlanDetail> Details { get; set; }
+        public ISet<MaintenancePlanDetail> Details { get; set; }
     }
 }

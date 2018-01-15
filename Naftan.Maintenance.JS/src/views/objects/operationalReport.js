@@ -23,7 +23,7 @@
             rows: [
                 {
                     view: "toolbar", elements: [
-                        { view: "button", type: "iconButton", icon: "refresh", label: "", width: 30, click: webix.bind(this.reload, this)},
+                        { view: "button", type: "iconButton", icon: "refresh", label: "Обновить", width: 100, click: webix.bind(this.reload, this)},
                         {
                             view: "datepicker", name:"period", align: "right", label: "Период:", labelWidth: 70, type: "month", width: 220, format: '%F %Y',
                             value: new Date(),
@@ -31,8 +31,8 @@
                                 onChange: webix.bind(this.reload, this)
                             }
                         },
-                        { view: 'combo', options: webix.collection.options('department', "name", true), width: 200 },
-                        { view: 'combo', options: webix.collection.options('plant', "name", true), width: 200 },
+                        //{ view: 'combo', options: webix.collection.options('department', "name", true), width: 200 },
+                       // { view: 'combo', options: webix.collection.options('plant', "name", true), width: 200 },
                         {},
                         { view: "button", type: "iconButton", icon: "share-square-o", label: "Провести", width: 100, click: webix.bind(this.applyReport, this) },
                         /*{ view: "button", type: "iconButton", icon: "floppy-o", label: "Сохранить", width: 110 }*/
@@ -41,11 +41,13 @@
                 {
                     view: "datatable",
                     css: "center_columns",
+                    footer: true,
                     select: 'cell',
                     leftSplit: 2,
                     navigation: true,
                     editable: true,
                     rules: webix.rules.operationalreport,
+                    save:'json->api/operationalReport',
                     columns: [
                         //webix.column("id"),
                         { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
@@ -63,7 +65,7 @@
                         },
                         {
                             id: 'plantId',
-                            header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true) }],
+                            header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true,null,true) }],
                             sort: "int",
                             template: webix.templates.collection("plant"),
                             width: 200
@@ -223,8 +225,13 @@
 
 
     reload: function () {
-        this.reportTable.clearAll();
-        this.reportTable.load("json->api/operationalReport/"+this.getPeriod())
+        var table = this.reportTable;
+        table.clearAll();
+        table.load("json->api/operationalReport/" + this.getPeriod(), function () {
+            table.filterByAll();
+            table.sort("#techIndex#");
+            table.markSorting("techIndex", "asc");
+        });
     },
 
     getPeriod: function () {
@@ -436,22 +443,46 @@
     },*/
 
     applyReport: function () {
-        var objects = [];
+
+        var me = this, objects = [];
         this.reportTable.data.each(function (e) { objects.push(e.id) });
 
-        this.mask("Проведение отчёта...")
+        if (objects.length > 0) {
 
-        webix.ajax().headers({ "Content-Type": "application/json" })
-            .post("/api/operationalReport/applyReports", { data: objects})
-            .then(webix.bind(this.onApplyHandler, this), this.onErrorHandler)
+            webix.confirm(
+                {
+                    title: "Проведение отчёта",
+                    text: "Выбрано <b>" + objects.length +"</b> единиц для проведения.<br/> Вы действительно хотите провести отчёт?",
+                    ok: "Да",
+                    cancel: "Нет",
+                    type: "confirm-warning",
+                    callback: function (isOk) {
+                        if (isOk) {
+
+                            me.mask("Проведение отчёта...")
+
+                            webix.ajax().headers({ "Content-Type": "application/json" })
+                                .post("/api/operationalReport/applyReports", { data: objects })
+                                .then(webix.bind(me.onApplyHandler, me), me.onErrorHandler)
+                        }
+                    }
+                });
+        }
+       
     },
 
-    onApplyHandler: function () {
+    onApplyHandler: function (e) {
         this.unmask();
+        var objects = e.json();
+        var dp = webix.dp(this.reportTable);
+        dp.off();
+        this.reportTable.remove(objects);
+        dp.on();
+        
     },
 
     onErrorHandler: function () {
-
+        this.unmask();
     }
 
 

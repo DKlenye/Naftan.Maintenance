@@ -13,6 +13,18 @@
                 {
                     view: "toolbar", elements: [
                         {
+                            view: "button", type: "iconButton", icon: "refresh", label: "Обновить", width: 100, click: webix.bind(function () {
+
+                                var table = this.queryView({ view: "datatable" });
+                                table.editStop();
+
+                                var store = this._getStore();
+                                store.clearAll()
+                                store.load(store.config.url);
+
+                            }, this)
+                        },
+                        {
                             view: "button", type: "iconButton", icon: "edit", label: "Редактировать", width: 135,
                             click: webix.bind(me.edit,me)
                         }

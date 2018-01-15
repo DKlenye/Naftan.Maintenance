@@ -152,7 +152,7 @@ namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
             var fullTO = new MaintenanceInterval
             (
                 MaintenanceTypeFactory.TO_Full,
-                null,null,null,null,
+                null,null,null,1,
                 TimePeriod.Month,
                 36
             );
@@ -160,7 +160,7 @@ namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
             var partialTO = new MaintenanceInterval
             (
                 MaintenanceTypeFactory.TO_Partial,
-                null, null, null, null,
+                null, null, null, 1,
                 TimePeriod.Month,
                 12
             );
@@ -217,7 +217,7 @@ namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
             var Interval_TO1 = new MaintenanceInterval(
                 MaintenanceTypeFactory.TO1_Repair,
                 MeasureUnitFactory.Km,
-                10000, null, null,
+                10000, null, 1,
                 TimePeriod.Year, 2
             );
 
