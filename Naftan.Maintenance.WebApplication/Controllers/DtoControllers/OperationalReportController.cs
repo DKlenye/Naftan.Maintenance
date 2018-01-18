@@ -1,5 +1,6 @@
 ﻿using Naftan.Common.AccountManagement;
 using Naftan.Common.Domain;
+using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
@@ -30,7 +31,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
             if (user.Plants.Any() && user.ObjectGroups.Any())
             {
-                return query.FindOperationalReportByParams(period, user.ObjectGroups, user.Plants);
+                return query.FindOperationalReportByParams(new Period(period), user.ObjectGroups, user.Plants);
             }
 
             return new List<OperationalReportDto>();
@@ -50,7 +51,6 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             report.State = dto.State;
             report.OfferForPlan = dto.OfferForPlan==null? null : repository.Get<MaintenanceType>(dto.OfferForPlan.Value);
             report.ReasonForOffer = dto.ReasonForOffer==null? null: repository.Get<MaintenanceReason>(dto.ReasonForOffer.Value);
-            report.PlannedMaintenanceType = dto.PlannedMaintenanceType==null? null:repository.Get<MaintenanceType>(dto.PlannedMaintenanceType.Value);
             report.UnplannedReason = dto.UnplannedReason==null? null: repository.Get<MaintenanceReason>(dto.UnplannedReason.Value);
             report.ActualMaintenanceType = dto.ActualMaintenanceType == null ? null : repository.Get<MaintenanceType>(dto.ActualMaintenanceType.Value);
 

@@ -6,6 +6,8 @@
 
     $init: function (config) {
 
+        console.log(config.segmentId);
+
         var me = this;
 
         var status = function (value, obj) {
@@ -54,12 +56,13 @@
                                 {
                                     view: 'toolbar',
                                     elements: [{
-                                        view: "segmented", width: 400, options: [
+                                        view: "segmented", width: 400,
+                                        options: [
                                             { id: "specificationEditor", value: "Тех. характеристики" },
                                             { id: "intervalEditor", value: "Межремонтные интервалы" }
                                         ],
                                         on: {
-                                            onAfterTabClick: function (id) {
+                                            onChange: function (id) {
                                                 me.queryView({ name: id }).show();
                                             }
                                         }
@@ -266,6 +269,9 @@
                 me.changeParent(state.value);
             } 
         });
+
+        this.queryView({ view: "segmented" }).setValue(this.config.segmentId);
+
     },
 
     changeParent: function (value) {
@@ -507,6 +513,9 @@
     },
 
     save: function () {
+
+        this.queryView({ view: "property" }).editStop();
+
         var data = this.getData();
         this[this.config.mode](data);
     },

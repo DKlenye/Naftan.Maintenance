@@ -2,7 +2,7 @@
 
     name: 'view_objectlist',
 
-    requireCollections: ["department", "plant", "specification", "reference", "ObjectGroup", "object"],
+    requireCollections: ["department", "plant", "specification", "reference", "ObjectGroup", "object","operatingState"],
 
     $init: function (cfg) {
 
@@ -222,8 +222,10 @@
                 template: webix.templates.collection("plant"),
                 width: 200
             },
-            { id: 'inventoryNumber', header: ["Инв. №", { content: "textFilter" }], sort: 'text', width: 100 },
-            { id: 'period', header: ["Период", { content: "numberFilter" }], sort: 'int', width: 100 },
+            {
+                id: 'period', header: ["Период", { content: "numberFilter" }], sort: 'int', width: 100,
+                template: webix.templates.period()
+            },
             {
                 id: 'currentOperatingState',
                 header: ['Состояние', { content: "selectFilter", options: webix.collection.options("operatingState", "name", true) }],

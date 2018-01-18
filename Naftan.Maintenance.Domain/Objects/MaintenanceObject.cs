@@ -21,7 +21,7 @@ namespace Naftan.Maintenance.Domain.Objects
         private readonly ICollection<LastMaintenance> lastMaintenance = new HashSet<LastMaintenance>();
         private readonly ICollection<MaintenanceActual> maintenance = new HashSet<MaintenanceActual>();
         private readonly ICollection<UsageActual> usage = new HashSet<UsageActual>();
-        private readonly ICollection<MaintenanceOffer> offers = new HashSet<MaintenanceOffer>();
+        private readonly ICollection<MaintenancePlan> plans = new HashSet<MaintenancePlan>();
 
         public MaintenanceObject(ObjectGroup group, string techIndex, DateTime startOperating, IEnumerable<LastMaintenance> last = null)
         {
@@ -123,7 +123,7 @@ namespace Naftan.Maintenance.Domain.Objects
         public OperationalReport Report { get; set; }
 
         /// <summary>
-        /// Применить отчёт (добавить информацию о ремонтах и наработке в соответствующие журналы)
+        /// Применить отчёт (добавить информацию о ремонтах и наработке в соответствующие журналы) и сформировать план на след. период
         /// </summary>
         public void ApplyReport()
         {
@@ -133,13 +133,28 @@ namespace Naftan.Maintenance.Domain.Objects
                 ChangeOperatingState(OperatingState.Operating, Report.Period.Start());
             }
 
+            if (!LastMaintenance.Any())
+            {
+                Intervals.ToList().ForEach(x =>
+                {
+                    lastMaintenance.Add(new LastMaintenance(
+                        x.MaintenanceType,
+                        null,
+                        x.MinUsage != null ? (int?)0 : null
+                        )
+                    {
+                        Object = this
+                    });
+                });
+            }
+
             var CurrentPeriod = Report.Period;
             var NextPeriod = CurrentPeriod.Next();
             
-            //Если оборудование списано то в расчёт больше не берётся
+            //Если оборудование не эксплуатируется то в расчёт больше не берётся
             if (CurrentOperatingState == OperatingState.WriteOff) return;
 
-            //Если оборудование было списано, то меняем состояние и больше не берём в расчёт
+            //Если оборудование установлено как не эксплуатируется, то меняем состояние и больше не берём в расчёт
             if (Report.State == OperatingState.WriteOff)
             {
                 ChangeOperatingState(OperatingState.WriteOff, CurrentPeriod.End());
@@ -173,17 +188,8 @@ namespace Naftan.Maintenance.Domain.Objects
                 AddUsage(Report.EndMaintenance.Value, CurrentPeriod.End(), Report.UsageAfterMaintenance);
             }
 
-            //Добавляем предложения для плана следующего периода
-            if (Report.OfferForPlan != null)
-            {
-                offers.Add(new MaintenanceOffer
-                {
-                    Object = this,
-                    MaintenanceType = Report.OfferForPlan,
-                    Period = NextPeriod,
-                    Reason = Report.ReasonForOffer
-                });
-            }
+            //Планируем следующий период
+            PlanningMaintenance(NextPeriod, Report.OfferForPlan, Report.ReasonForOffer);
 
 
             /* Очищение информации в отчёте для следующего месяца */
@@ -214,29 +220,7 @@ namespace Naftan.Maintenance.Domain.Objects
             //Переходим на следующий период
             Report.Period = NextPeriod;
 
-            //Если у объекта есть действующий план, то проверяем остаётся ли он актуален
-            if (CurrentPlan != null)
-            {
-                //Если срок плана истёк, то убираем его из объекта
-                if (NextPeriod.Start() > CurrentPlan.EndDate)
-                {
-                    CurrentPlan = null;
-                }
-                //иначе добавляем планируемые работы в отчёт
-                else
-                {
-                    /*todo 
-                        здесь предполагается что планируется один вид работ на период, и более мелкие виды работ входят в состав более крупного ремонта, 
-                        но возможно в будущем появится оборудование, у которого будет несколько видов работ за период, тогда нужно пересматривать вообще всю работу по оперативному отчёту
-                     */
-                    var plan = CurrentPlan.Details.SingleOrDefault(x => x.Object == this && x.MaintenanceDate >= NextPeriod.Start() && x.MaintenanceDate <= NextPeriod.End());
-                    if (plan != null)
-                    {
-                        Report.PlannedMaintenanceType = plan.MaintenanceType;
-                    }
-                }
-            }
-            
+                        
         }
 
         public void DiscardReport()
@@ -503,94 +487,86 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <summary>
         /// Предложения к плану
         /// </summary>
-        public IEnumerable<MaintenanceOffer> Offers => offers;
-
-        /// <summary>
-        /// Действующий план
-        /// </summary>
-        public MaintenancePlan CurrentPlan { get; set; }
+        public IEnumerable<MaintenancePlan> Plans => plans;
 
 
         /// <summary>
         /// Спланировать работы по обслуживанию
         /// </summary>
-        /// <param name="plan">План</param>
-        public void PlanningMaintenance(MaintenancePlan plan)
+        /// <param name="period">Период планирования</param>
+        /// <param name="offer">Предложение обслуживания</param>
+        /// <param name="offerReason">Причина предложения</param>
+        public void PlanningMaintenance(Period period, MaintenanceType offer, MaintenanceReason offerReason)
         {
+            ///сортируем интервалы по величине ремонта (самый крупный будет первым)
             var intervals = Intervals.ToList();
             intervals.Sort();
+
             var intervalsMap = intervals.ToDictionary(x => x.MaintenanceType.Id);
             var lastDateMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id, x => x.LastMaintenanceDate);
             var lastUsageMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id, x=>x.UsageFromLastMaintenance);
 
-            //Проверить можно ли планировать, существует ли текущий план, можно ли планировать на указанный период?
-
-            //Удаляем из плана работы, запланированные ранее (в случае пересчёта плана)
-            plan.Details.ToList().Where(x => x.Object == this).ToList().ForEach(x => plan.Details.Remove(x));
-
-            CurrentPlan = plan;
-            var period = new Period(plan.StartDate);
-
-            while (period.End() <= plan.EndDate)
+            var hours = period.Hours();
+            
+            intervals.Any(interval =>
             {
+                var type = interval.MaintenanceType.Id;
 
-                //todo пока-что реализован алгоритм для часов, если учитывать что-то другое, с другим показателем наработки, то нужно вводить понятие плановой наработки и брать её из справочника, либо рассчитывать среднее
-                var hours = period.Hours();
-
-                //признак того, что за период работы уже запланированы
-                var maintenanceFlag = false;  
-
-                intervals.ForEach(interval =>
+                if (!lastUsageMap.ContainsKey(type))
                 {
-                    var type = interval.MaintenanceType.Id;
-
-                    if (!maintenanceFlag)
+                    var newLast = new LastMaintenance(interval.MaintenanceType, null, null)
                     {
-                        //проверка по наработке
-                        if (interval.MinUsage != null && (lastUsageMap[type].Value + hours) >= interval.MinUsage.Value )
-                        {
-                            maintenanceFlag = true;
+                        Object = this
+                    };
 
-                            //дата проведения обслуживания
-                            var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
+                    lastMaintenance.Add(newLast);
+                    lastUsageMap.Add(type, 0);
+                    lastDateMap.Add(type, null);
+                }
 
-                            plan.Details.Add(new MaintenancePlanDetail
-                            {
-                                Object = this,
-                                MaintenanceType = interval.MaintenanceType,
-                                Plan = plan,
-                                MaintenanceDate = date
-                            });
+                //проверка по наработке
+                if (interval.MinUsage != null && (lastUsageMap[type].Value + hours) >= interval.MinUsage.Value)
+                {
+                    //дата проведения обслуживания
+                    var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
 
-                            //todo здесь не совсем понятно если планировать на последующие периоды, то сколько времени занимает ремонт
-                            //может это отражать в каком нибудь справочнике
-                            //пока временем ремонта будем пренебрегать
+                    //если дата ремонта выходит за пределы периода, то ошибка
+                    if (date > period.End()) throw new Exception("Запланированная дата выходит за пределы периода");
 
-                            intervals.Where(x => x.QuantityInCycle >= interval.QuantityInCycle).ToList().ForEach(x =>
-                            {
-                                lastUsageMap[x.MaintenanceType.Id] = (int)(period.End() - date).TotalDays * 24;
-                                lastDateMap[x.MaintenanceType.Id] = date;
-                            });
+                    plans.Add(new MaintenancePlan
+                    {
+                        MaintenanceDate = date,
+                        MaintenanceType = interval.MaintenanceType,
+                        Object = this
+                    });
 
-                        }
+                    return true;
 
-                        //проверка по времени
-                        else if (interval.PeriodQuantity != null)
-                        {
-                            //todo сделать проверку интервалов по времени
-                        }
+                }
 
-                        else
-                        {
-                            lastUsageMap[type] += hours;
-                        }
-                    }
+                //проверка по времени
+                else if (interval.PeriodQuantity != null)
+                {
+                    //todo сделать проверку интервалов по времени
+                }
+                //проверка по предложению
+                else if (offer != null && offer.Id==type)
+                {
 
-                });
+                    plans.Add(new MaintenancePlan
+                    {
+                        MaintenanceDate = period.Start(),
+                        MaintenanceType = interval.MaintenanceType,
+                        Object = this,
+                        OfferReason = offerReason
+                    });
+                    return true;
+                }
 
-                period = period.Next();
-                maintenanceFlag = false;
-            }
+                return false;
+
+            });
+           
         }
         
         #endregion

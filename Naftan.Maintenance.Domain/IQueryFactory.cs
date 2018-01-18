@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Naftan.Common.Domain.EntityComponents;
+using Naftan.Maintenance.Domain.Dto.Groups;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Maintenance.Domain.Users;
@@ -10,7 +12,11 @@ namespace Naftan.Maintenance.Domain
         IEnumerable<ObjectGroup> FindObjectGroups();
         IEnumerable<ObjectListDto> FindObjects();
         IEnumerable<OperationalReportDto> FindOperationalReportAll();
-        IEnumerable<OperationalReportDto> FindOperationalReportByParams(int period, IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants);
+        IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period, IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants);
+        IEnumerable<MaintenancePlanDto> FindMaintenancePlanAll();
+        IEnumerable<MaintenancePlanDto> FindMaintenancePlanByPeriod(Period period);
+        IEnumerable<GroupIntervalDto> FindGroupInterval();
+        IEnumerable<UsageDto> FindUsage();
         OperationalReportDto FindOperationalReportByObjectId(int objectId);
         Dictionary<int, Dictionary<int, string>> FindObjectSpecifications(int[] specificationId);
         User FindUserByLogin(string login);

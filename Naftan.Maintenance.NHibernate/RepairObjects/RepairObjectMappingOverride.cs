@@ -52,7 +52,7 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
               .LazyLoad()
               .BatchSize(250);
 
-            mapping.HasMany(x => x.Offers)
+            mapping.HasMany(x => x.Plans)
             .Access.ReadOnlyPropertyThroughCamelCaseField()
             .Cascade.AllDeleteOrphan()
             .Inverse()

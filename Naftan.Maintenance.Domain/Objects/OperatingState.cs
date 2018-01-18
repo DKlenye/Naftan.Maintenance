@@ -22,6 +22,6 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <summary>
         /// Списан
         /// </summary>
-        [Description("Списан")] WriteOff = 4
+        [Description("Не эксплуатируется")] WriteOff = 4
     }
 }

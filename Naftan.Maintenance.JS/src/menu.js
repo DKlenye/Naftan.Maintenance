@@ -13,13 +13,15 @@
     {
         icon: "table", open:true, value: "Объекты ремонта", data: [
             { icon: "sitemap", value: "Группы", target:"view_objectgroup" },
-            { icon: "superpowers", value: "Оборудование", target: "view_objectlist" }
+            { icon: "superpowers", value: "Оборудование", target: "view_objectlist" },
+            { icon: "clock-o", value: "Интервалы ремонта", target: "view_groupinterval" },
+            { icon: "cogs", value: "Наработка", target: "view_usage" }
         ]
     },
     {
         icon: "wrench", open: true, value: "ППР и ТО", data: [
             { icon: "file-text-o", value: "Оперативный отчёт", target: "view_operationalreport" },
-            { icon: "calendar", value: "График ППР", target: "view_objectgroup" }
+            { icon: "calendar", value: "График ППР", target: "view_plan" }
         ]
     },
     {
@@ -27,27 +29,4 @@
             { icon: "user", value: "Пользователи", target: "view_userlist" }
         ]
     }
-    /*,
-    {
-        id: "uis", icon: "puzzle-piece", value: "UI Components", data: [
-            { id: "dataview", value: "DataView" },
-            { id: "list", value: "List" },
-            { id: "menu", value: "Menu" },
-            { id: "tree", value: "Tree" }
-        ]
-    },
-    {
-        id: "tools", icon: "calendar-o", value: "Tools", data: [
-            { id: "kanban", value: "Kanban Board" },
-            { id: "pivot", value: "Pivot Chart" },
-            { id: "scheduler", value: "Calendar" }
-        ]
-    },
-    {
-        id: "forms", icon: "pencil-square-o", value: "Forms", data: [
-            { id: "buttons", value: "Buttons" },
-            { id: "selects", value: "Select boxes" },
-            { id: "inputs", value: "Inputs" }
-        ]
-    }*/
 ];

@@ -10,7 +10,6 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
         {
             mapping.References(x => x.MaintenanceObject).Unique();
             mapping.References(x => x.OfferForPlan).Column("OfferForPlan").ForeignKey("OfferPlan_FK");
-            mapping.References(x => x.PlannedMaintenanceType).Column("PlannedMaintenanceType").ForeignKey("PlannedMaintenanceType_FK");
             mapping.References(x => x.UnplannedReason).Column("UnplannedReason").ForeignKey("UnplannedReason_FK");
             mapping.References(x=>x.ReasonForOffer).Column("ReasonForOffer").ForeignKey("ReasonForOffer_FK");
             mapping.References(x => x.ActualMaintenanceType).Column("ActualMaintenanceType").ForeignKey("ActualMaintenanceType_FK");

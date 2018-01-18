@@ -2,7 +2,7 @@
 
     name: "view_objecteditor",
 
-    requireCollections: ["reference","maintenanceType", "specification", "plant", "objectGroup"],
+    requireCollections: ["reference","maintenanceType", "specification", "plant","department", "objectGroup"],
 
     $init: function (cfg) {
 

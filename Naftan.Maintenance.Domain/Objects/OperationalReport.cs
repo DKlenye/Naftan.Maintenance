@@ -24,11 +24,6 @@ namespace Naftan.Maintenance.Domain.Objects
         public Period Period { get; set; }
 
         /// <summary>
-        /// Вид обслуживания план
-        /// </summary>
-        public MaintenanceType PlannedMaintenanceType { get; set; }
-
-        /// <summary>
         /// Вид обслуживания факт
         /// </summary>
         public MaintenanceType ActualMaintenanceType { get; set; }

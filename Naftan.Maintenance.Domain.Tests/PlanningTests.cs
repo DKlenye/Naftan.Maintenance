@@ -24,30 +24,12 @@ namespace Naftan.Maintenance.Domain.Tests
                 uow.Commit();
             }
 
-            using (var uow = uowf.Create())
-            {
-                var plan = new MaintenancePlan()
-                {
-                    StartDate = new Period(201802).Start(),
-                    EndDate = new Period(201802).End()
-                };
-
-                compressor.PlanningMaintenance(plan);
-
-                repository.Save(plan);
-                repository.Save(compressor);
-
-                uow.Commit();
-
-                Assert.NotNull(compressor.CurrentPlan);
-                Assert.AreEqual(plan.Details.Count,1);
-                Assert.AreEqual(plan.Details.First().MaintenanceType, MaintenanceTypeFactory.O_Repair);
-
-            }
+                Assert.AreEqual(compressor.Plans.Count(),1);
+                Assert.AreEqual(compressor.Plans.First().MaintenanceType, MaintenanceTypeFactory.O_Repair);
         }
 
         [Test]
-        public void Planning_C()
+        public void Planning_T()
         {
             using (var uow = uowf.Create())
             {
@@ -58,28 +40,82 @@ namespace Naftan.Maintenance.Domain.Tests
                 uow.Commit();
             }
 
+            Assert.AreEqual(compressor.Plans.Count(), 1);
+            Assert.AreEqual(compressor.Plans.First().MaintenanceType, MaintenanceTypeFactory.T_Repair);
+        }
+
+        [Test]
+        public void Planning_K()
+        {
             using (var uow = uowf.Create())
             {
-                var plan = new MaintenancePlan()
-                {
-                    StartDate = new Period(201802).Start(),
-                    EndDate = new Period(201802).End()
-                };
+                report.UsageBeforeMaintenance = 63000;
+                compressor.ApplyReport();
 
-                compressor.PlanningMaintenance(plan);
-
-                repository.Save(plan);
                 repository.Save(compressor);
-
                 uow.Commit();
-
-                Assert.NotNull(compressor.CurrentPlan);
-                Assert.AreEqual(plan.Details.Count, 1);
-                Assert.AreEqual(plan.Details.First().MaintenanceType, MaintenanceTypeFactory.T_Repair);
-
-                
             }
+
+            Assert.AreEqual(compressor.Plans.Count(), 1);
+            Assert.AreEqual(compressor.Plans.First().MaintenanceType, MaintenanceTypeFactory.K_Repair);
         }
+
+
+        [Test]
+        public void PlanningWithOfferWithoutUsagePlan()
+        {
+            using (var uow = uowf.Create())
+            {
+                report.UsageBeforeMaintenance = 100;
+                report.OfferForPlan = MaintenanceTypeFactory.C_Repair;
+                report.ReasonForOffer = MaintenanceReasonFactory.Corrosion;
+                compressor.ApplyReport();
+
+                repository.Save(compressor);
+                uow.Commit();
+            }
+
+            Assert.AreEqual(compressor.Plans.Count(), 1);
+            Assert.AreEqual(compressor.Plans.First().MaintenanceType, MaintenanceTypeFactory.C_Repair);
+        }
+
+        [Test]
+        public void PlanningWithOfferWhenUsagePlanLesser()
+        {
+            using (var uow = uowf.Create())
+            {
+                report.UsageBeforeMaintenance = 2000;
+                report.OfferForPlan = MaintenanceTypeFactory.C_Repair;
+                report.ReasonForOffer = MaintenanceReasonFactory.Corrosion;
+                compressor.ApplyReport();
+
+                repository.Save(compressor);
+                uow.Commit();
+            }
+
+            Assert.AreEqual(compressor.Plans.Count(), 1);
+            Assert.AreEqual(compressor.Plans.First().MaintenanceType, MaintenanceTypeFactory.C_Repair);
+        }
+
+        [Test]
+        public void PlanningWithOfferWhenUsagePlanGreater()
+        {
+            using (var uow = uowf.Create())
+            {
+                report.UsageBeforeMaintenance = 5000;
+                report.OfferForPlan = MaintenanceTypeFactory.O_Repair;
+                report.ReasonForOffer = MaintenanceReasonFactory.Corrosion;
+                compressor.ApplyReport();
+
+                repository.Save(compressor);
+                uow.Commit();
+            }
+
+            Assert.AreEqual(compressor.Plans.Count(), 1);
+            Assert.AreEqual(compressor.Plans.First().MaintenanceType, MaintenanceTypeFactory.T_Repair);
+        }
+
+
 
     }
 }

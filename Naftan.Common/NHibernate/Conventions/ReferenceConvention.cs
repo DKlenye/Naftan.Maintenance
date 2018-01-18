@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
-using Naftan.Common.Domain.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Naftan.Common.NHibernate.Conventions
 {
@@ -12,7 +12,7 @@ namespace Naftan.Common.NHibernate.Conventions
         {
 
             if (Attribute.GetCustomAttributes(instance.Property.MemberInfo, false)
-                .OfType<NotNullAttribute>()
+                .OfType<RequiredAttribute>()
                 .Any()
                 )
             {

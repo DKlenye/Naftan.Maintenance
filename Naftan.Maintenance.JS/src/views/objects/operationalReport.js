@@ -47,7 +47,10 @@
                     navigation: true,
                     editable: true,
                     rules: webix.rules.operationalreport,
-                    save:'json->api/operationalReport',
+                    save: {
+                        url: 'json->api/operationalReport',
+                        updateFromResponse: true
+                    },
                     columns: [
                         //webix.column("id"),
                         { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
@@ -265,11 +268,13 @@
     onEditStart: function (obj) {
 
         var item = this.reportTable.getItem(obj.row);
+        var isRepair = item.state == 2;
 
         switch (obj.column) {
 
             case "usageBeforeMaintenance": {
 
+                if (isRepair) return false;
                 break;
             }
             case "usageAfterMaintenance": {
@@ -280,16 +285,19 @@
             }
             case "actualMaintenanceType": {
 
+                if (isRepair) return false;
                 break;
             }
             case "unplannedReason": {
 
+                if (isRepair) return false;
                 if (!item.actualMaintenanceType) return false;
 
                 break;
             }
             case "startMaintenance": {
 
+                if (isRepair) return false;
                 if (!item.actualMaintenanceType) return false;
                 break;
             }
@@ -327,7 +335,10 @@
 
         if (obj.column == 'endMaintenance') {
             calendar = this.reportTable.getEditor().getPopup().getBody();
-            calendar.define("minDate", item.startMaintenance);
+
+            if (item.state == 2) calendar.define("minDate", this.getStart(item.period));
+            else calendar.define("minDate", item.startMaintenance);
+
             calendar.define("maxDate", this.getEnd(item.period));
             calendar.refresh();
         }
@@ -464,7 +475,8 @@
 
                             webix.ajax().headers({ "Content-Type": "application/json" })
                                 .post("/api/operationalReport/applyReports", { data: objects })
-                                .then(webix.bind(me.onApplyHandler, me), me.onErrorHandler)
+                                .then(webix.bind(me.onApplyHandler, me))
+                                .fail(webix.bind(me.onErrorHandler, me))
                         }
                     }
                 });
@@ -482,8 +494,14 @@
         
     },
 
-    onErrorHandler: function () {
+    onErrorHandler: function (e) {
         this.unmask();
+        webix.alert({
+            title: "Произошла ошибка",
+            width: 700,
+            text: e.responseText,
+            type: "alert-error"
+        });
     }
 
 

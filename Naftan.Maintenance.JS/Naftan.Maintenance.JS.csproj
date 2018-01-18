@@ -89,6 +89,8 @@
     <Content Include="src\ui\editDataTable.js" />
     <Content Include="src\ui\tabView.js" />
     <Content Include="src\views\addSpecification.js" />
+    <Content Include="src\views\objects\usage.js" />
+    <Content Include="src\views\groups\groupInterval.js" />
     <Content Include="src\views\maintenanceReason.js" />
     <Content Include="src\views\department.js" />
     <Content Include="src\views\maintenanceType.js" />
@@ -98,8 +100,10 @@
     <Content Include="src\views\objects\objectEditor.js" />
     <Content Include="src\views\objects\objectList.js" />
     <Content Include="src\views\objects\operationalReport.js" />
+    <Content Include="src\views\objects\plan.js" />
     <Content Include="src\views\objects\specificationsEditor.js" />
     <Content Include="src\views\objects\usageEditor.js" />
+    <Content Include="src\views\planning\planList.js" />
     <Content Include="src\views\plant.js" />
     <Content Include="src\views\reference.js" />
     <Content Include="src\views\specification.js" />

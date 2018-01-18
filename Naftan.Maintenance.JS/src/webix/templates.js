@@ -35,7 +35,16 @@
 
         items.reverse();
         return items.join(' -> ')
-    }
+    },
 
+    period: function (format) {
+        format = format || "%M %Y";
+        return function (obj, common, value, config) {
+            var parser = webix.Date.strToDate("%Y.%m");
+            var _p = (value + '').split('');
+            _p = (_p.slice(0, 4).concat(['.']).concat(_p.slice(4, 6))).join('');
+            return webix.Date.dateToStr(format)(parser(_p));
+        }
+    }
 
 };

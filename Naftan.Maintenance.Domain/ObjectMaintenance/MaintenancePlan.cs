@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Naftan.Common.Domain;
-using Naftan.Maintenance.Domain.Users;
+using Naftan.Maintenance.Domain.Objects;
 
 namespace Naftan.Maintenance.Domain.ObjectMaintenance
 {
@@ -11,14 +11,12 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     public class MaintenancePlan:IEntity
     {
 
-        public MaintenancePlan() {
-            Details = new HashSet<MaintenancePlanDetail>();
-        }
-
         public int Id { get; set; }
-        public User User { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public ISet<MaintenancePlanDetail> Details { get; set; }
+        [Required]
+        public MaintenanceObject Object { get; set; }
+        public DateTime MaintenanceDate { get; set; }
+        [Required]
+        public MaintenanceType MaintenanceType { get; set; }
+        public MaintenanceReason OfferReason { get; set; }
     }
 }

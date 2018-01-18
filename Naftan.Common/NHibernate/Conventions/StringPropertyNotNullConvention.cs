@@ -1,10 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.AcceptanceCriteria;
 using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Conventions.Instances;
-using Naftan.Common.Domain.Attributes;
 
 namespace Naftan.Common.NHibernate.Conventions
 {
@@ -22,7 +22,7 @@ namespace Naftan.Common.NHibernate.Conventions
         {
             criteria.Expect(x =>
                 x.Property.PropertyType == typeof (string) &&
-                Attribute.GetCustomAttributes(x.Property.MemberInfo,false).OfType<NotNullAttribute>().Any()
+                Attribute.GetCustomAttributes(x.Property.MemberInfo,false).OfType<RequiredAttribute>().Any()
                 );
         }
     }

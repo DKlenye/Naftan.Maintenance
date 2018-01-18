@@ -32,5 +32,15 @@ namespace Naftan.Common.Domain.EntityComponents
         public Period Next() => new Period(Start().AddMonths(1));
         public Period Prev() => new Period(Start().AddMonths(-1));
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Period)
+            {
+                var p = obj as Period;
+                return p.period.Equals(period);
+            }
+            else return false;
+        }
+
     }
 }

@@ -181,6 +181,9 @@
     <Compile Include="Controllers\CrudControllers\MaintenanceReasonController.cs" />
     <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\CrudControllers\DepartmentController.cs" />
+    <Compile Include="Controllers\DtoControllers\UsageController.cs" />
+    <Compile Include="Controllers\DtoControllers\GroupIntervalController.cs" />
+    <Compile Include="Controllers\DtoControllers\MaintenancePlanController.cs" />
     <Compile Include="Controllers\DtoControllers\ObjectSpecificationController.cs" />
     <Compile Include="Controllers\DtoControllers\OperationalReportController.cs" />
     <Compile Include="Controllers\DtoControllers\UserController.cs" />

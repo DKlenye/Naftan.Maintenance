@@ -34,6 +34,7 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,18 +46,19 @@
   <ItemGroup>
     <Compile Include="Dto\AbstractSpecificationDto.cs" />
     <Compile Include="Dto\EntityDto.cs" />
+    <Compile Include="Dto\Groups\GroupIntervalDto.cs" />
     <Compile Include="Dto\Objects\LastMaintenanceDto.cs" />
+    <Compile Include="Dto\Objects\MaintenancePlanDto.cs" />
     <Compile Include="Dto\Objects\ObjectDto.cs" />
     <Compile Include="Dto\Objects\ObjectListDto.cs" />
     <Compile Include="Dto\Objects\ObjectSpecificationDto.cs" />
     <Compile Include="Dto\Objects\OperationalReportDto.cs" />
+    <Compile Include="Dto\Objects\UsageDto.cs" />
     <Compile Include="IQueryFactory.cs" />
     <Compile Include="ObjectMaintenance\LastMaintenance.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceActual.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceInterval.cs" />
-    <Compile Include="ObjectMaintenance\MaintenanceOffer.cs" />
     <Compile Include="ObjectMaintenance\MaintenancePlan.cs" />
-    <Compile Include="ObjectMaintenance\MaintenancePlanDetail.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceReason.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceType.cs" />
     <Compile Include="MeasureUnit.cs" />

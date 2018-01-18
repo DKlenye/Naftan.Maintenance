@@ -56,7 +56,6 @@ namespace Naftan.Maintenance.Domain.Tests
                 Assert.AreEqual(_compressor.CurrentOperatingState, OperatingState.Maintenance);
                 Assert.IsNotNull(_compressor.CurrentMaintenance);
                 Assert.NotZero(_compressor.Maintenance.Count());
-                Assert.Zero(_compressor.LastMaintenance.Count());
                 Assert.Zero(_compressor.Report.UsageBeforeMaintenance);
 
                 Assert.IsNotNull(_compressor.Report.ActualMaintenanceType);
