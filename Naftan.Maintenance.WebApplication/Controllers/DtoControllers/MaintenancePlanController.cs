@@ -1,6 +1,7 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain;
+using Naftan.Maintenance.Domain.Dto;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using System.Collections.Generic;
 using System.Web.Http;

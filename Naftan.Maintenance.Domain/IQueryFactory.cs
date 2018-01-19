@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Naftan.Common.Domain.EntityComponents;
+using Naftan.Maintenance.Domain.Dto;
 using Naftan.Maintenance.Domain.Dto.Groups;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.Objects;

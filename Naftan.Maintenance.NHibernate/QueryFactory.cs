@@ -10,6 +10,7 @@ using Naftan.Maintenance.Domain.Users;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain.Dto.Groups;
+using Naftan.Maintenance.Domain.Dto;
 
 namespace Naftan.Maintenance.NHibernate
 {

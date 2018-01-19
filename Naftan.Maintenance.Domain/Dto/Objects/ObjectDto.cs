@@ -1,7 +1,9 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Common.Domain.EntityComponents;
+using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Maintenance.Domain.Specifications;
+using Naftan.Maintenance.Domain.Usage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public int? ParentId { get; set; }
         public IEnumerable<LastMaintenanceDto> LastMaintenance { get; set; }
         public IEnumerable<ObjectSpecificationDto> Specifications { get; set; }
+        public IEnumerable<UsageActual> Usage { get; set; }
+        public IEnumerable<MaintenanceActualDto> Maintenance { get; set; }
 
 
         public override MaintenanceObject GetEntity(IRepository repository)
@@ -49,7 +53,9 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             base.SetEntity(entity);
             ParentId = entity.Parent?.Id;
             LastMaintenance = entity.LastMaintenance.Select(x => new LastMaintenanceDto(x));
-            Specifications = GetSpecifications(entity);            
+            Specifications = GetSpecifications(entity);
+            Usage = entity.Usage;
+            Maintenance = entity.Maintenance.ToList().Select(x=>new MaintenanceActualDto(x));
 
         }
 

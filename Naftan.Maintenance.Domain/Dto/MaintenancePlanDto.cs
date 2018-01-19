@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Naftan.Maintenance.Domain.Dto.Objects
+namespace Naftan.Maintenance.Domain.Dto
 {
     public class MaintenancePlanDto
     {

@@ -48,12 +48,13 @@
     <Compile Include="Dto\EntityDto.cs" />
     <Compile Include="Dto\Groups\GroupIntervalDto.cs" />
     <Compile Include="Dto\Objects\LastMaintenanceDto.cs" />
-    <Compile Include="Dto\Objects\MaintenancePlanDto.cs" />
+    <Compile Include="Dto\MaintenancePlanDto.cs" />
+    <Compile Include="Dto\Objects\MaintenanceActualDto.cs" />
     <Compile Include="Dto\Objects\ObjectDto.cs" />
     <Compile Include="Dto\Objects\ObjectListDto.cs" />
     <Compile Include="Dto\Objects\ObjectSpecificationDto.cs" />
-    <Compile Include="Dto\Objects\OperationalReportDto.cs" />
-    <Compile Include="Dto\Objects\UsageDto.cs" />
+    <Compile Include="Dto\OperationalReportDto.cs" />
+    <Compile Include="Dto\UsageDto.cs" />
     <Compile Include="IQueryFactory.cs" />
     <Compile Include="ObjectMaintenance\LastMaintenance.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceActual.cs" />

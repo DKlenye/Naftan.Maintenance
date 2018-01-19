@@ -85,44 +85,11 @@
             }
         });
 
-
     },
-
-    load: function (objectId) {
-
-        this.mask("Загрузка данных...")
-
-        this.define({ objectId: objectId });
-
-        var property = this.queryView({ view: 'property' });
-
-        webix.ajax()
-            .get("/api/object/specifications/" + objectId)
-            .then(webix.bind(this.onDataLoad, this), this.onErrorHandler)
-
-    },
-
-    save: function () {
-
-        this.mask("Сохранение...")
-
-        var data = this.getData();
-
-       return  webix.ajax().headers({ "Content-Type": "application/json" })
-            .post("/api/object/specifications", {data:data})
-            .then(webix.bind(this.onDataLoad, this), this.onErrorHandler)
-
-    },
-
-    onDataLoad: function (data) {
-
-        this.setData(data.json());
-        this.unmask();
-    },
-
+       
     setData: function (data) {
 
-        var dataSpecs = this.buildSpecifications(data);
+        var dataSpecs = this.buildSpecifications(data.specifications);
         var specifications = this.specifications
 
         specifications.clearAll();
@@ -131,23 +98,20 @@
 
     },
 
-    getData: function () {
+    getData: function (obj) {
         var me = this;
-        var objectId = this.config.objectId;
         var specifications = this.specifications
         var specArray = [];
         specifications.data.each(function (i) {
-
             specArray.push({
                 id: i.id > 1e10 ? 0 : i.id,
-                objectId: objectId,
                 specificationId: i.specificationId,
                 specificationType: i.specificationType,
                 value: i.value
             });
         });
 
-        return specArray;
+        obj.specifications = specArray;
     },
 
     buildSpecifications: function (specifications) {
@@ -213,8 +177,6 @@
                     o.map[i.id] = i.value;
                 });
             }
-            
-
 
             return o;
         });
@@ -231,18 +193,6 @@
             "date",
             "combo"
         ][type];
-    },
-
-    onErrorHandler: function () {
-        this.umask();
-    },
-
-    mask: function (text) {
-        this.specifications.showOverlay(text + " <span class='webix_icon fa-spinner fa-spin'></span>");
-    },
-
-    unmask: function () {
-        this.specifications.hideOverlay();
     }
 
 }, webix.ui.layout)

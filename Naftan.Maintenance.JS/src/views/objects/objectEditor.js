@@ -133,7 +133,7 @@
                                                 { id: "specifications", value: "Характеристики" },
                                                 { id: "child", value: "Узлы" },
                                                 { id: "usage", value: "Наработка" },
-                                                { id: "repairs", value: "Ремонты" },
+                                                { id: "maintenance", value: "Обслуживание" },
                                                 { id: "states", value: "Состояния" },
                                                 { id: "intervals", value: "Интервалы" }
                                             ],
@@ -147,11 +147,13 @@
                                     ]
                                 },
                                 {
+                                    name:"detailsCells",
                                     animate: false,
                                     cells: [
                                         { name: "specifications", view: 'view_specificationsEditor' },
                                         { name: "child" },
-                                        { name: "usage", view: "view_usageEditor" }
+                                        { name: "usage", view: "view_usageEditor" },
+                                        { name: "maintenance", view: "view_maintenanceEditor" }
                                     ]
                                 }
                             ]
@@ -177,7 +179,7 @@
     initEvents: function () {
         var me = this;
 
-        this.findViews(["viewsSegment", "specifications", "common", "details", "lastMaintenance"]);
+        this.findViews(["viewsSegment", "specifications", "common", "details","detailsCells", "lastMaintenance"]);
 
         this.common.attachEvent('onBeforeEditStart', function (id) {
 
@@ -263,15 +265,16 @@
 
         if (mode == "update") {
             this.loadObject(itemId);
-            this.specifications.load(itemId);
         }
 
     },
 
     loadObject: function (id) {
+        this.mask();
         webix.ajax()
             .get("/api/object/" + id)
-            .then(webix.bind(this.onObjectLoad, this), this.onErrorHandler)
+            .then(webix.bind(this.onObjectLoad, this))
+            .fail(webix.bind(this.onErrorHandler,this))
     },
 
     onObjectLoad: function (data) {
@@ -279,6 +282,10 @@
         this.define({ itemId: json.id });
         var mode = this.config.mode;
 
+        this.setData(json);
+        this.setMode("update");
+        this.unmask();
+        /*
         if (mode == "insert") {
             this.specifications.load(json.id);
         }
@@ -286,6 +293,21 @@
         this.setMode("update");
         this.common.setValues(json);
         this.lastMaintenance.parse(json.lastMaintenance);
+        */
+    },
+
+    getData: function () {
+        var data = this.common.getValues();
+    },
+
+    setData: function (data) {
+        this.common.setValues(data);
+
+        this.detailsCells.getChildViews().forEach(function (view) {
+            if (view.setData) view.setData(data);
+        });
+
+        console.log(data);
     },
 
     save: function () {
@@ -344,16 +366,23 @@
     },
 
     setMode_update: function () {
-
         var id = this.config.itemId;
-
         this.define({ mode: 'update' });
         this.callEvent('onChangeTitle', [this.config.id, "Оборудование №" + id, "edit"]);
         this.details.enable();
     },
 
-    onErrorHandler: function () {
+    onErrorHandler: function (e) {
+        this.unmask();
+        webix.message(e);
+    },
 
+    mask: function () {
+        this.disable();
+    },
+
+    unmask: function () {
+        this.enable();
     }
 
     

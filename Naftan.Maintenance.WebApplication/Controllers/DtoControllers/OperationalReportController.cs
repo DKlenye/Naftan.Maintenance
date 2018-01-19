@@ -2,6 +2,7 @@
 using Naftan.Common.Domain;
 using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain;
+using Naftan.Maintenance.Domain.Dto;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;

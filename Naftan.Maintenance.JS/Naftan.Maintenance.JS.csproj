@@ -89,6 +89,7 @@
     <Content Include="src\ui\editDataTable.js" />
     <Content Include="src\ui\tabView.js" />
     <Content Include="src\views\addSpecification.js" />
+    <Content Include="src\views\objects\maintenanceEditor.js" />
     <Content Include="src\views\usage.js" />
     <Content Include="src\views\groupInterval.js" />
     <Content Include="src\views\maintenanceReason.js" />
