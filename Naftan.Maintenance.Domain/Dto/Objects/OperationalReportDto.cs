@@ -20,5 +20,9 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public int? UnplannedReason { get; set; }
         public int? ReasonForOffer { get; set; }
         public int Period { get; set; }
+        public string NextMaintenance { get; set; }
+        public int? NextUsageNorm { get; set; }
+        public int? NextUsageFact { get; set; }
+       
     }
 }

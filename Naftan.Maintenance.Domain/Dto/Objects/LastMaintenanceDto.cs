@@ -19,7 +19,11 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
 
         public override LastMaintenance GetEntity(IRepository repository)
         {
-            throw new NotImplementedException();
+            return new LastMaintenance(
+                repository.Get<MaintenanceType>(MaintenanceTypeId),
+                LastMaintenanceDate,
+                UsageFromLastMaintenance
+                );
         }
 
         public override void Merge(LastMaintenance entity, IRepository repository)

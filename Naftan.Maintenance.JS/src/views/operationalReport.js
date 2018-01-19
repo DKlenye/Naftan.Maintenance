@@ -19,6 +19,20 @@
             offer: '#f6e2ad'
         };
 
+        var getPrcn = function (obj) {
+            var n = obj["nextUsageNorm"],
+                f = obj["nextUsageFact"];
+            var prcn = Math.round10((f / n) * 100);
+            return Math.min(prcn, 100)
+        }
+
+        var sortByProgress =function(a, b) {
+            a = getPrcn(a);
+            b = getPrcn(b);
+            return a > b ? 1 : (a < b ? -1 : 0);
+        };
+
+
         webix.extend(cfg, {
             rows: [
                 {
@@ -43,7 +57,7 @@
                     css: "center_columns",
                     footer: true,
                     select: 'cell',
-                    leftSplit: 2,
+                    leftSplit: 3,
                     navigation: true,
                     editable: true,
                     rules: webix.rules.operationalreport,
@@ -58,6 +72,13 @@
                             id: 'techIndex',
                             header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
                             footer: { content: "countColumn" }
+                        },
+                        {
+                            id: "nextPrcn",
+                            header: 'Состояние',
+                            template: webix.templates.progress("nextUsageNorm", "nextUsageFact", "nextMaintenance"),
+                            sort: sortByProgress,
+                            width:150
                         },
                         {
                             id: 'departmentId',

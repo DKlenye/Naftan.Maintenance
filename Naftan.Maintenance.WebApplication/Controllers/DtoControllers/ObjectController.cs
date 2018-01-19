@@ -27,28 +27,12 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         }
 
         public ObjectDto Get(int id) {
-            var maintenanceObject = repository.Get<MaintenanceObject>(id);
-            return new ObjectDto(maintenanceObject);
+            return new ObjectDto(repository.Get<MaintenanceObject>(id));
         }
 
         public ObjectDto Post([FromBody] ObjectDto dto)
         {
-            var newObject = new MaintenanceObject(
-                repository.Get<ObjectGroup>(dto.GroupId),
-                dto.TechIndex,
-                DateTime.Now)
-            {
-                Plant = repository.Get<Plant>(dto.PlantId.Value)
-            };
-
-            if (dto.ParentId != null)
-            {
-                var parent = repository.Get<MaintenanceObject>(dto.ParentId.Value);
-                parent.AddChild(newObject);
-
-                repository.Save(parent);
-            }
-            
+            var newObject = dto.GetEntity(repository);
             repository.Save(newObject);
 
             return new ObjectDto(newObject);
@@ -57,46 +41,9 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         public ObjectDto Put(int id, [FromBody] ObjectDto dto)
         {
             var entity = repository.Get<MaintenanceObject>(id);
-            entity.TechIndex = dto.TechIndex;
-            entity.Plant = repository.Get<Plant>(dto.PlantId.Value);
-
-            //Если родитель был
-            if (entity.Parent != null)
-            {
-                //Если родитель получен
-                if (dto.ParentId != null)
-                {
-                    //Если полученный родитель не равен тому, который был
-                    if (dto.ParentId != entity.Parent.Id)
-                    {
-                        var newParent = repository.Get<MaintenanceObject>(dto.ParentId.Value);
-                        entity.ClearParent();
-                        newParent.AddChild(entity);
-                        repository.Save(newParent);
-                    }
-                }
-                //Если родитель был, но его убрали
-                else
-                {
-                    entity.ClearParent();
-                }
-            }
-            //Если родителя небыло
-            else
-            {
-                //Если родитель был установлен
-                if (dto.ParentId != null)
-                {
-                    var parent = repository.Get<MaintenanceObject>(dto.ParentId.Value);
-                    parent.AddChild(entity);
-
-                    repository.Save(parent);
-                }
-                        
-            }
+            dto.Merge(entity, repository);
 
             repository.Save(entity);
-
             return new ObjectDto(entity);
         }
 

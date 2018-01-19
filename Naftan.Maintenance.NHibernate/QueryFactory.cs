@@ -118,9 +118,13 @@ namespace Naftan.Maintenance.NHibernate
 	                r.UnplannedReason,
 	                r.OfferForPlan,
 	                r.ReasonForOffer,
-	                r.period as Period
+	                r.period as Period,
+	                mt.Designation AS NextMaintenance,
+	                mo.NextUsageNorm,
+	                mo.NextUsageFact
                 from OperationalReport r
                 LEFT JOIN MaintenanceObject mo ON mo.MaintenanceObjectId = r.MaintenanceObjectId
+                LEFT JOIN MaintenanceType AS mt ON mt.MaintenanceTypeId = mo.NextMaintenance
                 LEFT JOIN Plant p ON p.PlantId = mo.PlantId
                 LEFT JOIN MaintenancePlan mp ON mp.MaintenanceObjectId = r.MaintenanceObjectId AND YEAR(mp.MaintenanceDate)*100+MONTH(mp.MaintenanceDate) = r.period
         ";

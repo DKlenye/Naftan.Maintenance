@@ -23,17 +23,17 @@ namespace Naftan.Maintenance.Domain.Objects
         private readonly ICollection<UsageActual> usage = new HashSet<UsageActual>();
         private readonly ICollection<MaintenancePlan> plans = new HashSet<MaintenancePlan>();
 
-        public MaintenanceObject(ObjectGroup group, string techIndex, DateTime startOperating, IEnumerable<LastMaintenance> last = null)
+        public MaintenanceObject(ObjectGroup group, string techIndex, DateTime? startOperating, Period period = null, IEnumerable<LastMaintenance> last = null)
         {
             Group = group;
             TechIndex = techIndex;
             StartOperating = startOperating;
-            ChangeOperatingState(OperatingState.Operating, startOperating);
+            ChangeOperatingState(OperatingState.Operating, startOperating??DateTime.Now);
             Report = new OperationalReport
             {
                 MaintenanceObject = this,
-                Period = Period.Now(),
-                UsageBeforeMaintenance = Period.Now().Hours(),
+                Period = period ?? Period.Now(),
+                UsageBeforeMaintenance = period?.Hours() ?? Period.Now().Hours(),
                 State = CurrentOperatingState.Value
             };
 
@@ -58,8 +58,9 @@ namespace Naftan.Maintenance.Domain.Objects
                         Object = this
                     });
                 });
-
             }
+
+            SetNextMaintenance();
 
         }
 
@@ -190,14 +191,17 @@ namespace Naftan.Maintenance.Domain.Objects
 
             //Планируем следующий период
             PlanningMaintenance(NextPeriod, Report.OfferForPlan, Report.ReasonForOffer);
+            //Рассчитываем следующее обслуживание
+            SetNextMaintenance();
 
 
             /* Очищение информации в отчёте для следующего месяца */
-                        
+
             // Если ремонт окончен, то обнуляем информацию по фактическому ремонту
             if (Report.EndMaintenance != null)
             {
                 Report.ActualMaintenanceType = null;
+                Report.UnplannedReason = null;
                 Report.StartMaintenance = null;
                 Report.EndMaintenance = null;
             }
@@ -489,6 +493,56 @@ namespace Naftan.Maintenance.Domain.Objects
         /// </summary>
         public IEnumerable<MaintenancePlan> Plans => plans;
 
+        /// <summary>
+        /// Вид обслуживания, который будет проведён следующим
+        /// </summary>
+        public MaintenanceType NextMaintenance { get; private set; }
+        /// <summary>
+        /// Наработка для следующего обслуживания (норма)
+        /// </summary>
+        public int? NextUsageNorm { get; private set; }
+        /// <summary>
+        /// Наработка для следующего обслуживания (факт)
+        /// </summary>
+        public int? NextUsageFact { get; private set; } 
+
+        /// <summary>
+        /// Установка следующего обслуживания(прогноз)
+        /// </summary>
+        private void SetNextMaintenance()
+        {
+            //чтобы рассчитать следующее обслуживание нужно сравнить по всем обслуживаниям разницу наработки норма-факт и взять меньшую разницу
+            var intervals = Intervals.ToList();
+            intervals.Sort();
+            
+            var intervalsMap = intervals.ToDictionary(x => x.MaintenanceType.Id);
+            var lastUsageMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id, x => x.UsageFromLastMaintenance);
+
+            MaintenanceType next = null;
+            int? fact=0;
+            int? norm=0;
+
+            intervals.ForEach(interval =>
+            {
+                var usage = lastUsageMap[interval.MaintenanceType.Id];
+                if (
+                    next == null ||
+                    //сравниваем значения как по величине так и по модулю, на случай если ремонт пропущен и разница минусовая
+                    (interval.MinUsage - usage < norm - fact &&
+                        Math.Abs(interval.MinUsage.Value - usage.Value) < Math.Abs(norm.Value - fact.Value))
+                )
+                {
+                    next = interval.MaintenanceType;
+                    norm = interval.MinUsage;
+                    fact = usage;
+                }
+            });
+
+            NextMaintenance = next;
+            NextUsageFact = fact;
+            NextUsageNorm = norm;
+        }
+
 
         /// <summary>
         /// Спланировать работы по обслуживанию
@@ -530,8 +584,9 @@ namespace Naftan.Maintenance.Domain.Objects
                     //дата проведения обслуживания
                     var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
 
-                    //если дата ремонта выходит за пределы периода, то ошибка
-                    if (date > period.End()) throw new Exception("Запланированная дата выходит за пределы периода");
+                    //если дата ремонта выходит за пределы периода, то устонавливаем её в пределы периода
+                    if (date > period.End()) date = period.End();
+                    if (date < period.Start()) date = period.Start();
 
                     plans.Add(new MaintenancePlan
                     {

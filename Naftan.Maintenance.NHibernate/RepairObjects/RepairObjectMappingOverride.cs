@@ -60,6 +60,8 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
             .LazyLoad()
             .BatchSize(250);
 
+            mapping.References(x => x.NextMaintenance).Column("NextMaintenance");
+
             mapping.IgnoreProperty(x => x.Intervals);
             mapping.HasOne(x => x.Report).PropertyRef(x => x.MaintenanceObject).Cascade.All().Fetch.Join();
         }

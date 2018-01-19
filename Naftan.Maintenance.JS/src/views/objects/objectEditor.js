@@ -149,17 +149,9 @@
                                 {
                                     animate: false,
                                     cells: [
-                                        {
-                                            name: "specifications",
-                                            view: 'view_specificationsEditor'
-                                        },
-                                        {
-                                            name:"child"
-                                        },
-                                        {
-                                            name: "usage",
-                                            view: "view_usageEditor"
-                                        }
+                                        { name: "specifications", view: 'view_specificationsEditor' },
+                                        { name: "child" },
+                                        { name: "usage", view: "view_usageEditor" }
                                     ]
                                 }
                             ]

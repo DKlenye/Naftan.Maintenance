@@ -45,6 +45,31 @@
             _p = (_p.slice(0, 4).concat(['.']).concat(_p.slice(4, 6))).join('');
             return webix.Date.dateToStr(format)(parser(_p));
         }
+    },
+
+    progress: function (norm,fact,type) {
+
+        var getColor = function (value) {
+            var hue = (100 - value).toString(10);
+            return "hsl(" + hue + ", 90%,44%)";
+        }
+        
+        return function (obj, common, value, config) {
+            
+            var n = obj[norm],
+                f = obj[fact],
+                t = obj[type],
+                diff = n - f;
+
+            var prcn = Math.min(
+                Math.round10((f / n) * 100),
+                100
+            );
+            
+            return '<div class="progress">' +
+                '<header>' + f + '<span>' + diff +'&nbsp;&nbsp;'+t+'</span></header>' +
+                '<div class="bar"><div title="'+prcn+'%" class="percent" style="background:' + getColor(prcn) + '; width: '+prcn+'%;">&nbsp;</div></div></div>'
+        }
     }
 
 };
