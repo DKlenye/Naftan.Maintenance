@@ -1,9 +1,9 @@
 ﻿using Naftan.Common.Domain;
 using Naftan.Common.Domain.EntityComponents;
+using Naftan.Maintenance.Domain.Dto.Groups;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
 using Naftan.Maintenance.Domain.Specifications;
-using Naftan.Maintenance.Domain.Usage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +20,17 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         }
 
         public int? ParentId { get; set; }
+        public DateTime? StartOperating { get; set; }
+        public MaintenanceType NextMaintenance { get; set; }
+        public int? NextUsageNorm { get; set; }
+        public int? NextUsageFact { get; set; }
         public IEnumerable<LastMaintenanceDto> LastMaintenance { get; set; }
         public IEnumerable<ObjectSpecificationDto> Specifications { get; set; }
-        public IEnumerable<UsageActual> Usage { get; set; }
+        public IEnumerable<UsageActualDto> Usage { get; set; }
         public IEnumerable<MaintenanceActualDto> Maintenance { get; set; }
+        public IEnumerable<OperatingStateDto> States { get; set; }
+        public IEnumerable<MaintenanceIntervalDto> Intervals { get; set; }
+        public IEnumerable<int> Children { get; set; }
 
 
         public override MaintenanceObject GetEntity(IRepository repository)
@@ -33,8 +40,10 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
                TechIndex,
                StartOperating,
                new Period(Period),
-               LastMaintenance.Select(x => x.GetEntity(repository))
+               LastMaintenance==null? null: LastMaintenance.Select(x => x.GetEntity(repository))
             );
+
+            newObject.Plant = repository.Get<Plant>(PlantId);
 
             if (ParentId != null)
             {
@@ -52,16 +61,25 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         {
             base.SetEntity(entity);
             ParentId = entity.Parent?.Id;
+            StartOperating = entity.StartOperating;
+            NextMaintenance = entity.NextMaintenance;
+            NextUsageNorm = entity.NextUsageNorm;
+            NextUsageFact = entity.NextUsageFact;
+
             LastMaintenance = entity.LastMaintenance.Select(x => new LastMaintenanceDto(x));
             Specifications = GetSpecifications(entity);
-            Usage = entity.Usage;
+            Usage = entity.Usage.Select(x=>new UsageActualDto(x));
             Maintenance = entity.Maintenance.ToList().Select(x=>new MaintenanceActualDto(x));
-
+            States = entity.OperatingStates.Select(x => new OperatingStateDto(x));
+            Intervals = entity.Intervals.Select(x => new MaintenanceIntervalDto(x));
+            Children = entity.Children.Select(x => x.Id);
         }
 
         public override void Merge(MaintenanceObject entity, IRepository repository)
         {
-            base.Merge(entity, repository);
+
+            entity.TechIndex = TechIndex;
+            entity.Plant = repository.Get<Plant>(PlantId);
 
             //Если родитель был
             if (entity.Parent != null)

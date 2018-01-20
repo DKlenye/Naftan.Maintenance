@@ -47,7 +47,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             return new ObjectDto(entity);
         }
 
-
+        /*
         [HttpGet,Route("api/object/specifications/{id}")]
         public IEnumerable<ObjectSpecificationDto> GetSpecifications(int id)
         {
@@ -124,6 +124,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
             return list.data;
         }
+        */
 
     }
 }

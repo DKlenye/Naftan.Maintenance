@@ -30,7 +30,7 @@
                                             { id: "id", label: "Код" },
                                             { id: "techIndex", label: "Тех. индекс", type: "text" },
                                             { id: "departmentId", label: "Цех\Производство", type: "combo", options: webix.collection.options("department", "name", true) },
-                                            { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true,null,true) },
+                                            { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true, null, true) },
                                             { id: "inventoryNumber", label: "Инв. №", type: "text" },
                                             {
                                                 id: "groupId",
@@ -60,7 +60,7 @@
                                                         columns: [
                                                             webix.column('id'),
                                                             { id: 'techIndex', header: ["Тех. индекс", { content: "textFilter" }] },
-                                                             {
+                                                            {
                                                                 id: 'departmentId',
                                                                 header: ['Цех\Производство', { content: "selectFilter", options: webix.collection.options("department", "name", true) }],
                                                                 sort: "int",
@@ -69,7 +69,7 @@
                                                             },
                                                             {
                                                                 id: 'plantId',
-                                                                header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true,null,true) }],
+                                                                header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true, null, true) }],
                                                                 sort: "int",
                                                                 template: webix.templates.collection("plant"),
                                                                 width: 200
@@ -88,10 +88,28 @@
                                                 template: function (col, id) {
                                                     return col.popup.getBody().config.getText(id);
                                                 },
-                                                collection:webix.collection("object")
+                                                collection: webix.collection("object")
                                             },
                                             { id: "currentState", label: "Текущее состояние" },
-                                            { id: "startOperating", label: "Ввод в эксплуатацию" },
+                                            {
+                                                id: "period", label: "Текущий период", type: "period",
+                                                format: function (value) {
+                                                    var parser = webix.Date.strToDate("%Y.%m");
+                                                    var _p = (value + '').split('');
+                                                    _p = (_p.slice(0, 4).concat(['.']).concat(_p.slice(4, 6))).join('');
+                                                    return webix.Date.dateToStr('%F %Y')(parser(_p));
+                                                }
+                                            },
+                                            {
+                                                id: "startOperating", label: "Ввод в эксплуатацию",
+                                                type: 'date',
+                                                format: function (value) {
+                                                    if (!value) return "";
+                                                    var format = webix.Date.dateToStr(webix.i18n.dateFormat);
+                                                    var parser = webix.Date.strToDate(webix.i18n.dateFormat);
+                                                    return format(parser(value));
+                                                }
+                                            },
                                             { id: "usageFromStart", label: "Наработка с начала экспл." }
                                         ]
                                     },
@@ -100,6 +118,8 @@
                                         header: "Последнее обслуживание",
                                         body: {
                                             view: 'datatable', 
+                                            editable: true,
+                                            select:'row',
                                             name:'lastMaintenance',
                                             columns: [
                                                 { id: 'maintenanceTypeId', header: 'Вид обслуживания', template: webix.templates.collection('maintenanceType'), fillspace: 2 },
@@ -111,9 +131,10 @@
                                                         var parser = webix.Date.strToDate(webix.i18n.dateFormat);
                                                         return format(parser(value));
                                                     },
+                                                    editor:'date',
                                                     fillspace: 1
                                                 },
-                                                { id: 'usageFromLastMaintenance', header: 'Наработка', fillspace: 1 }
+                                                { id: 'usageFromLastMaintenance', header: 'Наработка', editor:"text", fillspace: 1 }
                                             ]
                                         }
                                     }
@@ -151,9 +172,11 @@
                                     animate: false,
                                     cells: [
                                         { name: "specifications", view: 'view_specificationsEditor' },
-                                        { name: "child" },
+                                        { name: "child", view: "view_childrenEditor", parent: me },
                                         { name: "usage", view: "view_usageEditor" },
-                                        { name: "maintenance", view: "view_maintenanceEditor" }
+                                        { name: "maintenance", view: "view_maintenanceEditor" },
+                                        { name: "states", view: "view_stateEditor" },
+                                        { name: "intervals", view: "view_intervalEditor", parent: me }
                                     ]
                                 }
                             ]
@@ -237,11 +260,11 @@
                     break;
                 }
                 case "groupId": {
-                    /*if (state.value != state.old) {
-                        if (me.config.mode == "update") {
-                            me.specifications.load(me.config.itemId, state.value);
+                    if (state.value != state.old) {
+                        if (me.config.mode == "insert") {
+                            me.loadLastMaintenance(state.value);
                         }
-                    }*/
+                    }
                     break;
                 }
                 case "departmentId": {
@@ -269,6 +292,34 @@
 
     },
 
+    loadLastMaintenance: function (groupId) {
+        var me = this;
+        this.mask();
+
+        webix.ajax().get("/api/objectgroup/" + groupId)
+            .then(function (data) {
+                var json = data.json();
+                var intervals = json.intervals;
+                var last = me.lastMaintenance;
+
+
+                var _data = intervals.map(function (i) {
+                    return {
+                        maintenanceTypeId: i.maintenanceTypeId,
+                        usageFromLastMaintenance:0
+                    }
+                });
+
+                last.clearAll();
+                last.parse(_data);
+                last.refresh();
+
+                me.unmask();
+            })
+            .fail(webix.bind(me.onErrorHandler, me));
+    },
+
+
     loadObject: function (id) {
         this.mask();
         webix.ajax()
@@ -280,24 +331,29 @@
     onObjectLoad: function (data) {
         var json = data.json();
         this.define({ itemId: json.id });
-        var mode = this.config.mode;
 
         this.setData(json);
         this.setMode("update");
         this.unmask();
-        /*
-        if (mode == "insert") {
-            this.specifications.load(json.id);
-        }
-
-        this.setMode("update");
-        this.common.setValues(json);
-        this.lastMaintenance.parse(json.lastMaintenance);
-        */
     },
 
     getData: function () {
         var data = this.common.getValues();
+        this.queryView({ name: "specifications" }).getData(data);
+
+        data.lastMaintenance = [];
+
+        this.lastMaintenance.data.each(
+            function (i) {
+                data.lastMaintenance.push(
+                    {
+                        maintenanceTypeId: i.maintenanceTypeId,
+                        usageFromLastMaintenance: i.usageFromLastMaintenance,
+                        lastMaintenanceDate: webix.i18n.dateFormatStr(i.lastMaintenanceDate)
+                    })
+            });
+
+        return data;
     },
 
     setData: function (data) {
@@ -307,31 +363,28 @@
             if (view.setData) view.setData(data);
         });
 
-        console.log(data);
+        this.lastMaintenance.parse(data.lastMaintenance);
     },
 
     save: function () {
         this.common.editStop();
         this.disable();
-        var data = this.common.getValues();
+        var data = this.getData();
         this[this.config.mode](data);
     },
 
     update: function (data) {
-
-        var promises = [
-            webix.ajax().headers({ "Content-Type": "application/json" }).put("/api/object/" + data.id, data),
-            this.specifications.save()
-        ];
-
-        webix.promise.all(promises)
-            .then(webix.bind(this.onSaveHandler, this), this.onErrorHandler)
+        webix.ajax().headers({ "Content-Type": "application/json" })
+            .put("/api/object/" + data.id, data)
+            .then(webix.bind(this.onSaveHandler, this))
+            .fail(webix.bind(this.onErrorHandler, this));
     },
 
     insert: function (data) {
         webix.ajax().headers({ "Content-Type": "application/json" })
             .post("/api/object/", data)
-            .then(webix.bind(this.onSaveHandler, this), this.onErrorHandler)
+            .then(webix.bind(this.onSaveHandler, this))
+            .fail(webix.bind(this.onErrorHandler, this));
     },
 
     onSaveHandler: function (e) {
@@ -361,6 +414,10 @@
 
     setMode_insert: function () {
         this.define({ mode: 'insert' });
+        this.common.setValues({
+            period: webix.Date.dateToStr("%Y%m")(new Date()),
+            startOperating: new Date()
+        });
         this.details.disable();
         this.callEvent('onChangeTitle', [this.config.id, "Новое оборудование", "edit"]);
     },
@@ -374,7 +431,12 @@
 
     onErrorHandler: function (e) {
         this.unmask();
-        webix.message(e);
+
+        webix.message({
+            type: "error",
+            text: e.message
+        });
+
     },
 
     mask: function () {

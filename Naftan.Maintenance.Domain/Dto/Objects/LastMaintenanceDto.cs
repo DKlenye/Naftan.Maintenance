@@ -13,8 +13,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             SetEntity(entity);
         }
 
-        public int MaintenanceTypeId { get; private set; }
-        public DateTime? LastMaintenanceDate { get; private set; }
+        public int MaintenanceTypeId { get; set; }
+        public DateTime? LastMaintenanceDate { get; set; }
         public int? UsageFromLastMaintenance { get; set; }
 
         public override LastMaintenance GetEntity(IRepository repository)

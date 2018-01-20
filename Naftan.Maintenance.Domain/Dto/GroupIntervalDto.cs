@@ -1,4 +1,4 @@
-﻿namespace Naftan.Maintenance.Domain.Dto.Groups
+﻿namespace Naftan.Maintenance.Domain.Dto
 {
     public class GroupIntervalDto
     {

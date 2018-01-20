@@ -37,7 +37,7 @@ namespace Naftan.Maintenance.Domain.Objects
                 State = CurrentOperatingState.Value
             };
 
-            if (last != null)
+            if (last != null && last.Any())
             {
                 last.ToList().ForEach(x =>
                 {
@@ -388,7 +388,8 @@ namespace Naftan.Maintenance.Domain.Objects
                 {
                     group = group.Parent;
                     if (group == null)
-                        throw new Exception("Не найдены межремонтные интервалы");
+                        //Если интервалы не найдены возвращаем пустую коллекцию
+                        return new List<MaintenanceInterval>();
                 }
                 return group.Intervals;
             }
