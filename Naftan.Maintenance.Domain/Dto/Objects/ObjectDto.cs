@@ -24,6 +24,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public MaintenanceType NextMaintenance { get; set; }
         public int? NextUsageNorm { get; set; }
         public int? NextUsageFact { get; set; }
+        public int? UsageFromStartup { get; private set; }
         public IEnumerable<LastMaintenanceDto> LastMaintenance { get; set; }
         public IEnumerable<ObjectSpecificationDto> Specifications { get; set; }
         public IEnumerable<UsageActualDto> Usage { get; set; }
@@ -65,6 +66,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             NextMaintenance = entity.NextMaintenance;
             NextUsageNorm = entity.NextUsageNorm;
             NextUsageFact = entity.NextUsageFact;
+            UsageFromStartup = entity.UsageFromStartup;
+
 
             LastMaintenance = entity.LastMaintenance.Select(x => new LastMaintenanceDto(x));
             Specifications = GetSpecifications(entity);
@@ -80,6 +83,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
 
             entity.TechIndex = TechIndex;
             entity.Plant = repository.Get<Plant>(PlantId);
+            SetSpecifications(entity, repository);
 
             //Если родитель был
             if (entity.Parent != null)
@@ -160,7 +164,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
                 if (specificationsMap.ContainsKey(x.SpecificationId))
                 {
                     //если значения нет, то удаляем характеристику
-                    if (String.IsNullOrEmpty(x.Value.ToString()))
+                    if (String.IsNullOrEmpty(x.Value?.ToString()))
                     {
                         entity.RemoveSpecification(specificationsMap[x.SpecificationId]);
                     }

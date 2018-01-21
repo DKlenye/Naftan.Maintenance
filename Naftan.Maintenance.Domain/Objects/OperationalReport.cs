@@ -52,6 +52,11 @@ namespace Naftan.Maintenance.Domain.Objects
         /// Наработка после ремонта
         /// </summary>
         public int UsageAfterMaintenance{ get; set; }
+
+        /// <summary>
+        /// Наработка родительского оборудования
+        /// </summary>
+        public int UsageParent { get; set; }
        
         /// <summary>
         /// Предложения к плану на следующий период

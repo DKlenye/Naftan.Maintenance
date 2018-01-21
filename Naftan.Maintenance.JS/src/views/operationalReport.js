@@ -45,11 +45,9 @@
                                 onChange: webix.bind(this.reload, this)
                             }
                         },
-                        //{ view: 'combo', options: webix.collection.options('department', "name", true), width: 200 },
-                       // { view: 'combo', options: webix.collection.options('plant', "name", true), width: 200 },
                         {},
-                        { view: "button", type: "iconButton", icon: "share-square-o", label: "Провести", width: 100, click: webix.bind(this.applyReport, this) },
-                        /*{ view: "button", type: "iconButton", icon: "floppy-o", label: "Сохранить", width: 110 }*/
+                        { css: "red-button", view: "button", type: "iconButton", icon: "ban", label: "Откатить", width: 100, click: webix.bind(this.discardReport, this) },
+                        { css: "green-button", view: "button", type: "iconButton", icon: "share-square-o", label: "Провести", width: 100, click: webix.bind(this.applyReport, this) },
                     ]   
                 },
                 {
@@ -100,8 +98,8 @@
                             sort: "int",
                             template: webix.templates.collection("operatingState"),
                             editor: "combo",
-                            options: webix.collection.options("operatingState"),
-                            width: 160
+                            options: webix.collection.options("operatingState", "name", false, function (i) { return i.id != 2; }),
+                            width: 170
                         },
                         {
                             id: 'usageBeforeMaintenance',
@@ -139,7 +137,7 @@
                             id: 'unplannedReason',
                             header: ["", { text: "Причина", css: { "background": colors.maintenance } }],
                             editor: 'combo',
-                            options: webix.collection.options("maintenanceReason"),
+                            options: webix.collection.options("maintenanceReason","name",true),
                             template: webix.templates.collection("maintenanceReason"),
                             width: 140
                         },
@@ -171,7 +169,7 @@
                             id: 'reasonForOffer',
                             header: ["", { text: "Причина", css: { "background": colors.offer } }],
                             editor: 'combo',
-                            options: webix.collection.options("maintenanceReason"),
+                            options: webix.collection.options("maintenanceReason", "name", true),
                             template: webix.templates.collection("maintenanceReason"),
                             width: 120
                         }
@@ -292,7 +290,9 @@
         var isRepair = item.state == 2;
 
         switch (obj.column) {
-
+            case "state": {
+                if (isRepair) return false;
+            }
             case "usageBeforeMaintenance": {
 
                 if (isRepair) return false;
@@ -367,7 +367,7 @@
     },
 
     onEditStop: function (values, obj) {
-
+        var me = this;
         var item = this.reportTable.getItem(obj.row);
         var hours = this.getHours(item.period);
         var hoursBefore = this.getHoursBetweenDates(this.getStart(item.period), item.startMaintenance);
@@ -376,9 +376,24 @@
         var old = values.old;
         var parser = webix.Date.strToDate("%d.%m.%Y");
 
+        var resetCalendar = function(){
+            var calendar = me.reportTable.getEditor().getPopup().getBody();
+            delete calendar.config.minDate;
+            delete calendar.config.maxDate;
+            calendar.refresh();
+        }
+
         switch (obj.column) {
             case "state": {
                 item.state = value;
+                if (value != 1) {
+                    item.usageAfterMaintenance = 0;
+                    item.usageBeforeMaintenance = 0;
+                }
+                else {
+                    item.usageBeforeMaintenance = hours;
+                    item.usageAfterMaintenance = 0;
+                }
                 break;
             }
             case "usageBeforeMaintenance": {
@@ -430,7 +445,9 @@
                     item.usageBeforeMaintenance = hoursBefore;
                     item.startMaintenance = value;
                 }
-                
+
+                resetCalendar();
+
                 break;
             }
             case "endMaintenance": {
@@ -448,7 +465,9 @@
                     item.usageAfterMaintenance = hoursAfter;
                     item.endMaintenance = value;
                 }
-                
+
+                resetCalendar();
+
                 break;
             }
             case "offerForPlan": {
@@ -469,11 +488,9 @@
         }
 
         this.reportTable.updateItem(item.id, item);
+
     },
     
-   /* getCollection: function () {
-        return webix.collection('operationalReport');
-    },*/
 
     applyReport: function () {
 
@@ -495,7 +512,7 @@
                             me.mask("Проведение отчёта...")
 
                             webix.ajax().headers({ "Content-Type": "application/json" })
-                                .post("/api/operationalReport/applyReports", { data: objects })
+                                .post("/api/operationalReport/applyReports/" + me.getPeriod(), { data: objects })
                                 .then(webix.bind(me.onApplyHandler, me))
                                 .fail(webix.bind(me.onErrorHandler, me))
                         }
@@ -515,14 +532,48 @@
         
     },
 
+    discardReport: function () {
+        var me = this, objects = [];
+        this.reportTable.data.each(function (e) { objects.push(e.id) });
+
+        if (objects.length > 0) {
+
+            webix.confirm(
+                {
+                    title: "Откат отчёта",
+                    text: "Выбрано <b>" + objects.length + "</b> единиц для отката.<br/> Вы действительно хотите откатить отчёт?",
+                    ok: "Да",
+                    cancel: "Нет",
+                    type: "confirm-error",
+                    callback: function (isOk) {
+                        if (isOk) {
+
+                            me.mask("Откат отчёта...")
+
+                            webix.ajax().headers({ "Content-Type": "application/json" })
+                                .post("/api/operationalReport/discardReports/" + me.getPeriod(), { data: objects })
+                                .then(webix.bind(me.onApplyHandler, me))
+                                .fail(webix.bind(me.onErrorHandler, me))
+                        }
+                    }
+                });
+        }
+    },
+
     onErrorHandler: function (e) {
+        var me = this;
         this.unmask();
         webix.alert({
             title: "Произошла ошибка",
             width: 700,
             text: e.responseText,
-            type: "alert-error"
+            type: "alert-error",
+            callback: function (result) {
+                me.reload();
+            }
+
         });
+        
     }
 
 

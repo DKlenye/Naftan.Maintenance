@@ -61,6 +61,8 @@
                 t = obj[type],
                 diff = n - f;
 
+            if (f === null) return "";
+
             var prcn = Math.min(
                 Math.round10((f / n) * 100),
                 100

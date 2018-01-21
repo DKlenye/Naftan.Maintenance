@@ -90,16 +90,6 @@
                                                 },
                                                 collection: webix.collection("object")
                                             },
-                                            { id: "currentState", label: "Текущее состояние" },
-                                            {
-                                                id: "period", label: "Текущий период", type: "period",
-                                                format: function (value) {
-                                                    var parser = webix.Date.strToDate("%Y.%m");
-                                                    var _p = (value + '').split('');
-                                                    _p = (_p.slice(0, 4).concat(['.']).concat(_p.slice(4, 6))).join('');
-                                                    return webix.Date.dateToStr('%F %Y')(parser(_p));
-                                                }
-                                            },
                                             {
                                                 id: "startOperating", label: "Ввод в эксплуатацию",
                                                 type: 'date',
@@ -110,7 +100,17 @@
                                                     return format(parser(value));
                                                 }
                                             },
-                                            { id: "usageFromStart", label: "Наработка с начала экспл." }
+                                            {
+                                                id: "period", label: "Текущий период", type: "period",
+                                                format: function (value) {
+                                                    var parser = webix.Date.strToDate("%Y.%m");
+                                                    var _p = (value + '').split('');
+                                                    _p = (_p.slice(0, 4).concat(['.']).concat(_p.slice(4, 6))).join('');
+                                                    return webix.Date.dateToStr('%F %Y')(parser(_p));
+                                                }
+                                            },
+                                            { id: "currentOperatingState", label: "Текущее состояние", type: "combo", options: webix.collection.options("operatingState", "name", true) },
+                                            { id: "usageFromStartup", label: "Наработка с начала экспл." }
                                         ]
                                     },
                                     {view:'resizer'},
@@ -208,6 +208,7 @@
 
             var values = me.common.getValues();
             var parent = values.parentId;
+            var isUpdate = me.config.mode == "update";
 
             switch (id) {
                 case "groupId": {
@@ -234,6 +235,17 @@
                 case "techIndex": {
                     if (parent) return false;
                     break;
+                }
+                case "period": {
+                    if (isUpdate) return false;
+                    break;
+                }
+                case "startOperating":{
+                    if (isUpdate) return false;
+                    break;
+                }
+                case "currentOperatingState": {
+                    return false;
                 }
             }
 
@@ -434,7 +446,7 @@
 
         webix.message({
             type: "error",
-            text: e.message
+            text: e.message || e.response
         });
 
     },

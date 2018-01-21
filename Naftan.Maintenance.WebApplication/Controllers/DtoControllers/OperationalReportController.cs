@@ -61,24 +61,38 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         }
 
 
-        [HttpPost, Route("api/operationalReport/applyReports")]
-        public IEnumerable<int> ApplyReports([FromBody] ListSerializer<int> list)
+        [HttpPost, Route("api/operationalReport/applyReports/{period}")]
+        public IEnumerable<int> ApplyReports(int period, [FromBody] ListSerializer<int> list)
         {
             list.data.ToList().ForEach(x =>
             {
                 var o = repository.Get<MaintenanceObject>(x);
-                o.ApplyReport();
-                repository.Save(o);
+                if (o.Report.Period.period == period)
+                {
+                    o.ApplyReport();
+                    repository.Save(o);
+                }
             });
 
             return list.data;
 
         }
 
+        [HttpPost, Route("api/operationalReport/discardReports/{period}")]
+        public IEnumerable<int> DiscardReports(int period, [FromBody] ListSerializer<int> list)
+        {
+            list.data.ToList().ForEach(x =>
+            {
+                var o = repository.Get<MaintenanceObject>(x);
+                if (o.Report.Period.period == period)
+                {
+                    o.DiscardReport();
+                    repository.Save(o);
+                }
+            });
 
-
-
-
+            return list.data;
+        }
 
     }
 }

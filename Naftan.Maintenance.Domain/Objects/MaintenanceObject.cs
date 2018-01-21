@@ -25,6 +25,9 @@ namespace Naftan.Maintenance.Domain.Objects
 
         public MaintenanceObject(ObjectGroup group, string techIndex, DateTime? startOperating, Period period = null, IEnumerable<LastMaintenance> last = null)
         {
+
+            var _period = period ?? Period.Now();
+
             Group = group;
             TechIndex = techIndex;
             StartOperating = startOperating;
@@ -32,8 +35,8 @@ namespace Naftan.Maintenance.Domain.Objects
             Report = new OperationalReport
             {
                 MaintenanceObject = this,
-                Period = period ?? Period.Now(),
-                UsageBeforeMaintenance = period?.Hours() ?? Period.Now().Hours(),
+                Period = _period,
+                UsageBeforeMaintenance = _period.Hours(),
                 State = CurrentOperatingState.Value
             };
 
@@ -59,7 +62,6 @@ namespace Naftan.Maintenance.Domain.Objects
                     });
                 });
             }
-
             SetNextMaintenance();
 
         }
@@ -152,22 +154,11 @@ namespace Naftan.Maintenance.Domain.Objects
             var CurrentPeriod = Report.Period;
             var NextPeriod = CurrentPeriod.Next();
             
-            //Если оборудование не эксплуатируется то в расчёт больше не берётся
-            if (CurrentOperatingState == OperatingState.WriteOff) return;
-
-            //Если оборудование установлено как не эксплуатируется, то меняем состояние и больше не берём в расчёт
-            if (Report.State == OperatingState.WriteOff)
-            {
-                ChangeOperatingState(OperatingState.WriteOff, CurrentPeriod.End());
-                return;
-            }
-
-
+           
             // 1 Добавить наработку до ремонта, а если его не было, то за весь период
             if (Report.UsageBeforeMaintenance != 0)
             {
                 AddUsage(CurrentPeriod.Start(), Report.StartMaintenance ??CurrentPeriod.End(), Report.UsageBeforeMaintenance);
-                Report.UsageBeforeMaintenance = 0;
             }
 
             //2 Добавить информацию о ремонте, если он был.
@@ -194,6 +185,19 @@ namespace Naftan.Maintenance.Domain.Objects
             //Рассчитываем следующее обслуживание
             SetNextMaintenance();
 
+            /*Устанавливаем наработку для детей*/
+            if (Children.Any())
+            {
+                Children.ToList().ForEach(child =>
+                {
+                    if (child.Report.Period == CurrentPeriod)
+                    {
+                        var allUsage = Report.UsageBeforeMaintenance + Report.UsageAfterMaintenance;
+                        child.Report.UsageParent = allUsage;
+                        child.Report.UsageBeforeMaintenance = allUsage; 
+                    }
+                });
+            }
 
             /* Очищение информации в отчёте для следующего месяца */
 
@@ -209,6 +213,12 @@ namespace Naftan.Maintenance.Domain.Objects
             Report.OfferForPlan = null;
             Report.ReasonForOffer = null;
 
+            //Если состояние поменялось и это было не обслуживание, то меняем состояние
+            if (Report.State!=OperatingState.Maintenance &&  CurrentOperatingState != Report.State)
+            {
+                ChangeOperatingState(Report.State, CurrentPeriod.Start());
+            }
+            
             if (CurrentOperatingState == OperatingState.Operating)
             {
                 Report.UsageBeforeMaintenance = NextPeriod.Hours();
@@ -229,6 +239,58 @@ namespace Naftan.Maintenance.Domain.Objects
 
         public void DiscardReport()
         {
+            var CurrentPeriod = Report.Period;
+            var PrevPeriod = CurrentPeriod.Prev();
+
+            Report.Period = PrevPeriod;
+
+            //восстанавливаем план
+            var plan = plans.FirstOrDefault(x => x.MaintenanceDate >= PrevPeriod.Start() && x.MaintenanceDate <= PrevPeriod.End());
+
+            if (plan!=null)
+            {
+                //если было предложение то восстанавливаем его
+                if (plan.OfferReason != null)
+                {
+                    Report.OfferForPlan = plan.MaintenanceType;
+                    Report.ReasonForOffer = plan.OfferReason;
+                }
+                plans.Remove(plan);
+            }
+
+            //если незаконченный ремонт
+            if (Report.State == OperatingState.Maintenance)
+            {
+                var notFinalizedMaintenance = maintenance.First(x => x.EndMaintenance == null);
+                maintenance.Remove(notFinalizedMaintenance);
+            }
+            else
+            {
+                var prevMaintenance = maintenance.FirstOrDefault(x => x.EndMaintenance >= PrevPeriod.Start() && x.EndMaintenance <= PrevPeriod.End());
+
+                if (prevMaintenance != null)
+                {
+                    if (prevMaintenance.StartMaintenance < PrevPeriod.Start())
+                    {
+                        Report.State = OperatingState.Maintenance;
+                    }
+                }
+            }
+                       
+
+
+            //Востанавливаем наработку
+            var prevUsage = usage.Where(x => x.StartUsage >= PrevPeriod.Start()).OrderBy(x => x.StartUsage);
+
+            if (prevUsage.Any())
+            {
+                if (prevUsage.Count() > 1) Report.UsageAfterMaintenance = prevUsage.Last().Usage;
+                Report.UsageBeforeMaintenance = prevUsage.First().Usage;
+
+                prevUsage.ToList().ForEach(x => usage.Remove(x));
+            }
+
+            SetNextMaintenance();
 
         }
 
@@ -474,6 +536,7 @@ namespace Naftan.Maintenance.Domain.Objects
                     }
                 });
 
+                //todo здесь нужно взять последнее состояние до ремонта и восстановить его
                 ChangeOperatingState(OperatingState.Operating, end);
                 CurrentMaintenance = null;
             }
@@ -551,7 +614,7 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <param name="period">Период планирования</param>
         /// <param name="offer">Предложение обслуживания</param>
         /// <param name="offerReason">Причина предложения</param>
-        public void PlanningMaintenance(Period period, MaintenanceType offer, MaintenanceReason offerReason)
+        public void PlanningMaintenance(Period period, MaintenanceType offer = null, MaintenanceReason offerReason = null)
         {
             ///сортируем интервалы по величине ремонта (самый крупный будет первым)
             var intervals = Intervals.ToList();

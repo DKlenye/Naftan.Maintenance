@@ -92,6 +92,9 @@
                                                     }
                                                 },
                                                 {
+                                                    view: "button", type: "iconButton", icon: "retweet", label: "Замена", width: 100
+                                                },
+                                                {
                                                     view: "button", type: "iconButton", icon: "trash", label: "Удалить", width: 100, click: function () {
                                                         var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
                                                         if (item) {
@@ -102,7 +105,13 @@
                                                                     ok: "Да",
                                                                     cancel: "Нет",
                                                                     callback: function (isOk) {
-                                                                        if (isOk) { }//todo delete}
+                                                                        if (isOk) {
+                                                                            //todo delete
+                                                                            webix.message({
+                                                                                text: "Функция пока не реализована",
+                                                                                type:'debug'
+                                                                            })
+                                                                        }
                                                                     }
                                                                 });
                                                         }
