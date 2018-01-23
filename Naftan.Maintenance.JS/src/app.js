@@ -27,189 +27,197 @@
     //--
 
 
-
      webix.collection.tree(["objectGroup"]);
 
      //webix.debug = true;
 
      $.connection.hub.start();
 
-    webix.ui({
-        rows: [
-            {
-                view: "toolbar", css:"app_header", padding: 3, elements: [
-                    {
-                        view: "button", type: "icon", icon: "bars",
-                        width: 30, align: "center", css: "app_button", click: function () {
-                            $$("$sidebar1").toggle();
-                        }
-                    },
-                    {width:20},
-                    {
-                        view: "template",
-                        borderless: !0,
-                        css: "logo",
-                        template: "<img src='Content/images/1-50-32.png' />",
-                        width: 36,
-                        height:34
-                    },
-                    {
-                        view: "label",
-                        width:600,
-                        label: "Система управления техническим обслуживанием и ремонтом",
-                        css: "header_label"
-                    },
-                    {},
-                    {
-                        view: "icon", icon: "retweet", click: function () {
-                            webix.ajax()
-                                .post("/api/database/update").
-                                then(function () { webix.message('База обновлена') }, function (e) { webix.message(e.response, 'error') })}
-                    },
-                    {
-                        view: "icon", icon: "database", click: function () {
-                            webix.ajax()
-                                .post("/api/database/create").
-                                then(function () {webix.message('База построена') }, function (e) { webix.message(e.response, 'error') })
-                        }
-                    },
 
-                ]
-            },
-            {
-                cols: [
-                    {
-                        view: "sidebar",
-                        multipleOpen:true,
-                        width: 250,
-                        data: menu_data,
-                        on: {
-                            onAfterSelect: function (id) {
-
-                                var me = this,
-                                    item = me.getItem(id),
-                                    tab = $$("tab");
-
-                                var viewId, config = {};
-
-                                if (typeof (item.target) == "string") {
-                                    viewId = item.target;
-                                    config = {
-                                        id: viewId,
-                                        view: item.target
-                                    }
-                                }
-                                else {
-                                    viewId = item.target.multiple ? webix.uid() : item.target.view;
-                                    webix.extend(config, item.target);
-                                    webix.extend(config, {
-                                        id: viewId
-                                    });
-                                }
-                                                                                                   
-                                var view = $$(viewId);
-
-                                if (!view) {
-                                    addView(item.value, config, item.icon, item.width);
-                                }
-                                else {
-                                    tab.setValue(viewId);
-                                }
-                                
-                                me.unselect(id);
-                            }
-                        }
-                    },
-                    {
-                        id: "tab",
-                        view: "ui_tabview",
-                        cells: [{ id: 'tabHidden', hidden: true, body: { template: '' } }],
-                        value: 'tabHidden',
-                        tabbar: {
-                            close: true,
-                            optionWidth: 180
-                        }
-                    }
-                ]
-            }
-        ]
-     });
+     webix.ajax()
+         .get("/api/user/current")
+         .then(function (user) {
 
 
-    var addView = function (header, cfg, icon, width, ignoreLoadCollections) {
+             webix.ui({
+                 rows: [
+                     {
+                         view: "toolbar", css: "app_header", padding: 3, elements: [
+                             {
+                                 view: "button", type: "icon", icon: "bars",
+                                 width: 30, align: "center", css: "app_button", click: function () {
+                                     $$("$sidebar1").toggle();
+                                 }
+                             },
+                             { width: 20 },
+                             {
+                                 view: "template",
+                                 borderless: !0,
+                                 css: "logo",
+                                 template: "<img src='Content/images/1-50-32.png' />",
+                                 width: 36,
+                                 height: 34
+                             },
+                             {
+                                 view: "label",
+                                 width: 600,
+                                 label: "Система управления техническим обслуживанием и ремонтом",
+                                 css: "header_label"
+                             },
+                             {},
+                             {
+                                 view: "icon", icon: "retweet", click: function () {
+                                     webix.ajax()
+                                         .post("/api/database/update").
+                                         then(function () { webix.message('База обновлена') }, function (e) { webix.message(e.response, 'error') })
+                                 }
+                             },
+                             {
+                                 view: "icon", icon: "database", click: function () {
+                                     webix.ajax()
+                                         .post("/api/database/create").
+                                         then(function () { webix.message('База построена') }, function (e) { webix.message(e.response, 'error') })
+                                 }
+                             },
 
-        var viewName = cfg.view;
-        if (!ignoreLoadCollections && viewName) {
+                         ]
+                     },
+                     {
+                         cols: [
+                             {
+                                 view: "sidebar",
+                                 multipleOpen: true,
+                                 width: 250,
+                                 data: menu_data,
+                                 on: {
+                                     onAfterSelect: function (id) {
 
-            var proto = webix.ui[viewName];
-            if (proto.$protoWait) proto.call(webix, viewName);
-            proto = webix.ui[viewName].prototype;
+                                         var me = this,
+                                             item = me.getItem(id),
+                                             tab = $$("tab");
 
-            var collections = proto.requireCollections || [];
-            if (proto.collection) {
-                collections.push(proto.collection);
-            }
-            
-            if (collections.length>0) {
-                mask();
-                webix.collection.require(collections, function () {
-                    unmask();
-                    addView(header, cfg, icon, width, true);
-                });
-                return;
-            }
-        }
+                                         var viewId, config = {};
 
-        var getTitle = function (title, icon) {
-            if (icon) {
-                return title = "<span class='webix_icon fa-" + icon + "'></span>" + title;
-            }
-            return title;
-        }
+                                         if (typeof (item.target) == "string") {
+                                             viewId = item.target;
+                                             config = {
+                                                 id: viewId,
+                                                 view: item.target
+                                             }
+                                         }
+                                         else {
+                                             viewId = item.target.multiple ? webix.uid() : item.target.view;
+                                             webix.extend(config, item.target);
+                                             webix.extend(config, {
+                                                 id: viewId
+                                             });
+                                         }
 
-        var tab = $$("tab");
+                                         var view = $$(viewId);
 
-        var id = tab.addView({
-            header: getTitle(header, icon),
-            close: true,
-            body: cfg,
-            width: width
-        });
+                                         if (!view) {
+                                             addView(item.value, config, item.icon, item.width);
+                                         }
+                                         else {
+                                             tab.setValue(viewId);
+                                         }
 
-        view = $$(id);
+                                         me.unselect(id);
+                                     }
+                                 }
+                             },
+                             {
+                                 id: "tab",
+                                 view: "ui_tabview",
+                                 cells: [{ id: 'tabHidden', hidden: true, body: { template: '' } }],
+                                 value: 'tabHidden',
+                                 tabbar: {
+                                     close: true,
+                                     optionWidth: 180
+                                 }
+                             }
+                         ]
+                     }
+                 ]
+             });
 
-        view.attachEvent("onCreateView", addView);
 
-        view.attachEvent("onChangeTitle", function (id, title, icon) {
+             var addView = function (header, cfg, icon, width, ignoreLoadCollections) {
 
-            var bar = tab.getTabbar();
-            var i = bar.optionIndex(id);
+                 var viewName = cfg.view;
+                 if (!ignoreLoadCollections && viewName) {
 
-            if (i > 0) {
-                bar.config.options[i].value = getTitle(title, icon);
-                bar.refresh();
-            }
+                     var proto = webix.ui[viewName];
+                     if (proto.$protoWait) proto.call(webix, viewName);
+                     proto = webix.ui[viewName].prototype;
 
-        });
+                     var collections = proto.requireCollections || [];
+                     if (proto.collection) {
+                         collections.push(proto.collection);
+                     }
 
-        tab.setValue(id);
-    }
+                     if (collections.length > 0) {
+                         mask();
+                         webix.collection.require(collections, function () {
+                             unmask();
+                             addView(header, cfg, icon, width, true);
+                         });
+                         return;
+                     }
+                 }
 
-    var mask = function (text) {
-        var tab = $$("tab");
-        tab.disable();
-        tab.showProgress({
-            type: "icon",
-            icon: "refresh"
-        });
-    };
+                 var getTitle = function (title, icon) {
+                     if (icon) {
+                         return title = "<span class='webix_icon fa-" + icon + "'></span>" + title;
+                     }
+                     return title;
+                 }
 
-    var unmask = function () {
-        var tab = $$("tab");
-        tab.hideProgress();
-        tab.enable();
-    };
+                 var tab = $$("tab");
 
-    webix.extend($$("tab"), webix.ProgressBar);
+                 var id = tab.addView({
+                     header: getTitle(header, icon),
+                     close: true,
+                     body: cfg,
+                     width: width
+                 });
+
+                 view = $$(id);
+
+                 view.attachEvent("onCreateView", addView);
+
+                 view.attachEvent("onChangeTitle", function (id, title, icon) {
+
+                     var bar = tab.getTabbar();
+                     var i = bar.optionIndex(id);
+
+                     if (i > 0) {
+                         bar.config.options[i].value = getTitle(title, icon);
+                         bar.refresh();
+                     }
+
+                 });
+
+                 tab.setValue(id);
+             }
+
+             var mask = function (text) {
+                 var tab = $$("tab");
+                 tab.disable();
+                 tab.showProgress({
+                     type: "icon",
+                     icon: "refresh"
+                 });
+             };
+
+             var unmask = function () {
+                 var tab = $$("tab");
+                 tab.hideProgress();
+                 tab.enable();
+             };
+
+             webix.extend($$("tab"), webix.ProgressBar);
+
+         });
 
 });

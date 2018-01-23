@@ -33,12 +33,12 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         /// <summary>
         /// Дата с последнего обслуживания
         /// </summary>
-        public DateTime? LastMaintenanceDate { get; private set; }
+        public DateTime? LastMaintenanceDate { get; internal set; }
 
         /// <summary>
         /// Наработка с последнего обслуживания, если межремонтный интервал по времени, то наработка не учитывается
         /// </summary>
-        public int? UsageFromLastMaintenance { get; private set; }
+        public int? UsageFromLastMaintenance { get; internal set; }
 
         /// <summary>
         /// Сбросить последнее обслуживание
@@ -64,5 +64,14 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
                 UsageFromLastMaintenance += Usage;
             }
         }
+
+        public void RemoveUsage(int Usage)
+        {
+            if (UsageFromLastMaintenance != null)
+            {
+                UsageFromLastMaintenance -= Usage;
+            }
+        }
+
     }
 }

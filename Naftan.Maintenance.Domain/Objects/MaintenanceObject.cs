@@ -190,7 +190,7 @@ namespace Naftan.Maintenance.Domain.Objects
             {
                 Children.ToList().ForEach(child =>
                 {
-                    if (child.Report.Period == CurrentPeriod)
+                    if (child.Report.Period.period == CurrentPeriod.period)
                     {
                         var allUsage = Report.UsageBeforeMaintenance + Report.UsageAfterMaintenance;
                         child.Report.UsageParent = allUsage;
@@ -214,7 +214,7 @@ namespace Naftan.Maintenance.Domain.Objects
             Report.ReasonForOffer = null;
 
             //Если состояние поменялось и это было не обслуживание, то меняем состояние
-            if (Report.State!=OperatingState.Maintenance &&  CurrentOperatingState != Report.State)
+            if (Report.State!=OperatingState.Maintenance && CurrentOperatingState!=OperatingState.Maintenance &&  CurrentOperatingState != Report.State)
             {
                 ChangeOperatingState(Report.State, CurrentPeriod.Start());
             }
@@ -227,7 +227,18 @@ namespace Naftan.Maintenance.Domain.Objects
             {
                 Report.UsageBeforeMaintenance = 0;
             }
-            
+
+            if (Parent != null && Parent.Report.Period.period > NextPeriod.period)
+            {
+                var parentUsage = Parent.usage.Where(x => x.StartUsage >= NextPeriod.Start() && x.EndUsage <= NextPeriod.End()).Sum(x => x.Usage);
+                Report.UsageParent = parentUsage;
+            }
+            else
+            {
+                Report.UsageParent = 0;
+            }
+
+
             Report.UsageAfterMaintenance = 0;
             Report.State = CurrentOperatingState.Value;
 
@@ -244,8 +255,9 @@ namespace Naftan.Maintenance.Domain.Objects
 
             Report.Period = PrevPeriod;
 
+
             //восстанавливаем план
-            var plan = plans.FirstOrDefault(x => x.MaintenanceDate >= PrevPeriod.Start() && x.MaintenanceDate <= PrevPeriod.End());
+            var plan = plans.FirstOrDefault(x => x.MaintenanceDate >= CurrentPeriod.Start() && x.MaintenanceDate <= CurrentPeriod.End());
 
             if (plan!=null)
             {
@@ -258,40 +270,85 @@ namespace Naftan.Maintenance.Domain.Objects
                 plans.Remove(plan);
             }
 
-            //если незаконченный ремонт
-            if (Report.State == OperatingState.Maintenance)
-            {
-                var notFinalizedMaintenance = maintenance.First(x => x.EndMaintenance == null);
-                maintenance.Remove(notFinalizedMaintenance);
-            }
-            else
-            {
-                var prevMaintenance = maintenance.FirstOrDefault(x => x.EndMaintenance >= PrevPeriod.Start() && x.EndMaintenance <= PrevPeriod.End());
-
-                if (prevMaintenance != null)
-                {
-                    if (prevMaintenance.StartMaintenance < PrevPeriod.Start())
-                    {
-                        Report.State = OperatingState.Maintenance;
-                    }
-                }
-            }
-                       
 
 
             //Востанавливаем наработку
-            var prevUsage = usage.Where(x => x.StartUsage >= PrevPeriod.Start()).OrderBy(x => x.StartUsage);
+            var prevUsageAfter = usage.Where(x => x.EndUsage == PrevPeriod.End() && x.StartUsage > PrevPeriod.Start()).FirstOrDefault();
 
-            if (prevUsage.Any())
+            if (prevUsageAfter!=null) //наработка после ремонта
             {
-                if (prevUsage.Count() > 1) Report.UsageAfterMaintenance = prevUsage.Last().Usage;
-                Report.UsageBeforeMaintenance = prevUsage.First().Usage;
+                RemoveUsage(prevUsageAfter);
+            }
+            Report.UsageAfterMaintenance = prevUsageAfter?.Usage ?? 0;
 
-                prevUsage.ToList().ForEach(x => usage.Remove(x));
+
+            var prevMaintenance = maintenance.Where(x => x.StartMaintenance >= PrevPeriod.Start()).FirstOrDefault();
+
+            if (prevMaintenance != null)
+            {
+                Report.ActualMaintenanceType = prevMaintenance.MaintenanceType;
+                Report.StartMaintenance = prevMaintenance.StartMaintenance;
+                Report.EndMaintenance = prevMaintenance.EndMaintenance;
+                RemoveMaintenance(prevMaintenance);
+            }
+            
+            var notFinalized = maintenance.Where(x => x.EndMaintenance >= PrevPeriod.Start() && x.StartMaintenance < PrevPeriod.Start()).FirstOrDefault();
+
+            if (notFinalized != null)
+            {
+                var lastMaintenanceMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id);
+                notFinalized.Snapshot.ToList().ForEach(x =>
+                {
+                    var last = lastMaintenanceMap[x.MaintenanceType.Id];
+                    last.UsageFromLastMaintenance = x.UsageFromLastMaintenance;
+                    last.LastMaintenanceDate = x.LastMaintenanceDate;
+                });
+
+                Report.ActualMaintenanceType = notFinalized.MaintenanceType;
+                Report.EndMaintenance = notFinalized.EndMaintenance;
+                Report.StartMaintenance = notFinalized.StartMaintenance;
+
+                notFinalized.EndMaintenance = null;
+                CurrentMaintenance = notFinalized;
             }
 
-            SetNextMaintenance();
+            var prevUsageBefore= usage.Where(x => x.StartUsage == PrevPeriod.Start()).FirstOrDefault();
+            if (prevUsageBefore!=null)//наработка до ремонта
+            {
+                RemoveUsage(prevUsageBefore);
+            }
+            Report.UsageBeforeMaintenance = prevUsageBefore?.Usage ?? 0;
 
+
+            if (Parent != null)
+            {
+                var parentUsage = Parent.usage.Where(x => x.StartUsage >= PrevPeriod.Start() && x.EndUsage <= PrevPeriod.End()).Sum(x => x.Usage);
+                Report.UsageParent = parentUsage;
+            }
+            else
+            {
+                Report.UsageParent = 0;
+            }
+
+            if (Children.Any())
+            {
+                Children.ToList().ForEach(x =>
+                {
+                    if (x.Report.Period.period == CurrentPeriod.period)
+                    {
+                        x.Report.UsageParent = 0;
+                    }
+                });
+            }
+            
+
+            //восстанавливаем состояние
+            operatingStates.Where(x => x.StartDate >= PrevPeriod.Start()).ToList().ForEach(x => operatingStates.Remove(x));
+            CurrentOperatingState = operatingStates.OrderBy(x => x.StartDate).LastOrDefault()?.State ?? OperatingState.Operating;
+
+            Report.State = CurrentOperatingState.Value;
+
+            SetNextMaintenance();
         }
 
 
@@ -413,6 +470,21 @@ namespace Naftan.Maintenance.Domain.Objects
             UsageFromStartup  = (UsageFromStartup??0) + usage;
         }
 
+        public void RemoveUsage(UsageActual entity)
+        {
+            //Убрать наработку с начала эксплуатации
+            UsageFromStartup = UsageFromStartup.Value - entity.Usage;
+
+            //Убрать наработку из последних ремонтов
+            lastMaintenance.ToList().ForEach(last =>
+            {
+                last.RemoveUsage(entity.Usage);
+            });
+
+            usage.Remove(entity);
+        }
+
+
         /// <summary>
         /// Наработка с начала экслуатации
         /// </summary>
@@ -472,9 +544,8 @@ namespace Naftan.Maintenance.Domain.Objects
             }
 
             //Добавить запись в журнал обслуживания
-            var newMaintenance = new MaintenanceActual
+            var newMaintenance = new MaintenanceActual(this)
             {
-                Object = this,
                 MaintenanceType = maintenanceType,
                 StartMaintenance = start,
                 UnplannedReason = unplannedReason
@@ -493,6 +564,30 @@ namespace Naftan.Maintenance.Domain.Objects
             }
 
         }
+
+        public void RemoveMaintenance(MaintenanceActual entity)
+        {
+            var lastMaintenanceMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id);
+
+            //восстанавливаем данные из снимка
+            entity.Snapshot.ToList().ForEach(x =>
+            {
+                var last = lastMaintenanceMap[x.MaintenanceType.Id];
+
+                last.UsageFromLastMaintenance = x.UsageFromLastMaintenance;
+                last.LastMaintenanceDate = x.LastMaintenanceDate;
+            });
+
+            //если это текущее обслуживание, то сбрасываем его
+            if(!entity.IsFinalized() && CurrentMaintenance == entity)
+            {
+                CurrentMaintenance = null;
+            }
+
+            maintenance.Remove(entity);
+
+        }
+        
 
         public void FinalizeMaintenance(DateTime end)
         {
@@ -573,7 +668,7 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <summary>
         /// Установка следующего обслуживания(прогноз)
         /// </summary>
-        private void SetNextMaintenance()
+        public void SetNextMaintenance()
         {
             //чтобы рассчитать следующее обслуживание нужно сравнить по всем обслуживаниям разницу наработки норма-факт и взять меньшую разницу
             var intervals = Intervals.ToList();
@@ -616,6 +711,10 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <param name="offerReason">Причина предложения</param>
         public void PlanningMaintenance(Period period, MaintenanceType offer = null, MaintenanceReason offerReason = null)
         {
+
+            //если оборудование на обслуживании то не планируем ничего
+            if (CurrentOperatingState == OperatingState.Maintenance) return;
+
             ///сортируем интервалы по величине ремонта (самый крупный будет первым)
             var intervals = Intervals.ToList();
             intervals.Sort();

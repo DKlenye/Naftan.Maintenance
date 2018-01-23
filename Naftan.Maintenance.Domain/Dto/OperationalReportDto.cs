@@ -11,6 +11,7 @@ namespace Naftan.Maintenance.Domain.Dto
         public int PlantId { get; set; }
         public DateTime? StartMaintenance { get; set; }
         public DateTime? EndMaintenance { get; set; }
+        public int UsageParent { get; set; }
         public int UsageBeforeMaintenance { get; set; }
         public int UsageAfterMaintenance { get; set; }
         public OperatingState State { get; set; }

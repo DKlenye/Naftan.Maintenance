@@ -104,6 +104,7 @@
         this.groups.data.unsync();*/
 
         this.groups.data.importData(webix.collection("ObjectGroup"), true);
+        this.groups.uncheckAll();
 
         this.plants.parse(this.buildPlants());
 

@@ -61,6 +61,7 @@
     <Compile Include="Dto\UsageDto.cs" />
     <Compile Include="IQueryFactory.cs" />
     <Compile Include="ObjectMaintenance\LastMaintenance.cs" />
+    <Compile Include="ObjectMaintenance\LastMaintenanceSnapshot.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceActual.cs" />
     <Compile Include="ObjectMaintenance\MaintenanceInterval.cs" />
     <Compile Include="ObjectMaintenance\MaintenancePlan.cs" />

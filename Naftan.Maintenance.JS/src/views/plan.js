@@ -104,6 +104,8 @@
             me.unmask();
         });
 
+        this.reload();
+
     },
 
     reload: function () {

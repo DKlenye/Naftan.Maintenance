@@ -137,50 +137,15 @@ namespace Naftan.Maintenance.Domain.Tests
             {
                 var _compressor = repository.Get<MaintenanceObject>(compressor.Id);
 
-                Assert.AreEqual(_compressor.Report.Period,period);
+                Assert.AreEqual(_compressor.Report.Period,period.Next());
                 Assert.AreEqual(_compressor.CurrentOperatingState, OperatingState.WriteOff);
+                Assert.AreEqual(_compressor.Report.UsageBeforeMaintenance, 0);
                     
                 uow.Commit();
             }
 
         }
 
-        [Test]
-        public void ApplyReportToWriteOffObject()
-        {
-
-            var period = report.Period;
-            using (var uow = uowf.Create())
-            {
-                report.State = OperatingState.WriteOff;
-                compressor.ApplyReport();
-
-                repository.Save(compressor);
-                uow.Commit();
-            }
-
-
-            using (var uow = uowf.Create())
-            {
-                report.State = OperatingState.WriteOff;
-                compressor.ApplyReport();
-
-                repository.Save(compressor);
-                uow.Commit();
-            }
-            
-            using (var uow = uowf.Create())
-            {
-                var _compressor = repository.Get<MaintenanceObject>(compressor.Id);
-
-                Assert.AreEqual(_compressor.Report.Period, period);
-                Assert.AreEqual(_compressor.CurrentOperatingState, OperatingState.WriteOff);
-                Assert.AreEqual(_compressor.OperatingStates.Count(), 2);
-
-                uow.Commit();
-            }
-
-        }
 
         [Test]
         public void AddOfferForPlanFromReport()

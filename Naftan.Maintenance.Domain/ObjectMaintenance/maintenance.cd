@@ -13,7 +13,7 @@
     <Position X="3.83" Y="5.332" Height="0.331" Width="1.64" />
   </Comment>
   <Comment CommentText="Журнал состояний">
-    <Position X="9.107" Y="10.17" Height="0.296" Width="1.473" />
+    <Position X="9.076" Y="11.368" Height="0.296" Width="1.473" />
   </Comment>
   <Comment CommentText="Объект ремонта">
     <Position X="7.47" Y="0.848" Height="0.295" Width="1.807" />
@@ -24,18 +24,11 @@
   <Comment CommentText="Межремонтные интерваллы">
     <Position X="1.336" Y="0.692" Height="0.487" Width="1.28" />
   </Comment>
-  <Comment CommentText="Предложения к плану">
-    <Position X="5.111" Y="10.125" Height="0.296" Width="1.473" />
-  </Comment>
   <Class Name="Naftan.Maintenance.Domain.Objects.MaintenanceObject">
     <Position X="6.5" Y="1.25" Width="2.75" />
-    <AssociationLine Name="operatingStates" Type="Naftan.Maintenance.Domain.Objects.ObjectOperatingState" FixedFromPoint="true">
-      <Path>
-        <Point X="8.875" Y="9.54" />
-        <Point X="8.875" Y="10.5" />
-      </Path>
+    <AssociationLine Name="operatingStates" Type="Naftan.Maintenance.Domain.Objects.ObjectOperatingState">
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-1.459" Y="0.454" Height="0.182" Width="1.239" />
+        <Position X="-1.376" Y="0.506" Height="0.182" Width="1.239" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="lastMaintenance" Type="Naftan.Maintenance.Domain.ObjectMaintenance.LastMaintenance">
@@ -58,13 +51,8 @@
         <Position X="0.318" Y="0.081" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="offers" Type="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceOffer">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.709" Y="0.492" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>QiAagEiQIgAQgCCAEaYIgIAEEgHAgQIgAACSAAAABAA=</HashCode>
+      <HashCode>YiAegEiQIgAIgCCACaYIgIAEEgHAhAIgAACSAABIBAA=</HashCode>
       <FileName>Objects\MaintenanceObject.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -76,7 +64,6 @@
       <Field Name="lastMaintenance" />
       <Field Name="maintenance" />
       <Field Name="usage" />
-      <Field Name="offers" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -99,7 +86,7 @@
   <Class Name="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceInterval">
     <Position X="0.5" Y="1.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>KAACAEAAAAQAAAAQAAQAAAAAAAAAAAAAABgAAAAAAAA=</HashCode>
+      <HashCode>KAACAEAAAAQAAAQQAAQAAAAAAAAAAAAAABgAAAAAAAA=</HashCode>
       <FileName>ObjectMaintenance\MaintenanceInterval.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -107,7 +94,7 @@
   <Class Name="Naftan.Maintenance.Domain.ObjectMaintenance.LastMaintenance">
     <Position X="10.75" Y="1.25" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAQABABgAAIAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAQABABgAAIAAAAAAAAABAAAAAgAAAAAAAA=</HashCode>
       <FileName>ObjectMaintenance\LastMaintenance.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -129,26 +116,18 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Naftan.Maintenance.Domain.Objects.ObjectOperatingState">
-    <Position X="8" Y="10.5" Width="2.75" />
+    <Position X="7.75" Y="11.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAABEAAAAA=</HashCode>
       <FileName>Objects\ObjectOperatingState.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
+    <Lollipop Position="0.106" />
   </Class>
   <Class Name="Naftan.Maintenance.Domain.Objects.OperationalReport">
     <Position X="3" Y="5.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAADAAAIABAAQAAAEAAAEAAAEAAAAAABAAAABAAAUAI=</HashCode>
+      <HashCode>AAADAAAIABAAQAAAEAAAAAAAEAACAAABAAAABAAAUAI=</HashCode>
       <FileName>Objects\OperationalReport.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Naftan.Maintenance.Domain.ObjectMaintenance.MaintenanceOffer">
-    <Position X="4.25" Y="10.5" Width="2.75" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAQAAAIgAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
-      <FileName>ObjectMaintenance\MaintenanceOffer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

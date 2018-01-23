@@ -110,6 +110,7 @@ namespace Naftan.Maintenance.NHibernate
 	                mo.PlantId,
 	                r.StartMaintenance,
 	                r.EndMaintenance,
+                    r.UsageParent,
 	                r.UsageBeforeMaintenance,
 	                r.UsageAfterMaintenance,
 	                r.[State],

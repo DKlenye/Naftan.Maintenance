@@ -98,7 +98,9 @@ webix.DataCollectionPull.prototype = {
 
             switch (operation) {
                 case "insert": {
-                    store.add(data);
+                    var item = store.getItem(id);
+                    if (!item) store.add(data);
+                    else store.updateItem(id, data);
                     break;
                 }
                 case "update": {

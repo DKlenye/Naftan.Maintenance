@@ -52,6 +52,7 @@
                 },
                 {
                     view: "datatable",
+                    dragColumn: true,
                     css: "center_columns",
                     footer: true,
                     select: 'cell',
@@ -102,8 +103,15 @@
                             width: 170
                         },
                         {
+                            id: 'usageParent',
+                            header: [{ text: "Наработка", colspan: 3, css: { "background": colors.usage } }, { text: "Родитель", css: { "background": colors.usage } }],
+                            sort: 'int',
+                            parseFormat: intFormatter,
+                            width: 80
+                        },
+                        {
                             id: 'usageBeforeMaintenance',
-                            header: [{ text: "Наработка", colspan: 2, css: { "background": colors.usage } }, { text: "До", css: { "background": colors.usage } }],
+                            header: ['', { text: "До", css: { "background": colors.usage } }],
                             sort: 'int',
                             editor: "text",
                             editFormat: intFormatter,
@@ -189,6 +197,24 @@
 
                             return false;
                         })
+                    },
+                    on: {
+                        onKeyPress: function (code, e) {
+
+                            switch (e.key.toLowerCase()) {
+                                case "о": { me.setMaintenance(1); break; }
+                                case "j": { me.setMaintenance(1); break; }
+                                case "т": { me.setMaintenance(2); break; }
+                                case "n": { me.setMaintenance(2); break; }
+                                case "с": { me.setMaintenance(3); break; }
+                                case "c": { me.setMaintenance(3); break; }
+                                case "к": { me.setMaintenance(4); break; }
+                                case "r": { me.setMaintenance(4); break; }
+
+                                case "р": { me.setState(3); break; }
+                                case "h": { me.setState(3); break; }
+                            }
+                        }
                     }
                 }
             ]
@@ -282,6 +308,14 @@
     getHoursBetweenDates:function(date1, date2) {
         var parser = webix.Date.strToDate("%d.%m.%Y");
         return Math.round((parser(date2) - parser(date1)) / (1000 * 60 * 60 * 24)) * 24;
+    },
+
+    setMaintenance: function (type) {
+        webix.message(type)
+    },
+
+    setState: function (state) {
+        webix.message(state)
     },
 
     onEditStart: function (obj) {
@@ -490,7 +524,8 @@
         this.reportTable.updateItem(item.id, item);
 
     },
-    
+
+
 
     applyReport: function () {
 

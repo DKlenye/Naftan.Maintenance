@@ -4,6 +4,7 @@ using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Users;
 using Naftan.Maintenance.WebApplication.Dto;
 using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
 using System.Web.Http;
 
 namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
@@ -41,11 +42,11 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         [HttpGet, Route("api/user/current")]
         public User Current ()
         {
-            var account = ActiveDirectory.CurrentAccount;
-            var user = query.FindUserByLogin(account.Login);
+            var context = UserPrincipal.Current;
+            var user = query.FindUserByLogin(context.SamAccountName);
             if (user == null)
             {
-                user = new User(account.Login, account.Name, account.Phone, account.Email);
+                user = new User(context.SamAccountName, context.DisplayName, context.VoiceTelephoneNumber, context.EmailAddress);
                 repository.Save(user);
             }
             return user;

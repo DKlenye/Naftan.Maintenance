@@ -7,6 +7,7 @@ using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
 using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Web.Http;
 
@@ -26,9 +27,8 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         [HttpGet, Route("api/operationalReport/{period}")]
         public IEnumerable<OperationalReportDto> Get(int period)
         {
-            var account = ActiveDirectory.CurrentAccount;
-            var user = query.FindUserByLogin(account.Login);
-
+            var context = UserPrincipal.Current;
+            var user = query.FindUserByLogin(context.SamAccountName);
 
             if (user.Plants.Any() && user.ObjectGroups.Any())
             {
@@ -93,6 +93,14 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
             return list.data;
         }
+
+        [HttpGet, Route("api/operationalReport/setNextMaintenance")]
+        public void SetNextMaintenance()
+        {
+            repository.All<MaintenanceObject>()
+                .ToList().ForEach(x => x.SetNextMaintenance());
+        }
+
 
     }
 }
