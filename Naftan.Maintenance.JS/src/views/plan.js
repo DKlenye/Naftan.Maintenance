@@ -48,7 +48,6 @@
                         {
                             id: 'maintenanceDate',
                             header: ['Дата ремонта', { content: "dateFilter" }],
-
                         },
                         {
                             id: 'maintenanceTypeId',
@@ -57,13 +56,30 @@
                             template: webix.templates.collection("maintenanceType"),
                             width: 150
                         },
-
+                        {
+                            id: 'usageForPlan', header: ["Наработка", { content: "textFilter" }], sort: 'int', width: 120,
+                        },
                         {
                             id: 'maintenanceReasonId',
                             header: ['Причина ремонта', { content: "selectFilter", options: webix.collection.options("maintenanceReason", "name", true) }],
                             sort: "int",
                             template: webix.templates.collection("maintenanceReason"),
                             width: 150
+                        },
+                        {
+                            id: 'previousDate',
+                            header: [{ text: 'Предыдущий ремонт', colspan: 3 }, 'Дата']
+                        },
+                        {
+                            id: 'previousMaintenanceType',
+                            header: ['', 'Вид ремонта'],
+                            sort: "int",
+                            template: webix.templates.collection("maintenanceType"),
+                            width: 150
+                        },
+                        {
+                            id: 'previousUsage',
+                            header: ['', 'Наработка']
                         }
                     ],
                     onClick: {

@@ -13,7 +13,7 @@ namespace Naftan.Maintenance.Domain
         IEnumerable<ObjectGroup> FindObjectGroups();
         IEnumerable<ObjectListDto> FindObjects();
         IEnumerable<OperationalReportDto> FindOperationalReportAll();
-        IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period, IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants);
+        IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period);
         IEnumerable<MaintenancePlanDto> FindMaintenancePlanAll();
         IEnumerable<MaintenancePlanDto> FindMaintenancePlanByPeriod(Period period);
         IEnumerable<GroupIntervalDto> FindGroupInterval();

@@ -243,6 +243,9 @@
                 editor: "combo",
                 options: webix.collection.options("operatingState"),
                 width: 160
+            },
+            {
+                id: 'usageFromStartup', header: ["Наработка", { content: "numberFilter" }], sort: 'int', width: 110
             }
         ]
     },

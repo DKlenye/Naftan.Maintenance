@@ -47,19 +47,22 @@
         }
     },
 
-    progress: function (norm,fact,type) {
+    progress: function (norm,max,fact,type) {
 
         var getColor = function (value) {
             var hue = (100 - value).toString(10);
-            return "hsl(" + hue + ", 90%,44%)";
+            return "hsl(" + hue + ", 90%,47%)";
         }
-        
+
         return function (obj, common, value, config) {
             
             var n = obj[norm],
+                m = obj[max],
                 f = obj[fact],
                 t = obj[type],
                 diff = n - f;
+
+            diff = diff < 0 ? m - f : diff;
 
             if (f === null) return "";
 
@@ -67,10 +70,14 @@
                 Math.round10((f / n) * 100),
                 100
             );
+
+            var colorPrcn = f >= m ? 100 : (f >= n ? 50 : 0);
+            var color = getColor(colorPrcn);
+
             
             return '<div class="progress">' +
                 '<header>' + f + '<span>' + diff +'&nbsp;&nbsp;'+t+'</span></header>' +
-                '<div class="bar"><div title="'+prcn+'%" class="percent" style="background:' + getColor(prcn) + '; width: '+prcn+'%;">&nbsp;</div></div></div>'
+                '<div class="bar"><div title="'+prcn+'%" class="percent" style="background:' + color + '; width: '+prcn+'%;">&nbsp;</div></div></div>'
         }
     }
 

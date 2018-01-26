@@ -30,7 +30,7 @@ namespace Naftan.Maintenance.Domain.Users
         /// <summary>
         /// Электрик
         /// </summary>
-        [Description("Электрик")] Maintenance_Electric,
+        [Description("Электрик")] Maintenance_Electric
 
     }
 }

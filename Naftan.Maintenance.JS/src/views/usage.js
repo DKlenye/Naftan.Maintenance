@@ -71,7 +71,8 @@
                         { id: "s_date", header: [{ text: "Средний", colspan: 2 }, "Дата"] },
                         { id: "s_usage", header: ["", "Наработка"] },
                         { id: "k_date", header: [{ text: "Капитальный", colspan: 2 }, "Дата"] },
-                        { id: "k_usage", header: ["", "Наработка"] }
+                        { id: "k_usage", header: ["", "Наработка"] },
+                        { id: 'usageFromStartup', header: ["Наработка", "с нач. экспл."], sort: 'int'}
 
                     ],
                     onClick: {

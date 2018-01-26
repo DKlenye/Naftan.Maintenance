@@ -66,7 +66,7 @@ namespace Naftan.Maintenance.Domain.Objects
 
         }
 
-        #region Поля используемые для интерации данных из dbf
+        #region Поля используемые для интеграции данных из dbf
         public int? ReplicationKvo { get; private set; }
         public int? ReplicationKg { get; private set; }
         public int? ReplicationKu { get; private set; }
@@ -166,7 +166,13 @@ namespace Naftan.Maintenance.Domain.Objects
             // Если был неоконченный ремонт, то завершить его
             if (CurrentMaintenance != null)
             {
-                FinalizeMaintenance(Report.EndMaintenance.Value);
+                //Бывает что начинают один вид ремонта, а по факту выполняется другой
+                CurrentMaintenance.MaintenanceType = Report.ActualMaintenanceType;
+
+                if (Report.EndMaintenance != null)
+                {
+                    FinalizeMaintenance(Report.EndMaintenance.Value);
+                }
             }
             // Если новый ремонт, то добавляем его в журнал ремонтов
             else if (Report.ActualMaintenanceType!=null && Report.StartMaintenance != null)
@@ -218,8 +224,11 @@ namespace Naftan.Maintenance.Domain.Objects
             {
                 ChangeOperatingState(Report.State, CurrentPeriod.Start());
             }
-            
-            if (CurrentOperatingState == OperatingState.Operating)
+
+            //Устанавливаем состояние на следующий период. Если Текущее состояние резерв, то сбрасываем его на обслуживание, потому что механики вручную вносят резерв
+            Report.State = CurrentOperatingState.Value == OperatingState.Reserve ? OperatingState.Operating : CurrentOperatingState.Value;
+
+            if (Report.State == OperatingState.Operating)
             {
                 Report.UsageBeforeMaintenance = NextPeriod.Hours();
             }
@@ -228,6 +237,7 @@ namespace Naftan.Maintenance.Domain.Objects
                 Report.UsageBeforeMaintenance = 0;
             }
 
+            //Если есть родитель и у него проведена наработка, то устонавливаем её
             if (Parent != null && Parent.Report.Period.period > NextPeriod.period)
             {
                 var parentUsage = Parent.usage.Where(x => x.StartUsage >= NextPeriod.Start() && x.EndUsage <= NextPeriod.End()).Sum(x => x.Usage);
@@ -238,13 +248,10 @@ namespace Naftan.Maintenance.Domain.Objects
                 Report.UsageParent = 0;
             }
 
-
             Report.UsageAfterMaintenance = 0;
-            Report.State = CurrentOperatingState.Value;
 
             //Переходим на следующий период
             Report.Period = NextPeriod;
-
                         
         }
 
@@ -639,12 +646,6 @@ namespace Naftan.Maintenance.Domain.Objects
 
         #endregion
 
-        #region Запчасти
-
-        //todo запчасти
-
-        #endregion
-
         #region Планирование
 
         /// <summary>
@@ -657,9 +658,13 @@ namespace Naftan.Maintenance.Domain.Objects
         /// </summary>
         public MaintenanceType NextMaintenance { get; private set; }
         /// <summary>
-        /// Наработка для следующего обслуживания (норма)
+        /// Наработка для следующего обслуживания (минимальная наработка)
         /// </summary>
         public int? NextUsageNorm { get; private set; }
+        /// <summary>
+        /// Наработка для следующего обслуживания (максимальная наработка)
+        /// </summary>
+        public int? NextUsageNormMax { get; private set; }
         /// <summary>
         /// Наработка для следующего обслуживания (факт)
         /// </summary>
@@ -680,6 +685,7 @@ namespace Naftan.Maintenance.Domain.Objects
             MaintenanceType next = null;
             int? fact=0;
             int? norm=0;
+            int? normMax = 0;
 
             intervals.ForEach(interval =>
             {
@@ -693,6 +699,7 @@ namespace Naftan.Maintenance.Domain.Objects
                 {
                     next = interval.MaintenanceType;
                     norm = interval.MinUsage;
+                    normMax = interval.MaxUsage;
                     fact = usage;
                 }
             });
@@ -700,6 +707,7 @@ namespace Naftan.Maintenance.Domain.Objects
             NextMaintenance = next;
             NextUsageFact = fact;
             NextUsageNorm = norm;
+            NextUsageNormMax = normMax;
         }
 
 
@@ -751,12 +759,7 @@ namespace Naftan.Maintenance.Domain.Objects
                     if (date > period.End()) date = period.End();
                     if (date < period.Start()) date = period.Start();
 
-                    plans.Add(new MaintenancePlan
-                    {
-                        MaintenanceDate = date,
-                        MaintenanceType = interval.MaintenanceType,
-                        Object = this
-                    });
+                    plans.Add(new MaintenancePlan(this, interval.MaintenanceType, date));
 
                     return true;
 
@@ -771,13 +774,8 @@ namespace Naftan.Maintenance.Domain.Objects
                 else if (offer != null && offer.Id==type)
                 {
 
-                    plans.Add(new MaintenancePlan
-                    {
-                        MaintenanceDate = period.Start(),
-                        MaintenanceType = interval.MaintenanceType,
-                        Object = this,
-                        OfferReason = offerReason
-                    });
+                    plans.Add(new MaintenancePlan(this, interval.MaintenanceType, period.Start(), offerReason));
+
                     return true;
                 }
 

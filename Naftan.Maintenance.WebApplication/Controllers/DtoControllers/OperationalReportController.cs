@@ -30,9 +30,15 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             var context = UserPrincipal.Current;
             var user = query.FindUserByLogin(context.SamAccountName);
 
+            var plantsMap = user.Plants.ToDictionary(x => x.Id);
+            var groupMap = user.ObjectGroups.ToDictionary(x => x.Id);
+
+
             if (user.Plants.Any() && user.ObjectGroups.Any())
             {
-                return query.FindOperationalReportByParams(new Period(period), user.ObjectGroups, user.Plants);
+                // return query.FindOperationalReportByParams(new Period(period), user.ObjectGroups, user.Plants);
+                return query.FindOperationalReportByParams(new Period(period)).Where(x => x.Period == period && groupMap.ContainsKey(x.ObjectGroupId) && plantsMap.ContainsKey(x.PlantId)).ToList(); 
+                return query.FindOperationalReportAll().ToList().Where(x =>x.Period==period && groupMap.ContainsKey(x.ObjectGroupId) && plantsMap.ContainsKey(x.PlantId)).ToList();
             }
 
             return new List<OperationalReportDto>();

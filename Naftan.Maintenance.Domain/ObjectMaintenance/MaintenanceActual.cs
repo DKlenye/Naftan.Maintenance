@@ -21,20 +21,12 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
                 snapshot.Add(new LastMaintenanceSnapshot(this, x));
             });
 
-            var last = maintenanceObject.Maintenance.OrderBy(x => x.StartMaintenance).Last();
-
-            if (last != null)
-            {
-                PreviousMaintenanceType = last.MaintenanceType;
-            }
-
             Object = maintenanceObject;
         }
 
         public int Id { get; set; }
         public MaintenanceObject Object { get; private set; }
         public MaintenanceType MaintenanceType { get; internal set; }
-        public MaintenanceType PreviousMaintenanceType { get; internal set; }
         public DateTime StartMaintenance { get; internal set; }
         public DateTime? EndMaintenance { get; internal set; }
         public MaintenanceReason UnplannedReason { get; internal set; }

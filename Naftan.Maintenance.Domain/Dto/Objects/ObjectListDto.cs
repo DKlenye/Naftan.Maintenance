@@ -18,6 +18,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public int DepartmentId { get; set; }
         public int PlantId { get; set; }
         public int Period { get; set; }
+        public int? UsageFromStartup { get; set; }
+
         public OperatingState CurrentOperatingState { get; set; }
 
         public override MaintenanceObject GetEntity(IRepository repository)
@@ -39,7 +41,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             PlantId = entity.Plant.Id;
             Period = entity.Report.Period.period;
             CurrentOperatingState = entity.CurrentOperatingState??OperatingState.Operating;
-            
+            UsageFromStartup = entity.UsageFromStartup;
+
         }
     }
 }

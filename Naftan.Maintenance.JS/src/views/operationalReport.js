@@ -52,11 +52,11 @@
                 },
                 {
                     view: "datatable",
-                    dragColumn: true,
+                   // dragColumn: true,
                     css: "center_columns",
                     footer: true,
                     select: 'cell',
-                    leftSplit: 3,
+                    leftSplit: 2,
                     navigation: true,
                     editable: true,
                     rules: webix.rules.operationalreport,
@@ -67,15 +67,11 @@
                     columns: [
                         //webix.column("id"),
                         { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
-                        {
-                            id: 'techIndex',
-                            header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
-                            footer: { content: "countColumn" }
-                        },
+                       
                         {
                             id: "nextPrcn",
-                            header: 'Состояние',
-                            template: webix.templates.progress("nextUsageNorm", "nextUsageFact", "nextMaintenance"),
+                            header: 'Износ',
+                            template: webix.templates.progress("nextUsageNorm","nextUsageNormMax", "nextUsageFact", "nextMaintenance"),
                             sort: sortByProgress,
                             width:150
                         },
@@ -101,6 +97,11 @@
                             editor: "combo",
                             options: webix.collection.options("operatingState", "name", false, function (i) { return i.id != 2; }),
                             width: 170
+                        },
+                        {
+                            id: 'techIndex',
+                            header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
+                            footer: { content: "countColumn" }
                         },
                         {
                             id: 'usageParent',
@@ -152,17 +153,19 @@
                         {
                             id: 'startMaintenance',
                             header: ["", { text: "Начало", css: { "background": colors.maintenance } }],
-                            editFormat: webix.i18n.dateFormatStr,
-                            editParse: webix.i18n.dateFormatStr,
-                            editor: 'date',
+                            format: webix.i18n.dateFormatStr,
+                            //editFormat: webix.i18n.dateFormatStr,
+                            //editParse: webix.i18n.dateFormatStr,
+                            editor: 'text',
                             width: 100
                         },
                         {
                             id: 'endMaintenance',
                             header: ["", { text: "Окончание", css: { "background": colors.maintenance } }],
-                            editFormat: webix.i18n.dateFormatStr,
-                            editParse: webix.i18n.dateFormatStr,
-                            editor: 'date',
+                            format: webix.i18n.dateFormatStr,
+                            //editFormat: webix.i18n.dateFormatStr,
+                            //editParse: webix.i18n.dateFormatStr,
+                            editor: 'text',
                             width: 100
                         },
                         {
@@ -181,6 +184,7 @@
                             template: webix.templates.collection("maintenanceReason"),
                             width: 120
                         }
+
                     ],
                     onClick: {
                         "fa-edit": webix.bind(function (e, target) {
@@ -202,17 +206,84 @@
                         onKeyPress: function (code, e) {
 
                             switch (e.key.toLowerCase()) {
-                                case "о": { me.setMaintenance(1); break; }
-                                case "j": { me.setMaintenance(1); break; }
-                                case "т": { me.setMaintenance(2); break; }
-                                case "n": { me.setMaintenance(2); break; }
-                                case "с": { me.setMaintenance(3); break; }
-                                case "c": { me.setMaintenance(3); break; }
-                                case "к": { me.setMaintenance(4); break; }
-                                case "r": { me.setMaintenance(4); break; }
+                                case "о": { me.setMaintenance(1); return false; }
+                                case "j": { me.setMaintenance(1); return false; }
 
-                                case "р": { me.setState(3); break; }
-                                case "h": { me.setState(3); break; }
+                                case "т": { me.setMaintenance(2); return false; }
+                                case "n": { me.setMaintenance(2); return false; }
+
+                                case "с": { me.setMaintenance(3); return false; }
+                                case "c": { me.setMaintenance(3); return false; }
+
+                                case "к": { me.setMaintenance(4); return false; }
+                                case "r": { me.setMaintenance(4); return false; }
+
+                                case "р": { me.setState(3); return false; }
+                                case "h": { me.setState(3); return false; }
+
+                                case "enter": {
+
+                                    //Если в режиме edit
+                                    if (e.srcElement.tagName == "INPUT") {
+                                        var table = me.reportTable;
+                                        var columnName = table.getSelectedId().column;
+
+                                        table.editStop();
+                                        var current =  table.getSelectedItem();
+
+                                        var setCell = function (name, nextRow) {
+                                            
+                                            if (nextRow === true) {
+                                                table.moveSelection("down");
+                                            }
+                                            var sel = table.getSelectedId();
+                                            var item = table.getSelectedItem();
+
+                                            if (nextRow && item.state == 2) name = "endMaintenance";
+
+                                            table.select(sel.row, name, false);
+                                            table.editStop();
+                                            table.editCell(sel.row, name, false, true);
+                                        }
+
+                                        switch (columnName) {
+                                            case "usageBeforeMaintenance": {
+                                                webix.delay(setCell, this, ["offerForPlan"]);
+                                                break;
+                                            }
+                                            case "usageAfterMaintenance": {
+                                                webix.delay(setCell, this, ["offerForPlan"]);
+                                                break;
+                                            }
+                                            case "startMaintenance": {
+                                                webix.delay(setCell, this, ["endMaintenance"]);
+                                                break;
+                                            }
+                                            case "endMaintenance": {
+
+                                                current.endMaintenance ?
+                                                    webix.delay(setCell, this, ["usageAfterMaintenance"]) :
+                                                    webix.delay(setCell, this, ["offerForPlan"]);
+                                                break;
+                                            }
+                                            case "unplannedReason": {
+                                                webix.delay(setCell, this, ["startMaintenance"]);
+                                                break;
+                                            }
+                                            case "offerForPlan": {
+                                                current.offerForPlan && current.offerForPlan < 1e10 ?
+                                                    webix.delay(setCell, this, ["reasonForOffer"]) :
+                                                    webix.delay(setCell, this, ["usageBeforeMaintenance", true])
+                                                break;
+                                            }
+                                            case "reasonForOffer": {
+                                                webix.delay(setCell, this, ["usageBeforeMaintenance", true]);
+                                                break;
+                                            }
+
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -239,7 +310,7 @@
         var me = this;
         var table = me.reportTable;
 
-
+        
         webix.UIManager.addHotKey("enter", function (view) {
             var pos = view.getSelectedId();
             view.edit(pos);
@@ -255,8 +326,9 @@
 
 
         table.attachEvent("onBeforeEditStart", webix.bind(this.onEditStart, this));
-        table.attachEvent("onAfterEditStart", webix.bind(this.onAfterEditStart, this));
+       // table.attachEvent("onAfterEditStart", webix.bind(this.onAfterEditStart, this));
         table.attachEvent("onBeforeEditStop", webix.bind(this.onEditStop, this));
+       // table.attachEvent("onAfterEditStop", webix.bind(this.onAfterEditStop, this));
 
         this.reload();
     },
@@ -277,8 +349,8 @@
         table.clearAll();
         table.load("json->api/operationalReport/" + this.getPeriod(), function () {
             table.filterByAll();
-            table.sort("#techIndex#");
-            table.markSorting("techIndex", "asc");
+            //table.sort("#techIndex#");
+            //table.markSorting("techIndex", "asc");
         });
     },
 
@@ -311,11 +383,43 @@
     },
 
     setMaintenance: function (type) {
-        webix.message(type)
+
+        var table = this.reportTable;
+        var item = table.getSelectedItem();
+        var dp = webix.dp(table);
+
+        dp.define({ autoupdate: false });
+
+        item.actualMaintenanceType = type;
+        table.updateItem(item.id, item);
+
+        table.editStop();
+
+        var nextCell = item.plannedMaintenanceType ? "startMaintenance":"unplannedReason";
+
+        table.select(item.id, nextCell, false);
+        table.editCell(item.id, nextCell, false, true);
+
+        dp.define({ autoupdate: true });
     },
 
     setState: function (state) {
-        webix.message(state)
+        var table = this.reportTable;
+        var item = table.getSelectedItem();
+        var dp = webix.dp(table);
+
+        item.state = state;
+        item.usageAfterMaintenance = 0;
+        item.usageBeforeMaintenance = 0;
+        table.updateItem(item.id, item);
+
+        table.editStop();
+        table.moveSelection("down");
+        item = table.getSelectedItem();
+        
+        table.select(item.id, "usageBeforeMaintenance", false);
+        table.editCell(item.id, "usageBeforeMaintenance", false, true);
+
     },
 
     onEditStart: function (obj) {
@@ -340,7 +444,7 @@
             }
             case "actualMaintenanceType": {
 
-                if (isRepair) return false;
+                //if (isRepair) return false;
                 break;
             }
             case "unplannedReason": {
@@ -375,7 +479,7 @@
         }
 
     },
-
+/*
     onAfterEditStart: function (obj) {
 
         var item = this.reportTable.getItem(obj.row);
@@ -399,7 +503,7 @@
         }
 
     },
-
+    */
     onEditStop: function (values, obj) {
         var me = this;
         var item = this.reportTable.getItem(obj.row);
@@ -409,26 +513,51 @@
         var value = values.value;
         var old = values.old;
         var parser = webix.Date.strToDate("%d.%m.%Y");
+        var isRepair = item.state == 2;
 
-        var resetCalendar = function(){
+        if (old == value) return;
+
+
+        /*var resetCalendar = function(){
             var calendar = me.reportTable.getEditor().getPopup().getBody();
             delete calendar.config.minDate;
             delete calendar.config.maxDate;
             calendar.refresh();
-        }
+        }*/
 
+        var buildDate = function (v) {
+
+            var periodParser = webix.Date.dateToStr("%Y%m");
+
+            v = (v + "").substring(0, 2);
+            v = parseInt(v) || 0;
+            var date = me.getStart(me.getPeriod());
+            var period = periodParser(date)
+
+
+            if (!v) return null;
+
+             webix.Date.add(date, v-1, "day");
+
+            if (period != periodParser(date)) return null;
+
+            return date;
+        }
+        
         switch (obj.column) {
             case "state": {
-                item.state = value;
-                if (value != 1) {
-                    item.usageAfterMaintenance = 0;
-                    item.usageBeforeMaintenance = 0;
+                if (old != value) {
+                    item.state = value;
+                    if (value != 1) {
+                        item.usageAfterMaintenance = 0;
+                        item.usageBeforeMaintenance = 0;
+                    }
+                    else {
+                        item.usageBeforeMaintenance = hours;
+                        item.usageAfterMaintenance = 0;
+                    }
+                    break;
                 }
-                else {
-                    item.usageBeforeMaintenance = hours;
-                    item.usageAfterMaintenance = 0;
-                }
-                break;
             }
             case "usageBeforeMaintenance": {
 
@@ -450,12 +579,14 @@
             case "actualMaintenanceType": {
 
                 if (value > 1e10) {
-                    item.startMaintenance = null;
-                    item.endMaintenance = null;
-                    item.usageBeforeMaintenance = hours;
-                    item.usageAfterMaintenance = 0;
-                    item.actualMaintenanceType = null;
-                    item.unplannedReason = null;
+                    if (!isRepair) {
+                        item.startMaintenance = null;
+                        item.endMaintenance = null;
+                        item.usageBeforeMaintenance = hours;
+                        item.usageAfterMaintenance = 0;
+                        item.actualMaintenanceType = null;
+                        item.unplannedReason = null;
+                    }
                 }
                 else {
                     item.actualMaintenanceType = value;
@@ -467,6 +598,8 @@
                 break;
             }
             case "startMaintenance": {
+
+                value = buildDate(value);
 
                 if (!value) {
                     item.usageBeforeMaintenance = hours;
@@ -480,11 +613,13 @@
                     item.startMaintenance = value;
                 }
 
-                resetCalendar();
+               // resetCalendar();
 
                 break;
             }
             case "endMaintenance": {
+
+                value = buildDate(value);
 
                 if (!value) {
                     item.usageAfterMaintenance = 0;
@@ -500,7 +635,7 @@
                     item.endMaintenance = value;
                 }
 
-                resetCalendar();
+               // resetCalendar();
 
                 break;
             }
@@ -525,8 +660,21 @@
 
     },
 
+    onAfterEditStop: function (values, obj) {
 
+        console.log(arguments);
 
+        var table = this.reportTable;
+        var item = table.getSelectedItem();
+
+        switch (obj.column) {
+            case "startMaintenance": {
+                table.select(item.id, "endMaintenance", false);
+                table.editCell(item.id, "endMaintenance", false, true);
+            }
+        }
+    },
+    
     applyReport: function () {
 
         var me = this, objects = [];

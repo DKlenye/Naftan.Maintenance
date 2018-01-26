@@ -24,7 +24,6 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public MaintenanceType NextMaintenance { get; set; }
         public int? NextUsageNorm { get; set; }
         public int? NextUsageFact { get; set; }
-        public int? UsageFromStartup { get; private set; }
         public IEnumerable<LastMaintenanceDto> LastMaintenance { get; set; }
         public IEnumerable<ObjectSpecificationDto> Specifications { get; set; }
         public IEnumerable<UsageActualDto> Usage { get; set; }
@@ -66,7 +65,6 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             NextMaintenance = entity.NextMaintenance;
             NextUsageNorm = entity.NextUsageNorm;
             NextUsageFact = entity.NextUsageFact;
-            UsageFromStartup = entity.UsageFromStartup;
 
 
             LastMaintenance = entity.LastMaintenance.Select(x => new LastMaintenanceDto(x));

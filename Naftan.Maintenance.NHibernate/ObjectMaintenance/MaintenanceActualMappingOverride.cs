@@ -16,8 +16,6 @@ namespace Naftan.Maintenance.NHibernate.ObjectMaintenance
               .LazyLoad()
               .BatchSize(250);
 
-            mapping.References(x => x.PreviousMaintenanceType).Column("PreviousMaintenanceType");
-
         }
     }
 }

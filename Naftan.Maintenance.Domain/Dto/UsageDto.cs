@@ -19,5 +19,6 @@ namespace Naftan.Maintenance.Domain.Dto
         public int s_usage { get; set; }
         public DateTime? k_date { get; set; }
         public int k_usage { get; set; }
+        public int UsageFromStartup { get; set; }
     }
 }

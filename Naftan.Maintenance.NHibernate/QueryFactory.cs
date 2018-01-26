@@ -42,7 +42,8 @@ namespace Naftan.Maintenance.NHibernate
 	            p.DepartmentId,
 	            o.PlantId,
                 o.CurrentOperatingState,
-                r.Period
+                r.Period,
+                o.UsageFromStartup
             from MaintenanceObject o
             left join OperationalReport r on r.MaintenanceObjectId = o.MaintenanceObjectId
             left join Plant p on p.PlantId = o.PlantId";
@@ -102,10 +103,12 @@ namespace Naftan.Maintenance.NHibernate
                 .Where(x => x.Login == login).FirstOrDefault();
         }
 
-        private string operationalReportQuery = @"
-                select
-	                 r.MaintenanceObjectId as Id,
-	                mo.TechIndex,
+        private string operationalReportQuery(string whereClause="") => $@"
+                 select
+	                r.MaintenanceObjectId as Id,
+	                mo.ObjectGroupId,
+	                rv.[Value] AS Model,
+                    mo.TechIndex,
 	                p.DepartmentId,
 	                mo.PlantId,
 	                r.StartMaintenance,
@@ -122,17 +125,22 @@ namespace Naftan.Maintenance.NHibernate
 	                r.period as Period,
 	                mt.Designation AS NextMaintenance,
 	                mo.NextUsageNorm,
+                    mo.NextUsageNormMax,
 	                mo.NextUsageFact
                 from OperationalReport r
                 LEFT JOIN MaintenanceObject mo ON mo.MaintenanceObjectId = r.MaintenanceObjectId
+                LEFT JOIN ObjectSpecification AS os ON mo.MaintenanceObjectId = os.MaintenanceObjectId AND os.SpecificationId = 27
+                LEFT JOIN ReferenceValue rv ON rv.ReferenceValueId = os.Value
                 LEFT JOIN MaintenanceType AS mt ON mt.MaintenanceTypeId = mo.NextMaintenance
                 LEFT JOIN Plant p ON p.PlantId = mo.PlantId
                 LEFT JOIN MaintenancePlan mp ON mp.MaintenanceObjectId = r.MaintenanceObjectId AND YEAR(mp.MaintenanceDate)*100+MONTH(mp.MaintenanceDate) = r.period
+                {whereClause}
+				ORDER BY p.ReplicationKc, p.ReplicationKu, mo.ReplicationKvo, mo.TechIndex, mo.ReplicationKmrk
         ";
 
         public IEnumerable<OperationalReportDto> FindOperationalReportAll()
         {
-            return Session.CreateSQLQuery(operationalReportQuery)
+            return Session.CreateSQLQuery(operationalReportQuery())
                .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
                .List<OperationalReportDto>();
 
@@ -140,18 +148,19 @@ namespace Naftan.Maintenance.NHibernate
 
         public OperationalReportDto FindOperationalReportByObjectId(int objectId)
         {
-            return Session.CreateSQLQuery(operationalReportQuery + " WHERE mo.MaintenanceObjectId = :id")
+            return Session.CreateSQLQuery(operationalReportQuery("WHERE mo.MaintenanceObjectId = :id"))
                 .SetParameter("id", objectId)
                 .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
                 .List<OperationalReportDto>().FirstOrDefault();
         }
 
-        public IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period, IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants)
+        public IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period/*,IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants*/)
         {
-                return Session.CreateSQLQuery(operationalReportQuery+ " WHERE r.period = :period AND mo.PlantId in (:plants) AND mo.ObjectGroupId in (:groups)")
+                //return Session.CreateSQLQuery(operationalReportQuery+ " WHERE r.period = :period AND mo.PlantId in (:plants) AND mo.ObjectGroupId in (:groups)")
+                return Session.CreateSQLQuery(operationalReportQuery("WHERE r.period = :period"))
                 .SetParameter("period",period.period)
-                .SetParameterList("plants",plants.Select(x=>x.Id))
-                .SetParameterList("groups",groups.Select(x=>x.Id))
+               // .SetParameterList("plants",plants.Select(x=>x.Id))
+                //.SetParameterList("groups",groups.Select(x=>x.Id))
                 .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
                 .List<OperationalReportDto>();
 
@@ -167,7 +176,11 @@ namespace Naftan.Maintenance.NHibernate
 	            mo.PlantId,
 	            p.MaintenanceDate,
 	            p.MaintenanceTypeId,
-	            p.MaintenanceReasonId
+	            p.MaintenanceReasonId,
+                p.UsageForPlan,
+	            p.PreviousDate,
+	            p.PreviousUsage,
+	            p.PreviousMaintenanceType
             FROM 
             MaintenancePlan p
             LEFT JOIN MaintenanceObject AS mo ON p.MaintenanceObjectId = mo.MaintenanceObjectId
@@ -239,7 +252,8 @@ namespace Naftan.Maintenance.NHibernate
 	                s.LastMaintenanceDate AS s_date,
 	                s.UsageFromLastMaintenance AS s_usage,
 	                k.LastMaintenanceDate AS k_date,
-	                k.UsageFromLastMaintenance AS k_usage
+	                k.UsageFromLastMaintenance AS k_usage,
+                    mo.UsageFromStartup
                 FROM MaintenanceObject AS mo
                 LEFT JOIN Plant AS p ON p.PlantId = mo.PlantId
                 LEFT JOIN LastMaintenance AS o ON o.MaintenanceObjectId = mo.MaintenanceObjectId AND o.MaintenanceTypeId = 1
