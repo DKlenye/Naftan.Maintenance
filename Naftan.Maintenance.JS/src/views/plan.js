@@ -8,6 +8,12 @@
 
         var me = this;
 
+        var sortByProgress = function (a, b) {
+            a = getPrcn(a);
+            b = getPrcn(b);
+            return a > b ? 1 : (a < b ? -1 : 0);
+        };
+
         webix.extend(cfg, {
             rows: [
                 {
@@ -24,9 +30,17 @@
                 },
                 {
                     view: 'datatable',
+                    save:"json->api/maintenancePlan/",
                     columns: [
                         { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
                         { id: 'objectId', header: ["Код", { content: "numberFilter" }], width: 60, sort: "int" },
+                        {
+                            id: "nextPrcn",
+                            header: 'Износ',
+                            template: webix.templates.progress("nextUsageNorm", "nextUsageNormMax", "nextUsageFact", "nextMaintenance"),
+                            sort: sortByProgress,
+                            width: 150
+                        },
                         {
                             id:'techIndex', header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
                             footer: { content: "countColumn" }
@@ -58,9 +72,9 @@
                         },
                         {
                             id: 'isTransfer',
-                            header: ['Перенос', ''],
-                            template: function (obj) { return !obj.isTransfer ? '' : 'П'; },
-                            width:70
+                            header: ['Перенос', 'Предложение'],
+                            template: function (obj) { return !obj.isTransfer ? (!obj.isOffer?'':'Предложение') : 'Перенос'; },
+                            width:100
                         },
                         {
                             id: 'usageForPlan', header: ["Наработка", { content: "textFilter" }], sort: 'int', width: 120,
@@ -86,7 +100,8 @@
                         {
                             id: 'previousUsage',
                             header: ['', 'Наработка']
-                        }
+                        },
+                        webix.column('trash')
                     ],
                     onClick: {
                         "fa-edit": webix.bind(function (e, target) {
@@ -100,6 +115,21 @@
                                     itemId: item.objectId
                                 }
                             ]);
+
+                            return false;
+                        }),
+                        "fa-trash-o": webix.bind(function (e, target) {
+
+                            webix.confirm(
+                                {
+                                    title: "Удаление записи",
+                                    text: "Вы действительно хотите удалить запись?",
+                                    ok: "Да",
+                                    cancel: "Нет",
+                                    callback: function (isOk) {
+                                        if (isOk) me.table.remove(target.row);
+                                    }
+                                });
 
                             return false;
                         })

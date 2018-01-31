@@ -181,14 +181,20 @@ namespace Naftan.Maintenance.NHibernate
 	            p.MaintenanceDate,
 	            p.MaintenanceTypeId,
                 p.IsTransfer,
+                p.IsOffer,
 	            p.MaintenanceReasonId,
                 p.UsageForPlan,
 	            p.PreviousDate,
 	            p.PreviousUsage,
-	            p.PreviousMaintenanceType
+	            p.PreviousMaintenanceType,
+                mt.Designation AS NextMaintenance,
+	            mo.NextUsageNorm,
+                mo.NextUsageNormMax,
+	            mo.NextUsageFact
             FROM 
             MaintenancePlan p
             LEFT JOIN MaintenanceObject AS mo ON p.MaintenanceObjectId = mo.MaintenanceObjectId
+            LEFT JOIN MaintenanceType AS mt ON mt.MaintenanceTypeId = mo.NextMaintenance
             LEFT JOIN Plant AS pl ON pl.PlantId = mo.PlantId
         ";
 

@@ -2,7 +2,7 @@
 using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto;
-using Naftan.Maintenance.Domain.Dto.Objects;
+using Naftan.Maintenance.Domain.ObjectMaintenance;
 using System.Collections.Generic;
 using System.Web.Http;
 
@@ -18,11 +18,15 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
             this.query = query;
             this.repository = repository;
         }
-
-        
+                
         public IEnumerable<MaintenancePlanDto> Get(int id)
         {
             return query.FindMaintenancePlanByPeriod(new Period(id));
+        }
+
+        public void Delete(int id)
+        {
+            repository.Remove<MaintenancePlan>(id);
         }
 
     }

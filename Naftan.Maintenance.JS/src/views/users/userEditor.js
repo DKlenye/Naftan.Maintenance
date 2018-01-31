@@ -94,6 +94,8 @@
 
     initData: function () {
 
+        webix.extend(this, webix.ProgressBar);
+
         webix.extend(this, {
             groups: this.queryView({ name: "objectGroups" }),
             plants: this.queryView({ name: "plants" }),
@@ -127,19 +129,23 @@
     },
 
     load: function (id) {
+
+        this.mask();
+
         webix.ajax()
             .get("/api/user/" + id)
-            .then(
-            webix.bind(this.onLoadHandler, this),
-            this.onErrorHandler
-            );
+            .then(webix.bind(this.onLoadHandler, this))
+            .fail(this.onErrorHandler);
     },
 
     onLoadHandler: function (data) {
         this.setData(data.json());
+        this.unmask();
     },
 
     save: function () {
+
+        this.mask();
 
         this.property.editStop();
 
@@ -172,8 +178,27 @@
         return item;
     },
 
-    onErrorHandler: function () {
+    onErrorHandler: function (e) {
+        this.unmask();
+        webix.alert({
+            title: "Произошла ошибка",
+            width: 700,
+            text: e.responseText,
+            type: "alert-error"
+        });
+    },
 
+    mask: function () {
+        this.disable();
+        this.showProgress({
+            type: "icon",
+            icon: "refresh"
+        });
+    },
+
+    unmask: function () {
+        this.hideProgress();
+        this.enable();
     }
 
 }, webix.ui.layout);
