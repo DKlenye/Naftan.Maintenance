@@ -118,6 +118,7 @@ namespace Naftan.Maintenance.NHibernate
 	                r.UsageAfterMaintenance,
 	                r.[State],
 	                mp.MaintenanceTypeId as PlannedMaintenanceType,
+                    mp.IsTransfer,
 	                r.ActualMaintenanceType,
 	                r.UnplannedReason,
 	                r.OfferForPlan,
@@ -154,16 +155,19 @@ namespace Naftan.Maintenance.NHibernate
                 .List<OperationalReportDto>().FirstOrDefault();
         }
 
-        public IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period/*,IEnumerable<ObjectGroup> groups, IEnumerable<Plant> plants*/)
+        public IEnumerable<OperationalReportDto> FindOperationalReportByParams(Period period, string userLogin)
         {
-                //return Session.CreateSQLQuery(operationalReportQuery+ " WHERE r.period = :period AND mo.PlantId in (:plants) AND mo.ObjectGroupId in (:groups)")
-                return Session.CreateSQLQuery(operationalReportQuery("WHERE r.period = :period"))
+                return Session.CreateSQLQuery(operationalReportQuery(@"
+                INNER JOIN Users u ON u.[login] = :login
+                INNER JOIN UserPlants AS up ON up.UserId = u.UserId AND up.PlantId = mo.PlantId
+                INNER JOIN UserObjectGroups AS ug ON ug.UserId = u.UserId AND ug.ObjectGroupId = mo.ObjectGroupId
+                WHERE r.period = :period
+                "
+                ))
                 .SetParameter("period",period.period)
-               // .SetParameterList("plants",plants.Select(x=>x.Id))
-                //.SetParameterList("groups",groups.Select(x=>x.Id))
+                .SetParameter("login",userLogin)
                 .SetResultTransformer(Transformers.AliasToBean<OperationalReportDto>())
                 .List<OperationalReportDto>();
-
         }
 
         private string planQuery = @"
@@ -176,6 +180,7 @@ namespace Naftan.Maintenance.NHibernate
 	            mo.PlantId,
 	            p.MaintenanceDate,
 	            p.MaintenanceTypeId,
+                p.IsTransfer,
 	            p.MaintenanceReasonId,
                 p.UsageForPlan,
 	            p.PreviousDate,

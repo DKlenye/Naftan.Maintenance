@@ -126,6 +126,11 @@ namespace Naftan.Maintenance.Domain.Objects
         public OperationalReport Report { get; set; }
 
         /// <summary>
+        /// Ссылка на оборудование, которое было заменено
+        /// </summary>
+        public MaintenanceObject ReplaceObject { get; private set; }
+
+        /// <summary>
         /// Применить отчёт (добавить информацию о ремонтах и наработке в соответствующие журналы) и сформировать план на след. период
         /// </summary>
         public void ApplyReport()
@@ -186,10 +191,7 @@ namespace Naftan.Maintenance.Domain.Objects
                 AddUsage(Report.EndMaintenance.Value, CurrentPeriod.End(), Report.UsageAfterMaintenance);
             }
 
-            //Планируем следующий период
-            PlanningMaintenance(NextPeriod, Report.OfferForPlan, Report.ReasonForOffer);
-            //Рассчитываем следующее обслуживание
-            SetNextMaintenance();
+           
 
             /*Устанавливаем наработку для детей*/
             if (Children.Any())
@@ -205,6 +207,18 @@ namespace Naftan.Maintenance.Domain.Objects
                 });
             }
 
+            //Если состояние поменялось и это было не обслуживание, то меняем состояние
+            if (Report.State != OperatingState.Maintenance && CurrentOperatingState != OperatingState.Maintenance && CurrentOperatingState != Report.State)
+            {
+                ChangeOperatingState(Report.State, CurrentPeriod.Start());
+            }
+
+            //Планируем следующий период
+            PlanningMaintenance(NextPeriod, Report.OfferForPlan, Report.ReasonForOffer);
+            //Рассчитываем следующее обслуживание
+            SetNextMaintenance();
+
+
             /* Очищение информации в отчёте для следующего месяца */
 
             // Если ремонт окончен, то обнуляем информацию по фактическому ремонту
@@ -219,11 +233,7 @@ namespace Naftan.Maintenance.Domain.Objects
             Report.OfferForPlan = null;
             Report.ReasonForOffer = null;
 
-            //Если состояние поменялось и это было не обслуживание, то меняем состояние
-            if (Report.State!=OperatingState.Maintenance && CurrentOperatingState!=OperatingState.Maintenance &&  CurrentOperatingState != Report.State)
-            {
-                ChangeOperatingState(Report.State, CurrentPeriod.Start());
-            }
+            
 
             //Устанавливаем состояние на следующий период. Если Текущее состояние резерв, то сбрасываем его на обслуживание, потому что механики вручную вносят резерв
             Report.State = CurrentOperatingState.Value == OperatingState.Reserve ? OperatingState.Operating : CurrentOperatingState.Value;
@@ -250,6 +260,9 @@ namespace Naftan.Maintenance.Domain.Objects
 
             Report.UsageAfterMaintenance = 0;
 
+
+           
+
             //Переходим на следующий период
             Report.Period = NextPeriod;
                         
@@ -269,14 +282,13 @@ namespace Naftan.Maintenance.Domain.Objects
             if (plan!=null)
             {
                 //если было предложение то восстанавливаем его
-                if (plan.OfferReason != null)
+                if (plan.IsOffer)
                 {
                     Report.OfferForPlan = plan.MaintenanceType;
                     Report.ReasonForOffer = plan.OfferReason;
                 }
                 plans.Remove(plan);
             }
-
 
 
             //Востанавливаем наработку
@@ -347,11 +359,25 @@ namespace Naftan.Maintenance.Domain.Objects
                     }
                 });
             }
-            
+
 
             //восстанавливаем состояние
+
+            var lastState = operatingStates.FirstOrDefault(x => x.StartDate >= PrevPeriod.Start());
             operatingStates.Where(x => x.StartDate >= PrevPeriod.Start()).ToList().ForEach(x => operatingStates.Remove(x));
-            CurrentOperatingState = operatingStates.OrderBy(x => x.StartDate).LastOrDefault()?.State ?? OperatingState.Operating;
+
+            if (CurrentMaintenance != null)
+            {
+                CurrentOperatingState = OperatingState.Maintenance;
+            }
+            else if (lastState!=null && lastState.State==OperatingState.Reserve)
+            {
+                CurrentOperatingState = OperatingState.Reserve;
+            }
+            else
+            {
+                CurrentOperatingState = operatingStates.OrderBy(x => x.StartDate).LastOrDefault()?.State ?? OperatingState.Operating;
+            }
 
             Report.State = CurrentOperatingState.Value;
 
@@ -710,7 +736,7 @@ namespace Naftan.Maintenance.Domain.Objects
             NextUsageNormMax = normMax;
         }
 
-
+        
         /// <summary>
         /// Спланировать работы по обслуживанию
         /// </summary>
@@ -721,7 +747,23 @@ namespace Naftan.Maintenance.Domain.Objects
         {
 
             //если оборудование на обслуживании то не планируем ничего
-            if (CurrentOperatingState == OperatingState.Maintenance) return;
+            if (CurrentOperatingState == OperatingState.Maintenance || CurrentOperatingState==OperatingState.Reserve) return;
+
+            //проверяем предыдущий период если план невыполнен то переносим в след период
+            var prevPlan = plans.FirstOrDefault(x => x.MaintenanceDate >= period.Prev().Start() && x.MaintenanceDate <= period.Prev().End());
+            if (prevPlan != null && !maintenance.Any(x => x.StartMaintenance >= period.Prev().Start() && x.StartMaintenance <= period.Prev().End())){
+
+                plans.Add(new MaintenancePlan(
+                    this,
+                    prevPlan.MaintenanceType,
+                    period.Start(),
+                    true,
+                    false,
+                    prevPlan.OfferReason
+                    ));
+
+                return;
+            }
 
             ///сортируем интервалы по величине ремонта (самый крупный будет первым)
             var intervals = Intervals.ToList();
@@ -750,31 +792,37 @@ namespace Naftan.Maintenance.Domain.Objects
                 }
 
                 //проверка по наработке
-                if (interval.MinUsage != null && (lastUsageMap[type].Value + hours) >= interval.MinUsage.Value)
+                if (interval.MinUsage != null)
                 {
-                    //дата проведения обслуживания
-                    var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
+                    var fork = interval.MaxUsage - interval.MinUsage;
+                    var targetUsage = fork >= 5000 ? interval.MinUsage.Value + fork/2 : interval.MinUsage.Value;
 
-                    //если дата ремонта выходит за пределы периода, то устонавливаем её в пределы периода
-                    if (date > period.End()) date = period.End();
-                    if (date < period.Start()) date = period.Start();
+                    if(lastUsageMap[type].Value >= targetUsage)
+                    {
+                        //дата проведения обслуживания
+                        var date = period.Start().AddDays((interval.MinUsage.Value - lastUsageMap[type].Value) / 24);
 
-                    plans.Add(new MaintenancePlan(this, interval.MaintenanceType, date));
+                        //если дата ремонта выходит за пределы периода, то устонавливаем её в пределы периода
+                        if (date > period.End()) date = period.End();
+                        if (date < period.Start()) date = period.Start();
 
-                    return true;
+                        plans.Add(new MaintenancePlan(this, interval.MaintenanceType, date));
 
+                        return true;
+                    }
                 }
 
                 //проверка по времени
-                else if (interval.PeriodQuantity != null)
+                if (interval.PeriodQuantity != null)
                 {
                     //todo сделать проверку интервалов по времени
                 }
+                
                 //проверка по предложению
-                else if (offer != null && offer.Id==type)
+                if (offer != null && offer.Id==type)
                 {
 
-                    plans.Add(new MaintenancePlan(this, interval.MaintenanceType, period.Start(), offerReason));
+                    plans.Add(new MaintenancePlan(this, interval.MaintenanceType, period.Start(), false, true, offerReason));
 
                     return true;
                 }

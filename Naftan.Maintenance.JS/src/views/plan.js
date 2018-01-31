@@ -26,7 +26,7 @@
                     view: 'datatable',
                     columns: [
                         { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
-                        webix.column("id"),
+                        { id: 'objectId', header: ["Код", { content: "numberFilter" }], width: 60, sort: "int" },
                         {
                             id:'techIndex', header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
                             footer: { content: "countColumn" }
@@ -55,6 +55,12 @@
                             sort: "int",
                             template: webix.templates.collection("maintenanceType"),
                             width: 150
+                        },
+                        {
+                            id: 'isTransfer',
+                            header: ['Перенос', ''],
+                            template: function (obj) { return !obj.isTransfer ? '' : 'П'; },
+                            width:70
                         },
                         {
                             id: 'usageForPlan', header: ["Наработка", { content: "textFilter" }], sort: 'int', width: 120,
@@ -119,6 +125,31 @@
         this.table.attachEvent("onAfterLoad", function () {
             me.unmask();
         });
+
+        var currentDepartment;
+        this.table.attachEvent("onBeforeFilter", function (id, value, config) {
+
+            if (id == "departmentId" && value != currentDepartment) {
+                currentDepartment = value;
+                var cfg = this.config.columns.filter(function (x) { return x.id == "plantId" })[0].header[1];
+
+                if (value) {
+                    var newOptions = webix.collection.options("plant", "name", true, function (i) {
+                        return i.departmentId == value;
+                    });
+                    cfg.options = newOptions;
+                }
+                else {
+                    cfg.value = "";
+                    cfg.options = webix.collection.options("plant", "name", true, null, true)
+                }
+
+                this.refreshColumns();
+
+            }
+
+        });
+
 
         this.reload();
 

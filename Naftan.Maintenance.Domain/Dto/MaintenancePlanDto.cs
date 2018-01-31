@@ -12,6 +12,7 @@ namespace Naftan.Maintenance.Domain.Dto
         public int? PlantId { get; set; }
         public DateTime MaintenanceDate { get; set; }
         public int MaintenanceTypeId { get; set; }
+        public bool IsTransfer { get; set; }
         public int MaintenanceReasonId { get; set; }
         public int? UsageForPlan { get; set; }
         public DateTime? PreviousDate { get; set; }

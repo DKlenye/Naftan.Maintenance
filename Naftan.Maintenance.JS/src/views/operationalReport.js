@@ -32,6 +32,7 @@
             return a > b ? 1 : (a < b ? -1 : 0);
         };
 
+        var planTpl = webix.templates.collection("maintenanceType");
 
         webix.extend(cfg, {
             rows: [
@@ -56,7 +57,8 @@
                     css: "center_columns",
                     footer: true,
                     select: 'cell',
-                    leftSplit: 2,
+                    leftSplit: 3,
+                    rightSplit: 1,
                     navigation: true,
                     editable: true,
                     rules: webix.rules.operationalreport,
@@ -65,9 +67,8 @@
                         updateFromResponse: true
                     },
                     columns: [
-                        //webix.column("id"),
                         { id: "object", header: "&nbsp;", align: "center", width: 35, template: "<span  style='cursor:pointer;'  class='webix_icon fa-edit'></span>" },
-                       
+                        webix.column("id"),
                         {
                             id: "nextPrcn",
                             header: 'Износ',
@@ -80,14 +81,14 @@
                             header: ['Цех\Производство', { content: "selectFilter", options: webix.collection.options("department", "name", true) }],
                             sort: "int",
                             template: webix.templates.collection("department"),
-                            width: 150
+                            width: 140
                         },
                         {
                             id: 'plantId',
                             header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true,null,true) }],
                             sort: "int",
                             template: webix.templates.collection("plant"),
-                            width: 200
+                            width: 180
                         },
                         {
                             id: 'state',
@@ -100,7 +101,7 @@
                         },
                         {
                             id: 'techIndex',
-                            header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,
+                            header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 110,
                             footer: { content: "countColumn" }
                         },
                         {
@@ -131,13 +132,21 @@
                         {
                             id: 'plannedMaintenanceType',
                             header: [{ text: "Ремонт/обслуживание", colspan: 5, css: { "background": colors.maintenance } }, { text: "План", css: { "background": colors.maintenance } }],
-                            template: webix.templates.collection("maintenanceType"),
+                            sort: "int",
+                            template: function (obj, common, value, config) {
+                                var out = planTpl.apply(this,arguments);
+                                if (obj.isTransfer) {
+                                    out = "[П] " + out;
+                                }
+                                return out;
+                            },
                             width: 120
                         },
                         {
                             id: 'actualMaintenanceType',
                             header: ["", { text: "Факт", css: { "background": colors.maintenance } }],
                             editor: 'combo',
+                            sort:"int",
                             template: webix.templates.collection("maintenanceType"),
                             options: webix.collection.options("maintenanceType", "name", true),
                             width: 120
@@ -183,7 +192,8 @@
                             options: webix.collection.options("maintenanceReason", "name", true),
                             template: webix.templates.collection("maintenanceReason"),
                             width: 120
-                        }
+                        },
+                        { id: "ban", header: "&nbsp;", align: "center", width: 35, css:"red-button", template: "<span  style='cursor:pointer;'  class='webix_icon fa-ban'></span>" },
 
                     ],
                     onClick: {
@@ -200,28 +210,44 @@
                             ]);
 
                             return false;
+                        }),
+                        "fa-ban": webix.bind(function (e, target) {
+                            var item = me.reportTable.getItem(target.row);
+
+                            webix.confirm(
+                                {
+                                    title: "Откат отчёта",
+                                    text: "Выбран тех. индекс <b>" + item.techIndex + "</b> для отката.<br/> Вы действительно хотите откатить отчёт?",
+                                    ok: "Да",
+                                    cancel: "Нет",
+                                    type: "confirm-error",
+                                    callback: function (isOk) {
+                                        if (isOk) {
+
+                                            me.mask("Откат отчёта...")
+
+                                            webix.ajax().headers({ "Content-Type": "application/json" })
+                                                .post("/api/operationalReport/discardReports/" + me.getPeriod(), { data: [item.id] })
+                                                .then(webix.bind(me.onApplyHandler, me))
+                                                .fail(webix.bind(me.onErrorHandler, me))
+                                        }
+                                    }
+                                });
+
                         })
                     },
                     on: {
                         onKeyPress: function (code, e) {
 
-                            switch (e.key.toLowerCase()) {
-                                case "о": { me.setMaintenance(1); return false; }
-                                case "j": { me.setMaintenance(1); return false; }
-
-                                case "т": { me.setMaintenance(2); return false; }
-                                case "n": { me.setMaintenance(2); return false; }
-
-                                case "с": { me.setMaintenance(3); return false; }
-                                case "c": { me.setMaintenance(3); return false; }
-
-                                case "к": { me.setMaintenance(4); return false; }
-                                case "r": { me.setMaintenance(4); return false; }
-
-                                case "р": { me.setState(3); return false; }
-                                case "h": { me.setState(3); return false; }
-
-                                case "enter": {
+                            var code = e.code == "NumpadEnter" ? "Enter" : e.code;
+                            
+                            switch (code) {
+                                case "KeyJ": { me.setMaintenance(1); return false; }
+                                case "KeyN": { me.setMaintenance(2); return false; }
+                                case "KeyC": { me.setMaintenance(3); return false; }
+                                case "KeyR": { me.setMaintenance(4); return false; }
+                                case "KeyH": { me.setState(3); return false; }
+                                case "Enter": {
 
                                     //Если в режиме edit
                                     if (e.srcElement.tagName == "INPUT") {
@@ -330,6 +356,31 @@
         table.attachEvent("onBeforeEditStop", webix.bind(this.onEditStop, this));
        // table.attachEvent("onAfterEditStop", webix.bind(this.onAfterEditStop, this));
 
+        var currentDepartment;
+
+        table.attachEvent("onBeforeFilter", function (id, value, config) {
+
+            if (id == "departmentId" && value != currentDepartment) {
+                currentDepartment = value;
+                var cfg = this.config.columns.filter(function (x) { return x.id == "plantId" })[0].header[1];
+
+                if (value) {
+                    var newOptions = webix.collection.options("plant", "name", true, function (i) {
+                        return i.departmentId == value;
+                    });
+                    cfg.options = newOptions;
+                }
+                else {
+                    cfg.value = "";
+                    cfg.options = webix.collection.options("plant", "name", true, null, true)
+                }
+
+                this.refreshColumns();
+
+            }
+
+        });
+
         this.reload();
     },
 
@@ -391,6 +442,9 @@
         dp.define({ autoupdate: false });
 
         item.actualMaintenanceType = type;
+
+
+
         table.updateItem(item.id, item);
 
         table.editStop();
@@ -569,7 +623,12 @@
                     item.usageAfterMaintenance = 0;
                     item.usageBeforeMaintenance = Math.min(value, hours)
                 }
-                
+
+                //Если вводится наработка, но у нас резерв, то устанавливаем состояние в эксплуатации
+                if (item.usageBeforeMaintenance > 0 && item.state==3) {
+                    item.state = 1;
+                }
+
                 break;
             }
             case "usageAfterMaintenance": {
@@ -609,7 +668,7 @@
                 }
                 else {
                     hoursBefore = this.getHoursBetweenDates(this.getStart(item.period), value);
-                    item.usageBeforeMaintenance = hoursBefore;
+                    item.usageBeforeMaintenance = Math.min(hoursBefore, item.usageBeforeMaintenance);
                     item.startMaintenance = value;
                 }
 

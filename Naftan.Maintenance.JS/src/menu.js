@@ -21,7 +21,9 @@
     {
         icon: "wrench", open: true, value: "ППР и ТО", data: [
             { icon: "file-text-o", value: "Оперативный отчёт", target: "view_operationalreport" },
-            { icon: "calendar", value: "График ППР", target: "view_plan" }
+            { icon: "print", value: "Печать оп. отчёта", target: "report_operationalreport" },
+            { icon: "calendar", value: "График ППР", target: "view_plan" },
+            { icon: "print", value: "Печать графика ППР", target: "report_plan" }
         ]
     },
     {

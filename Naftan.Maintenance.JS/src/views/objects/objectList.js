@@ -207,6 +207,32 @@
             }, null, true);
         }
 
+        var currentDepartment;
+
+        objects.attachEvent("onBeforeFilter", function (id, value, config) {
+
+            if (id == "departmentId" && value != currentDepartment) {
+                currentDepartment = value;
+                var cfg = this.config.columns.filter(function (x) { return x.id == "plantId" })[0].header[1];
+
+                if (value) {
+                    var newOptions = webix.collection.options("plant", "name", true, function (i) {
+                        return i.departmentId == value;
+                    });
+                    cfg.options = newOptions;
+                }
+                else {
+                    cfg.value = "";
+                    cfg.options = webix.collection.options("plant", "name", true, null, true)
+                }
+
+                this.refreshColumns();
+
+            }
+
+        });
+
+
     },
 
     getColumns: function () {

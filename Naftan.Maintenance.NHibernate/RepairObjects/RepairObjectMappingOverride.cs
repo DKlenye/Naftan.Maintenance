@@ -64,6 +64,7 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
 
             mapping.IgnoreProperty(x => x.Intervals);
             mapping.HasOne(x => x.Report).PropertyRef(x => x.MaintenanceObject).Cascade.All().Fetch.Join();
+            mapping.References(x => x.ReplaceObject).Column("ReplaceObject").ForeignKey("ReplaceObject_FK");
         }
     }
     

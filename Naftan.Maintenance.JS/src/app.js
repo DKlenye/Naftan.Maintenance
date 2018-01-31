@@ -71,14 +71,14 @@
                                          .post("/api/database/update").
                                          then(function () { webix.message('База обновлена') }, function (e) { webix.message(e.response, 'error') })
                                  }
-                             },
+                             }/*,
                              {
                                  view: "icon", icon: "database", click: function () {
                                      webix.ajax()
                                          .post("/api/database/create").
                                          then(function () { webix.message('База построена') }, function (e) { webix.message(e.response, 'error') })
                                  }
-                             },
+                             },*/
 
                          ]
                      },

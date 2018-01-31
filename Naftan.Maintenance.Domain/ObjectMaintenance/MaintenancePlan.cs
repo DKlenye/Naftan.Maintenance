@@ -13,13 +13,14 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     {
         protected MaintenancePlan() { }
 
-        public MaintenancePlan(MaintenanceObject maintenanceObject, MaintenanceType maintenanceType, DateTime date, MaintenanceReason offer = null)
+        public MaintenancePlan(MaintenanceObject maintenanceObject, MaintenanceType maintenanceType, DateTime date, bool isTransfer = false, bool isOffer = false, MaintenanceReason offer = null)
         {
             Object = maintenanceObject;
             MaintenanceType = maintenanceType;
             MaintenanceDate = date;
+            IsOffer = isOffer;
             OfferReason = offer;
-
+            IsTransfer = isTransfer;
 
             var map = Object.LastMaintenance.ToDictionary(x => x.MaintenanceType.Id);
 
@@ -30,6 +31,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
             }
 
             //Фиксируем предыдущий ремонт
+
             var previous = Object.Maintenance.OrderBy(x => x.StartMaintenance).LastOrDefault();
 
             if (previous != null)
@@ -39,6 +41,42 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
                 PreviousDate = last.LastMaintenanceDate;
                 PreviousMaintenanceType = last.MaintenanceType;
                 PreviousUsage = last.UsageFromLastMaintenance;
+            }
+            else
+            {
+                var intervals = Object.Intervals.ToList();
+                intervals.Sort();
+
+                int? type = null;
+                DateTime? lastDate = null;
+
+                intervals.ForEach(x =>
+                {
+                    if (type != null && lastDate!=null)
+                    {
+                        var _date = map[x.MaintenanceType.Id].LastMaintenanceDate;
+
+                        if (_date!=null && _date > lastDate)
+                        {
+                            type = x.MaintenanceType.Id;
+                            lastDate = _date;
+                        }
+                    }
+                    else
+                    {
+                        type = x.MaintenanceType.Id;
+                        lastDate = map[type.Value].LastMaintenanceDate;
+                    }
+
+                });
+
+                if(type!=null && lastDate != null)
+                {
+                    PreviousDate = map[type.Value].LastMaintenanceDate;
+                    PreviousMaintenanceType = map[type.Value].MaintenanceType;
+                    PreviousUsage = map[type.Value].UsageFromLastMaintenance;
+                }
+
             }
 
         }
@@ -53,6 +91,12 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         /// </summary>
         public DateTime MaintenanceDate { get; private set; }
        
+
+        /// <summary>
+        /// По предложению
+        /// </summary>
+        public bool IsOffer { get; private set; }
+
         /// <summary>
         /// Причина внепланового ремонта
         /// </summary>
@@ -83,6 +127,11 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         /// Наработка с последнего обслуживания
         /// </summary>
         public int? PreviousUsage { get; private set; }
+
+        /// <summary>
+        /// Признак переноса из предыдущего месяца
+        /// </summary>
+        public bool IsTransfer { get; private set; }
 
     }
 }

@@ -93,6 +93,8 @@
     <Content Include="src\views\objects\stateEditor.js" />
     <Content Include="src\views\objects\intervalEditor.js" />
     <Content Include="src\views\objects\childrenEditor.js" />
+    <Content Include="src\views\reports\operationalReport.js" />
+    <Content Include="src\views\reports\plan.js" />
     <Content Include="src\views\usage.js" />
     <Content Include="src\views\groupInterval.js" />
     <Content Include="src\views\maintenanceReason.js" />
@@ -116,6 +118,7 @@
     <Content Include="src\webix\DataCollectionPull.js" />
     <Content Include="src\webix\decimalAdjust.js" />
     <Content Include="src\webix\periodPopup.js" />
+    <Content Include="src\webix\reporter.js" />
     <Content Include="src\webix\sidebar.js" />
     <Content Include="src\webix\suggest\grid.js" />
     <Content Include="src\webix\suggest\tree.js" />

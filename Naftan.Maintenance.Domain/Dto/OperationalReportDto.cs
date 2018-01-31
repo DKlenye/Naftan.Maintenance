@@ -19,6 +19,7 @@ namespace Naftan.Maintenance.Domain.Dto
         public OperatingState State { get; set; }
         public int? OfferForPlan { get; set; }
         public int? PlannedMaintenanceType { get; set; }
+        public bool IsTransfer { get; set; }
         public int? ActualMaintenanceType { get; set; }
         public int? UnplannedReason { get; set; }
         public int? ReasonForOffer { get; set; }

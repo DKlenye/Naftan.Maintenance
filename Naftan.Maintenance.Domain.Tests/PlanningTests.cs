@@ -17,7 +17,7 @@ namespace Naftan.Maintenance.Domain.Tests
         {
             using (var uow = uowf.Create())
             {
-                report.UsageBeforeMaintenance = 2000;
+                report.UsageBeforeMaintenance = 2700;
                 compressor.ApplyReport();
 
                 repository.Save(compressor);
@@ -33,7 +33,7 @@ namespace Naftan.Maintenance.Domain.Tests
         {
             using (var uow = uowf.Create())
             {
-                report.UsageBeforeMaintenance = 5000;
+                report.UsageBeforeMaintenance = 5300;
                 compressor.ApplyReport();
 
                 repository.Save(compressor);
@@ -49,7 +49,7 @@ namespace Naftan.Maintenance.Domain.Tests
         {
             using (var uow = uowf.Create())
             {
-                report.UsageBeforeMaintenance = 63000;
+                report.UsageBeforeMaintenance = 70200;
                 compressor.ApplyReport();
 
                 repository.Save(compressor);
@@ -102,7 +102,7 @@ namespace Naftan.Maintenance.Domain.Tests
         {
             using (var uow = uowf.Create())
             {
-                report.UsageBeforeMaintenance = 5000;
+                report.UsageBeforeMaintenance = 5300;
                 report.OfferForPlan = MaintenanceTypeFactory.O_Repair;
                 report.ReasonForOffer = MaintenanceReasonFactory.Corrosion;
                 compressor.ApplyReport();
