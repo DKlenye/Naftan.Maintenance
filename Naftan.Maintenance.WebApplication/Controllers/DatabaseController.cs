@@ -13,7 +13,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers
             this.initializer = initializer;
         }
 
-        [Route("api/database/create")]
+        /*[Route("api/database/create")]
         public void Create()
         {
             new SchemaExport(initializer.GetConfiguration())
@@ -21,7 +21,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers
                  useStdOut: false,
                  execute: true
              );
-        }
+        }*/
 
         [Route("api/database/update")]
         public void Update()

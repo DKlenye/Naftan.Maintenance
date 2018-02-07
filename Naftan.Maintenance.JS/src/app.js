@@ -65,13 +65,13 @@
                                  css: "header_label"
                              },
                              {},
-                             {
+                             /*{
                                  view: "icon", icon: "retweet", click: function () {
                                      webix.ajax()
                                          .post("/api/database/update").
                                          then(function () { webix.message('База обновлена') }, function (e) { webix.message(e.response, 'error') })
                                  }
-                             }/*,
+                             },
                              {
                                  view: "icon", icon: "database", click: function () {
                                      webix.ajax()

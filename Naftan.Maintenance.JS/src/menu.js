@@ -23,7 +23,8 @@
             { icon: "file-text-o", value: "Оперативный отчёт", target: "view_operationalreport" },
             { icon: "print", value: "Печать оп. отчёта", target: "report_operationalreport" },
             { icon: "calendar", value: "График ППР", target: "view_plan" },
-            { icon: "print", value: "Печать графика ППР", target: "report_plan" }
+            { icon: "print", value: "Печать графика ППР", target: "report_plan" },
+            { icon: "print", value: "Отчёт о выполн. ППР", target: "report_maintenancereport" }
         ]
     },
     {

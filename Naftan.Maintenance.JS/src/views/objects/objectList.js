@@ -64,6 +64,18 @@
                                             view: 'toolbar',
                                             elements: [
                                                 {
+                                                    view: "button", type: "iconButton", icon: "refresh", label: "Обновить", width: 100, click: webix.bind(function () {
+
+                                                        var table = this.queryView({ view: "datatable" });
+                                                        table.editStop();
+
+                                                        var store = webix.collection("object");
+                                                        store.clearAll()
+                                                        store.load(store.config.url);
+
+                                                    }, this)
+                                                },
+                                                {
                                                     view: "button", type: "iconButton", icon: "plus-circle", label: "Добавить", width: 100,
                                                     click: function () {
                                                         me.callEvent("onCreateView", [
@@ -238,6 +250,25 @@
     getColumns: function () {
         return [
             webix.column("id"),
+            {
+                id: 'parentId',
+                header: ["Код родителя", { content: "textFilter" }],sort:'int',width:120
+            },
+            {
+                id: 'groupId',
+                header: ["Группа"], sort: 'int', width: 200,
+                template: function (obj, common, value, config) {
+                    if (!value) return null;
+
+                    var collection = webix.collection('ObjectGroup');
+                    var item = collection.getItem(value);
+
+                    if (item.$parent) {
+                        return collection.getItem(item.$parent).name;
+                    }
+                    return null;
+                }
+            },
             {
                 id:
                 'techIndex', header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,

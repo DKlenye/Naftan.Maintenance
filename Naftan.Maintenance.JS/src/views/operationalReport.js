@@ -34,6 +34,12 @@
 
         var planTpl = webix.templates.collection("maintenanceType");
 
+
+        var cssFormat = function (value, obj) {
+            if (obj.state == 4) return "row-silver"
+            return "";
+        }
+
         webix.extend(cfg, {
             rows: [
                 {
@@ -81,14 +87,16 @@
                             header: ['Цех\Производство', { content: "selectFilter", options: webix.collection.options("department", "name", true) }],
                             sort: "int",
                             template: webix.templates.collection("department"),
-                            width: 140
+                            width: 140,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'plantId',
                             header: ['Установка', { content: "selectFilter", options: webix.collection.options("plant", "name", true,null,true) }],
                             sort: "int",
                             template: webix.templates.collection("plant"),
-                            width: 180
+                            width: 180,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'state',
@@ -96,20 +104,23 @@
                             sort: "int",
                             template: webix.templates.collection("operatingState"),
                             editor: "combo",
-                            options: webix.collection.options("operatingState", "name", false, function (i) { return i.id != 2; }),
-                            width: 170
+                            options: webix.collection.options("operatingState", "name", false, function (i) { return [1,3,4].indexOf(i.id) != -1; }),
+                            width: 170,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'techIndex',
                             header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 110,
-                            footer: { content: "countColumn" }
+                            footer: { content: "countColumn" },
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'usageParent',
                             header: [{ text: "Наработка", colspan: 3, css: { "background": colors.usage } }, { text: "Родитель", css: { "background": colors.usage } }],
                             sort: 'int',
                             parseFormat: intFormatter,
-                            width: 80
+                            width: 80,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'usageBeforeMaintenance',
@@ -118,7 +129,8 @@
                             editor: "text",
                             editFormat: intFormatter,
                             parseFormat: intFormatter,
-                            width: 60
+                            width: 60,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'usageAfterMaintenance',
@@ -127,7 +139,8 @@
                             editor: "text",
                             editFormat: intFormatter,
                             parseFormat: intFormatter,
-                            width: 60
+                            width: 60,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'plannedMaintenanceType',
@@ -140,7 +153,8 @@
                                 }
                                 return out;
                             },
-                            width: 120
+                            width: 120,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'actualMaintenanceType',
@@ -149,7 +163,8 @@
                             sort:"int",
                             template: webix.templates.collection("maintenanceType"),
                             options: webix.collection.options("maintenanceType", "name", true),
-                            width: 120
+                            width: 120,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'unplannedReason',
@@ -157,7 +172,8 @@
                             editor: 'combo',
                             options: webix.collection.options("maintenanceReason","name",true),
                             template: webix.templates.collection("maintenanceReason"),
-                            width: 140
+                            width: 140,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'startMaintenance',
@@ -166,7 +182,8 @@
                             //editFormat: webix.i18n.dateFormatStr,
                             //editParse: webix.i18n.dateFormatStr,
                             editor: 'text',
-                            width: 100
+                            width: 100,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'endMaintenance',
@@ -175,7 +192,8 @@
                             //editFormat: webix.i18n.dateFormatStr,
                             //editParse: webix.i18n.dateFormatStr,
                             editor: 'text',
-                            width: 100
+                            width: 100,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'offerForPlan',
@@ -183,7 +201,8 @@
                             editor: 'combo',
                             template: webix.templates.collection("maintenanceType"),
                             options: webix.collection.options("maintenanceType", "name", true),
-                            width: 120
+                            width: 120,
+                            cssFormat: cssFormat
                         },
                         {
                             id: 'reasonForOffer',
@@ -191,7 +210,8 @@
                             editor: 'combo',
                             options: webix.collection.options("maintenanceReason", "name", true),
                             template: webix.templates.collection("maintenanceReason"),
-                            width: 120
+                            width: 120,
+                            cssFormat: cssFormat
                         },
                         { id: "ban", header: "&nbsp;", align: "center", width: 35, css:"red-button", template: "<span  style='cursor:pointer;'  class='webix_icon fa-ban'></span>" },
 

@@ -72,14 +72,17 @@
 
         var objects = children.map(function (i) {
             return collection.getItem(i);
-        })
+        });
 
-        console.log(objects)
+        if (data.parentId) {
+            objects.push(collection.getItem(data.parentId));
+        }
                 
         var table = this.queryView({ view: "datatable" });
         table.clearAll();
         table.parse(objects);
         table.refresh();
+
     }
 
 }, webix.ui.layout);

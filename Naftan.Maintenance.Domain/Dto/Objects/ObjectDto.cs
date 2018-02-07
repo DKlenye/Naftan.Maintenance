@@ -19,7 +19,6 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             SetEntity(obj);
         }
 
-        public int? ParentId { get; set; }
         public DateTime? StartOperating { get; set; }
         public MaintenanceType NextMaintenance { get; set; }
         public int? NextUsageNorm { get; set; }
@@ -43,7 +42,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
                LastMaintenance==null? null: LastMaintenance.Select(x => x.GetEntity(repository))
             );
 
-            newObject.Plant = repository.Get<Plant>(PlantId);
+            newObject.Plant = repository.Get<Plant>(PlantId.Value);
 
             if (ParentId != null)
             {
@@ -80,7 +79,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         {
 
             entity.TechIndex = TechIndex;
-            entity.Plant = repository.Get<Plant>(PlantId);
+            entity.Plant = repository.Get<Plant>(PlantId.Value);
             SetSpecifications(entity, repository);
 
             //Если родитель был

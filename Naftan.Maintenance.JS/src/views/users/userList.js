@@ -68,7 +68,27 @@
     },
 
     initData: function () {
+        var me = this;
+        var store = this._getStore();
         var table = this.queryView({ view: "datatable" });
+
+        var events = [];
+
+        events.push(store.attachEvent("onBeforeLoad", function () {
+            me.disable();
+            table.showOverlay("Загрузка..." + "<span class='webix_icon fa-spinner fa-spin'></span>");
+        }));
+
+        events.push(store.attachEvent("onAfterLoad", function () {
+            me.enable();
+            table.hideOverlay();
+        }));
+
+        this.attachEvent("onDestruct", function () {
+            events.forEach(function (e) { store.detachEvent(e) });
+        });
+
+
         table.parse(this._getStore());
     },
 

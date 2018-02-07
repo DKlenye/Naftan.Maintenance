@@ -22,6 +22,15 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <summary>
         /// Списан
         /// </summary>
-        [Description("Не эксплуатируется")] WriteOff = 4
+        [Description("Не эксплуатируется")] WriteOff = 4,
+        /// <summary>
+        /// Смонтировано
+        /// </summary>
+        [Description("Смонтировано")] Mounted = 5,
+        /// <summary>
+        /// Демонтировано
+        /// </summary>
+        [Description("Демонтировано")] UnMounted = 6
+       
     }
 }

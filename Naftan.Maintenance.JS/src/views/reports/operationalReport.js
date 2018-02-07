@@ -11,9 +11,45 @@
                 {
                     cols: [
                         {
-                            header: 'Группы оборудования',
+                            header: 'Условия выборки данных',
                             body: {
                                 rows: [
+                                    {
+                                        view: "property",
+                                        width: 500, nameWidth: 200,
+                                        elements: [
+                                            { id: "departmentId", label: "Цех\Производство", type: "combo", options: webix.collection.options("department", "name", true) },
+                                            { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true, null, true) }
+                                        ],
+                                        height: 80,
+                                        on: {
+                                            onBeforeEditStart: function (id) {
+                                                var prop = me.queryView({ view: "property" });
+                                                var values = prop.getValues();
+
+                                                if (id == "plantId") {
+                                                    var newOptions = webix.collection.options("plant", "name", true, function (i) {
+                                                        return i.departmentId == values.departmentId;
+                                                    });
+                                                    var collection = prop.config.elements.filter(function (i) { return i.id == "plantId" })[0].collection;
+                                                    collection.clearAll();
+                                                    collection.parse(newOptions);
+                                                }
+                                            },
+                                            onAfterEditStop: function (state, editor, ignoreUpdate) {
+
+                                                if (editor.id == "departmentId") {
+                                                    if (state.value != state.old) {
+                                                        var prop = me.queryView({ view: "property" });
+                                                        var values = prop.getValues();
+                                                        values.plantId = null;
+                                                        prop.setValues(values);
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    },
                                     {
                                         view: "toolbar",
                                         elements: [
@@ -109,12 +145,28 @@
         return this.queryView({ name: "groups" }).getChecked();
     },
 
+    getPlants: function () {
+
+        var values = this.queryView({ view: "property" }).getValues();
+
+        if (values.plantId && values.plantId < 1e10) return values.plantId + "";
+
+        if (values.departmentId && values.departmentId < 1e10) {
+            return webix.collection.options("plant", "name", false, function (i) {
+                return i.departmentId == values.departmentId;
+            }).map(function (i) { return i.id }).join(",");
+        }
+
+        return " ";
+
+    },
 
     print: function () {
 
         var params = {
             period: this.getPeriod(),
-            groups: this.getGroups()
+            groups: this.getGroups(),
+            plants: this.getPlants()
         };
 
         this.queryView({ view: 'iframe' }).load(webix.Reporter.getUrl("OperationalReport", params));
@@ -123,7 +175,8 @@
     export: function () {
         var params = {
             period: this.getPeriod(),
-            groups: this.getGroups()
+            groups: this.getGroups(),
+            plants: this.getPlants()
         };
         var format = this.queryView({ name: "format" }).getValue();
 

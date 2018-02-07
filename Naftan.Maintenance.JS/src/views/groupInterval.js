@@ -25,12 +25,13 @@
                         {},
                         {
                             view: "button", type: "iconButton", label: "Экспорт", icon: "file-excel-o", width: 100, click: function () {
-                                webix.toExcel(
+                                /*webix.toExcel(
                                     me.queryView({ view: "ui_datatable" }),
                                     {
                                         ignore: { "trash": true }
                                     }
-                                );
+                                );*/
+                                webix.Reporter.exportReport("Intervals");
                             }
                         }
                     ]

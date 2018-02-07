@@ -94,6 +94,7 @@
     <Content Include="src\views\objects\intervalEditor.js" />
     <Content Include="src\views\objects\childrenEditor.js" />
     <Content Include="src\views\reports\operationalReport.js" />
+    <Content Include="src\views\reports\maintenanceReport.js" />
     <Content Include="src\views\reports\plan.js" />
     <Content Include="src\views\usage.js" />
     <Content Include="src\views\groupInterval.js" />

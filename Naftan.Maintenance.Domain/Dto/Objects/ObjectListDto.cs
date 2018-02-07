@@ -12,11 +12,11 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         {
             SetEntity(obj);
         }
-
+        public int? ParentId { get; set; }
         public int GroupId { get; set; }
         public string TechIndex { get; set; }
-        public int DepartmentId { get; set; }
-        public int PlantId { get; set; }
+        public int? DepartmentId { get; set; }
+        public int? PlantId { get; set; }
         public int Period { get; set; }
         public int? UsageFromStartup { get; set; }
 
@@ -37,8 +37,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             Id = entity.Id;
             GroupId = entity.Group.Id;
             TechIndex = entity.TechIndex;
-            DepartmentId = entity.Plant.Department.Id;
-            PlantId = entity.Plant.Id;
+            DepartmentId = entity.Plant?.Department?.Id;
+            PlantId = entity.Plant?.Id;
             Period = entity.Report.Period.period;
             CurrentOperatingState = entity.CurrentOperatingState??OperatingState.Operating;
             UsageFromStartup = entity.UsageFromStartup;

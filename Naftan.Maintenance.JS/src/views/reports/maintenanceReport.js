@@ -1,6 +1,6 @@
 ﻿webix.protoUI({
 
-    name: "report_plan",
+    name: "report_maintenancereport",
     requireCollections: ["ObjectGroup","department","plant"],
 
     $init: function (cfg) {
@@ -14,42 +14,7 @@
                             header: 'Условия выборки данных',
                             body: {
                                 rows: [
-                                    {
-                                        view: "property",
-                                        width: 500, nameWidth: 200,
-                                        elements: [
-                                            { id: "departmentId", label: "Цех\Производство", type: "combo", options: webix.collection.options("department", "name", true) },
-                                            { id: "plantId", label: "Установка", type: "combo", options: webix.collection.options("plant", "name", true, null, true) }
-                                        ],
-                                        height: 80,
-                                        on: {
-                                            onBeforeEditStart: function (id) {
-                                                var prop = me.queryView({ view: "property" });
-                                                var values = prop.getValues();
-
-                                                if (id == "plantId") {
-                                                    var newOptions = webix.collection.options("plant", "name", true, function (i) {
-                                                        return i.departmentId == values.departmentId;
-                                                    });
-                                                    var collection = prop.config.elements.filter(function (i) { return i.id == "plantId" })[0].collection;
-                                                    collection.clearAll();
-                                                    collection.parse(newOptions);
-                                                }
-                                            },
-                                            onAfterEditStop: function (state, editor, ignoreUpdate){
-
-                                                if (editor.id == "departmentId") {
-                                                    if (state.value != state.old) {
-                                                        var prop = me.queryView({ view: "property" });
-                                                        var values = prop.getValues();
-                                                        values.plantId = null;
-                                                        prop.setValues(values);
-                                                    }
-                                                }
-
-                                            }
-                                        }
-                                    },
+                                    
                                     {
                                         view: "toolbar",
                                         elements: [
@@ -189,21 +154,6 @@
         return items[this.queryView({ name: "reportType" }).getValue()] || " ";
     },
 
-    getPlants: function () {
-
-        var values = this.queryView({ view: "property" }).getValues();
-
-        if (values.plantId && values.plantId<1e10 ) return values.plantId+"";
-
-        if (values.departmentId && values.departmentId < 1e10) {
-            return webix.collection.options("plant", "name", false, function (i) {
-                return i.departmentId == values.departmentId;
-            }).map(function (i) { return i.id }).join(",");
-        }
-
-        return " ";
-
-    },
 
     getStart: function (period) {
         var parser = webix.Date.strToDate("%Y.%m");
@@ -225,11 +175,10 @@
             start: webix.i18n.dateFormatStr(this.getStart(this.getPeriod())),
             end: webix.i18n.dateFormatStr(this.getEnd(this.getPeriod())),
             groups: this.getGroups(),
-            header: this.getHeader(),
-            plants: this.getPlants()
+            header: this.getHeader()
         };
 
-        this.queryView({ view: 'iframe' }).load(webix.Reporter.getUrl("Plan", params));
+        this.queryView({ view: 'iframe' }).load(webix.Reporter.getUrl("MaintenanceReport", params));
     },
 
     export: function () {
@@ -237,12 +186,11 @@
             start: webix.i18n.dateFormatStr(this.getStart(this.getPeriod())),
             end: webix.i18n.dateFormatStr(this.getEnd(this.getPeriod())),
             groups: this.getGroups(),
-            header: this.getHeader(),
-            plants: this.getPlants()
+            header: this.getHeader()
         };
         var format = this.queryView({ name: "format" }).getValue();
 
-        webix.Reporter.exportReport("Plan", params, format);
+        webix.Reporter.exportReport("MaintenanceReport", params, format);
     }
 
 }, webix.ui.layout);

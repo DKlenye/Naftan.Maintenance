@@ -36,6 +36,7 @@ namespace Naftan.Maintenance.NHibernate
         {
             var sql = @"
              select 
+                o.PARENT_ID AS ParentId,
                 o.MaintenanceObjectId as Id,
 	            o.ObjectGroupId as GroupId,
 	            o.TechIndex,

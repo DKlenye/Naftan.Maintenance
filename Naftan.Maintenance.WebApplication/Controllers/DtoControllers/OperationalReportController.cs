@@ -1,12 +1,9 @@
-﻿using Naftan.Common.AccountManagement;
-using Naftan.Common.Domain;
+﻿using Naftan.Common.Domain;
 using Naftan.Common.Domain.EntityComponents;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto;
-using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
-using System;
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
@@ -93,6 +90,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         public void SetNextMaintenance()
         {
             repository.All<MaintenanceObject>()
+                .Where(x=>x.Id>= 4735)
                 .ToList().ForEach(x => x.SetNextMaintenance());
         }
 
@@ -114,5 +112,6 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
 
                 });
         }
+
     }
 }

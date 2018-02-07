@@ -54,12 +54,28 @@
                                                 type: "combo",
                                                 popup: webix.ui({
                                                     view: "gridsuggest",
-                                                    width: 800,
+                                                    width: 900,
                                                     body: {
                                                         height: 400,
                                                         columns: [
                                                             webix.column('id'),
                                                             { id: 'techIndex', header: ["Тех. индекс", { content: "textFilter" }] },
+                                                            {
+                                                                id: 'groupId',
+                                                                header: ["Группа"], sort: 'int', width: 200,
+                                                                template: function (obj, common, value, config) {
+                                                                    if (!value) return null;
+
+                                                                    var collection = webix.collection('ObjectGroup');
+                                                                    var item = collection.getItem(value);
+
+                                                                    if (item.$parent) {
+                                                                        return collection.getItem(item.$parent).name;
+                                                                    }
+                                                                    return null;
+                                                                }
+
+                                                            },
                                                             {
                                                                 id: 'departmentId',
                                                                 header: ['Цех\Производство', { content: "selectFilter", options: webix.collection.options("department", "name", true) }],

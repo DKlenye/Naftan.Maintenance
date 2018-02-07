@@ -39,6 +39,9 @@
 .row-marked {
     background-color: #ffa;
 }
+.row-silver {
+    color:silver;
+}
 
 .row-inherited {
     background-color: lavender;

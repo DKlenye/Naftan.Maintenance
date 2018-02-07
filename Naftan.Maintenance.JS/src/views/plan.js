@@ -8,6 +8,13 @@
 
         var me = this;
 
+        var getPrcn = function (obj) {
+            var n = obj["nextUsageNorm"],
+                f = obj["nextUsageFact"];
+            var prcn = Math.round10((f / n) * 100);
+            return Math.min(prcn, 100)
+        }
+
         var sortByProgress = function (a, b) {
             a = getPrcn(a);
             b = getPrcn(b);
@@ -74,7 +81,7 @@
                             id: 'isTransfer',
                             header: ['Перенос', 'Предложение'],
                             template: function (obj) { return !obj.isTransfer ? (!obj.isOffer?'':'Предложение') : 'Перенос'; },
-                            width:100
+                            width:110
                         },
                         {
                             id: 'usageForPlan', header: ["Наработка", { content: "textFilter" }], sort: 'int', width: 120,

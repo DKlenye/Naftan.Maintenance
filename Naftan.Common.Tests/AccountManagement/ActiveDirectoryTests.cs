@@ -36,15 +36,15 @@ namespace Naftan.Common.Tests.AccountManagement
         [Test]
         public void GetAccount()
         {
-            var account = ActiveDirectory.GetAccount("kdn");
+            var account = ActiveDirectory.GetAccount("otord_mech11");
             PrintAccount(account);
         }
 
         [Test]
         public void GetAccountsByGroup()
         {
-            var accounts = ActiveDirectory.GetAccountsByGroup("Internet_Teamviewer");
-            accounts.ToList().ForEach(x=>Console.WriteLine(x.Name));
+            var accounts = ActiveDirectory.GetAccountsByGroup("Maintenance_Engineer");
+            accounts.ToList().ForEach(x=>Console.WriteLine(x.Login));
         }
 
 

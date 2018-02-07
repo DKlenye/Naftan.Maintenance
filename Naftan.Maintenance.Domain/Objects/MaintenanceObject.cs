@@ -252,6 +252,7 @@ namespace Naftan.Maintenance.Domain.Objects
             {
                 var parentUsage = Parent.usage.Where(x => x.StartUsage >= NextPeriod.Start() && x.EndUsage <= NextPeriod.End()).Sum(x => x.Usage);
                 Report.UsageParent = parentUsage;
+                Report.UsageBeforeMaintenance = parentUsage;
             }
             else
             {
@@ -637,9 +638,9 @@ namespace Naftan.Maintenance.Domain.Objects
                  * Т.е. Если проводится Средний ремонт, то сбрасываются Средний, Текущий и Обслуживание.
                 */
 
-                //todo В данном случае выбираетя более мелкий интервал по количеству в ремонтном цикле,а если количества нет?
+                //todo В данном случае выбираетя более мелкий интервал по минимальной наработке.
                 var intervalsForReset = Intervals.Where(
-                    x => x.QuantityInCycle >= targetInterval.QuantityInCycle)
+                    x => x.MinUsage <= targetInterval.MinUsage)
                     .ToDictionary(i => i.MaintenanceType);
 
                 //Если последнего обслуживания нет, то добавляем его
