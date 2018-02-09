@@ -2,10 +2,7 @@
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto.Objects;
 using Naftan.Maintenance.Domain.Objects;
-using Naftan.Maintenance.Domain.Specifications;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Http;
 
 namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers

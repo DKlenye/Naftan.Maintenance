@@ -227,6 +227,12 @@
             var isUpdate = me.config.mode == "update";
 
             switch (id) {
+
+                case "parentId": {
+                    me.common.config.elements.filter(function (i) { return i.id == "parentId" })[0].collection.filter(function (e) { return !e.parentId && e.groupId<126 });
+                    break;
+                }
+
                 case "groupId": {
                     if (me.config.mode == "update") return false; //нельзя править группу когда объект уже сохранён
                     break;
@@ -249,7 +255,7 @@
                     break;
                 }
                 case "techIndex": {
-                    if (parent) return false;
+                   // if (parent) return false;
                     break;
                 }
                 case "period": {
@@ -281,9 +287,12 @@
 
                         values.departmentId = item.departmentId;
                         values.plantId = item.plantId;
-                        values.techIndex = item.techIndex;
+                       // values.techIndex = item.techIndex;
                         me.common.setValues(values);
                     }
+
+                    me.common.config.elements.filter(function (i) { return i.id == "parentId" })[0].collection.filter(function (e) { return true; });
+                
 
                     break;
                 }
