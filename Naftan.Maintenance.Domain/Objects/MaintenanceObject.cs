@@ -31,14 +31,12 @@ namespace Naftan.Maintenance.Domain.Objects
             Group = group;
             TechIndex = techIndex;
             StartOperating = startOperating;
-            ChangeOperatingState(OperatingState.Operating, startOperating??DateTime.Now);
-            Report = new OperationalReport
+            ChangeOperatingState(OperatingState.Mounted, startOperating??DateTime.Now);
+
+            if (startOperating != null)
             {
-                MaintenanceObject = this,
-                Period = _period,
-                UsageBeforeMaintenance = _period.Hours(),
-                State = CurrentOperatingState.Value
-            };
+                PutIntoOperating(startOperating.Value, _period);
+            }
 
             if (last != null && last.Any())
             {
@@ -119,16 +117,16 @@ namespace Naftan.Maintenance.Domain.Objects
         /// </summary>
         public DateTime? StartOperating { get; private set; }
 
+        /// <summary>
+        /// Ссылка на оборудование, которое было заменено
+        /// </summary>
+        public MaintenanceObject ReplaceObject { get; private set; }
+
         #region Оперативный отчёт
         /// <summary>
         /// Оперативный отчёт о работе за месяц
         /// </summary>
         public OperationalReport Report { get; set; }
-
-        /// <summary>
-        /// Ссылка на оборудование, которое было заменено
-        /// </summary>
-        public MaintenanceObject ReplaceObject { get; private set; }
 
         /// <summary>
         /// Применить отчёт (добавить информацию о ремонтах и наработке в соответствующие журналы) и сформировать план на след. период
@@ -269,6 +267,9 @@ namespace Naftan.Maintenance.Domain.Objects
                         
         }
 
+        /// <summary>
+        /// Откатить отчёт 
+        /// </summary>
         public void DiscardReport()
         {
             var CurrentPeriod = Report.Period;
@@ -387,8 +388,7 @@ namespace Naftan.Maintenance.Domain.Objects
 
 
         #endregion
-
-
+        
         #region Рабочее состояние
 
         /// <summary>
@@ -419,6 +419,26 @@ namespace Naftan.Maintenance.Domain.Objects
                 });
             }
         }
+
+       /// <summary>
+       /// Ввести в эксплуатацию
+       /// </summary>
+       /// <param name="startDate">Дата начала эксплуатации</param>
+       /// <param name="period">Текущий период оперативного отчёта</param>
+        public void PutIntoOperating(DateTime startDate, Period period)
+        {
+            StartOperating = startDate;
+            ChangeOperatingState(OperatingState.Operating, startDate);
+
+            Report = new OperationalReport
+            {
+                MaintenanceObject = this,
+                Period = period,
+                UsageBeforeMaintenance = period.Hours(),
+                State = OperatingState.Operating
+            };
+
+        } 
 
         #endregion
 

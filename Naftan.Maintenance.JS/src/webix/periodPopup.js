@@ -13,6 +13,11 @@ webix.editors.period = webix.extend({
     popupType: "period",
     setValue: function (value) {
 
+        if (!value) {
+            webix.editors.popup.setValue.call(this, new Date());
+            return;
+        }
+
         var parser = webix.Date.strToDate("%Y.%m");
 
         var _p = (value + '').split('');

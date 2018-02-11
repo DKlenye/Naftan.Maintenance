@@ -17,7 +17,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public string TechIndex { get; set; }
         public int? DepartmentId { get; set; }
         public int? PlantId { get; set; }
-        public int Period { get; set; }
+        public int? Period { get; set; }
         public int? UsageFromStartup { get; set; }
 
         public OperatingState CurrentOperatingState { get; set; }
@@ -39,7 +39,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             TechIndex = entity.TechIndex;
             DepartmentId = entity.Plant?.Department?.Id;
             PlantId = entity.Plant?.Id;
-            Period = entity.Report.Period.period;
+            Period = entity.Report?.Period?.period;
             CurrentOperatingState = entity.CurrentOperatingState??OperatingState.Operating;
             UsageFromStartup = entity.UsageFromStartup;
 

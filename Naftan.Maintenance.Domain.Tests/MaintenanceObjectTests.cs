@@ -93,7 +93,7 @@ namespace Naftan.Maintenance.Domain.Tests
             Assert.AreEqual(repairObject.CurrentOperatingState, OperatingState.Maintenance);
 
             //Делается запись в журнал состояние объекта ремонта
-            Assert.AreEqual(repairObject.OperatingStates.Count(),2);
+            Assert.AreEqual(repairObject.OperatingStates.Count(),3);
 
             //Текущее обслуживание должно быть заполнено
             Assert.IsNotNull(repairObject.CurrentMaintenance);
@@ -128,9 +128,9 @@ namespace Naftan.Maintenance.Domain.Tests
             //Объект ремонта меняет своё состояние на "на обслуживании" и  возобнавляет "эксплуатируется"
             Assert.AreEqual(repairObject.CurrentOperatingState, OperatingState.Operating);
 
-            //Количество состояние объекта 3.
-            //1 "эксплуатируется". -> 2. "на обслуживании" -> 3."эксплуатируется"
-            Assert.AreEqual(repairObject.OperatingStates.Count(), 3);
+            //Количество состояние объекта 4.
+            //1 Смонтировано -> 2 "эксплуатируется". -> 3. "на обслуживании" -> 4."эксплуатируется"
+            Assert.AreEqual(repairObject.OperatingStates.Count(), 4);
 
             //Текущий ремонт сбрасывается
             Assert.IsNull(repairObject.CurrentMaintenance);

@@ -30,15 +30,16 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         public IEnumerable<OperatingStateDto> States { get; set; }
         public IEnumerable<MaintenanceIntervalDto> Intervals { get; set; }
         public IEnumerable<int> Children { get; set; }
-
+        public int? ReplaceObjectId { get; set; }
 
         public override MaintenanceObject GetEntity(IRepository repository)
         {
+
             var newObject = new MaintenanceObject(
                repository.Get<ObjectGroup>(GroupId),
                TechIndex,
                StartOperating,
-               new Period(Period),
+               Period==null? new Period(DateTime.Now):new Period(Period.Value),
                LastMaintenance==null? null: LastMaintenance.Select(x => x.GetEntity(repository))
             );
 
@@ -60,6 +61,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
         {
             base.SetEntity(entity);
             ParentId = entity.Parent?.Id;
+            ReplaceObjectId = entity.ReplaceObject?.Id;
             StartOperating = entity.StartOperating;
             NextMaintenance = entity.NextMaintenance;
             NextUsageNorm = entity.NextUsageNorm;
@@ -81,6 +83,13 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             entity.TechIndex = TechIndex;
             entity.Plant = repository.Get<Plant>(PlantId.Value);
             SetSpecifications(entity, repository);
+
+            //Если введена дата ввода в эксплуатацию, то вводим в эксплуатацию
+            if(entity.CurrentOperatingState==OperatingState.Mounted && StartOperating != null)
+            {
+                var period = Period == null ? new Period(DateTime.Now) : new Period(Period.Value);
+                entity.PutIntoOperating(StartOperating.Value, period);
+            }
 
             //Если родитель был
             if (entity.Parent != null)
@@ -116,6 +125,21 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
                 }
 
             }
+            
+           var dtoMap =  LastMaintenance.ToDictionary(x => x.MaintenanceTypeId);
+
+            entity.LastMaintenance.ToList().ForEach(last =>
+            {
+                if (dtoMap.ContainsKey(last.MaintenanceType.Id))
+                {
+                    var _dto = dtoMap[last.MaintenanceType.Id];
+                    last.LastMaintenanceDate = _dto.LastMaintenanceDate;
+                    last.UsageFromLastMaintenance = _dto.UsageFromLastMaintenance;
+                }
+
+            });
+            
+            entity.SetNextMaintenance();
 
         }
 

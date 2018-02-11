@@ -104,7 +104,21 @@
                                                     }
                                                 },
                                                 {
-                                                    view: "button", type: "iconButton", icon: "retweet", label: "Замена", width: 100
+                                                    view: "button", type: "iconButton", icon: "retweet", label: "Замена", width: 100,
+                                                    click: function () {
+                                                        var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
+                                                        if (item) {
+                                                            me.callEvent("onCreateView", [
+                                                                'Новое оборудование',
+                                                                {
+                                                                    view: "view_objecteditor",
+                                                                    mode: 'insert',
+                                                                    replaceObjectId: item.id
+                                                                },
+                                                                'plus-circle'
+                                                            ]);
+                                                        }
+                                                    }
                                                 },
                                                 {
                                                     view: "button", type: "iconButton", icon: "trash", label: "Удалить", width: 100, click: function () {
