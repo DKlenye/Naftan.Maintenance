@@ -289,6 +289,8 @@
 
                 case "replaceObjectId": {
                     if (me.config.mode == "update") return false;
+                    me.common.config.elements.filter(function (i) { return i.id == "replaceObjectId" })[0].collection.filter(function (e) { return true; });
+                    break;
                 }
 
                 case "parentId": {
@@ -340,6 +342,12 @@
         this.common.attachEvent('onAfterEditStop', function (state, editor, ignoreUpdate) {
 
             switch (editor.id) {
+
+                case "replaceObjectId" :{
+                    me.common.config.elements.filter(function (i) { return i.id == "replaceObjectId" })[0].collection.filter(function (e) { return true; });
+                    break;
+                }
+
                 //когда изменяется родительский объект устонавливаем тех индекс и местоположение родителя
                 case "parentId": {
 
@@ -470,6 +478,8 @@
 
     save: function () {
         this.common.editStop();
+        this.lastMaintenance.editStop();
+
         this.disable();
         var data = this.getData();
         this[this.config.mode](data);
@@ -490,12 +500,14 @@
     },
 
     onSaveHandler: function (e) {
+
+        var mode = this.config.mode;
+
         if (!e.json) e = e[0];
         this.onObjectLoad(e);
 
         var collection = webix.collection('object');
         var data = e.json();
-
 
         var dp = webix.dp(collection);
         dp.off();
@@ -504,7 +516,19 @@
             collection.add(data);
         }
         else collection.updateItem(data.id, data);
+
+        $.connection.dataHub.server.dataChange('object', data.id, mode, data);
+
+        if (mode == "insert" && data.replaceObjectId) {
+            var replaceObject = collection.getItem(data.replaceObjectId);
+            replaceObject.currentOperatingState = 6;
+            collection.updateItem(replaceObject.id, replaceObject);
+
+            $.connection.dataHub.server.dataChange('object', replaceObject.id, "update", replaceObject);
+        }
+
         dp.on();
+
 
         this.enable();
     },
@@ -526,7 +550,8 @@
                 techIndex: replaceObject.techIndex,
                 departmentId: replaceObject.departmentId,
                 plantId: replaceObject.plantId,
-                replaceObjectId: replaceObjectId
+                replaceObjectId: replaceObjectId,
+                parentId: replaceObject.parentId
             });
         }
        

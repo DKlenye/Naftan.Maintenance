@@ -23,7 +23,7 @@ namespace Naftan.Maintenance.Domain.Objects
         private readonly ICollection<UsageActual> usage = new HashSet<UsageActual>();
         private readonly ICollection<MaintenancePlan> plans = new HashSet<MaintenancePlan>();
 
-        public MaintenanceObject(ObjectGroup group, string techIndex, DateTime? startOperating, Period period = null, IEnumerable<LastMaintenance> last = null)
+        public MaintenanceObject(ObjectGroup group, string techIndex, DateTime? startOperating, Period period = null, IEnumerable<LastMaintenance> last = null, MaintenanceObject replaceObject = null)
         {
 
             var _period = period ?? Period.Now();
@@ -36,7 +36,14 @@ namespace Naftan.Maintenance.Domain.Objects
             if (startOperating != null)
             {
                 PutIntoOperating(startOperating.Value, _period);
+
+                if (replaceObject != null)
+                {
+                    ReplaceObject = replaceObject;
+                    replaceObject.PutIntoUnMounted(startOperating.Value);
+                }
             }
+            
 
             if (last != null && last.Any())
             {
@@ -133,7 +140,9 @@ namespace Naftan.Maintenance.Domain.Objects
         /// </summary>
         public void ApplyReport()
         {
-
+            //Если оборудование демонтировано, то  отчёт не проводим
+            if (CurrentOperatingState == OperatingState.UnMounted) return;
+                        
             if (CurrentOperatingState == null)
             {
                 ChangeOperatingState(OperatingState.Operating, Report.Period.Start());
@@ -272,6 +281,9 @@ namespace Naftan.Maintenance.Domain.Objects
         /// </summary>
         public void DiscardReport()
         {
+            //Если оборудование демонтировано, то  отчёт не откатываем
+            if (CurrentOperatingState == OperatingState.UnMounted) return;
+
             var CurrentPeriod = Report.Period;
             var PrevPeriod = CurrentPeriod.Prev();
 
@@ -423,12 +435,12 @@ namespace Naftan.Maintenance.Domain.Objects
        /// <summary>
        /// Ввести в эксплуатацию
        /// </summary>
-       /// <param name="startDate">Дата начала эксплуатации</param>
+       /// <param name="date">Дата начала эксплуатации</param>
        /// <param name="period">Текущий период оперативного отчёта</param>
-        public void PutIntoOperating(DateTime startDate, Period period)
+        public void PutIntoOperating(DateTime date, Period period)
         {
-            StartOperating = startDate;
-            ChangeOperatingState(OperatingState.Operating, startDate);
+            StartOperating = date;
+            ChangeOperatingState(OperatingState.Operating, date);
 
             Report = new OperationalReport
             {
@@ -439,6 +451,18 @@ namespace Naftan.Maintenance.Domain.Objects
             };
 
         } 
+        
+        /// <summary>
+        /// Демонтировать оборудование
+        /// </summary>
+        /// <param name="date">Дата демонтирования</param>
+        public void PutIntoUnMounted(DateTime date)
+        {
+            ChangeOperatingState(OperatingState.UnMounted, date);
+            Report.UsageBeforeMaintenance = 0;
+            Report.State = OperatingState.UnMounted;
+        }
+
 
         #endregion
 
@@ -767,8 +791,9 @@ namespace Naftan.Maintenance.Domain.Objects
         public void PlanningMaintenance(Period period, MaintenanceType offer = null, MaintenanceReason offerReason = null)
         {
 
-            //если оборудование на обслуживании то не планируем ничего
-            if (CurrentOperatingState == OperatingState.Maintenance || CurrentOperatingState==OperatingState.Reserve) return;
+            //если оборудование не эксплуатируется, то ничего не планируем
+            if (CurrentOperatingState != OperatingState.Operating) return;
+
 
             //проверяем предыдущий период если план невыполнен то переносим в след период
             var prevPlan = plans.FirstOrDefault(x => x.MaintenanceDate >= period.Prev().Start() && x.MaintenanceDate <= period.Prev().End());

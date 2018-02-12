@@ -6,8 +6,6 @@
 
     $init: function (config) {
 
-        console.log(config.segmentId);
-
         var me = this;
 
         var status = function (value, obj) {

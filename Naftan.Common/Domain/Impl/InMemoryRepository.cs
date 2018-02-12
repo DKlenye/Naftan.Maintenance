@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace Naftan.Common.Domain.Impl
 {
-   /// <summary>
-   /// Реализация репозитория в памяти
-   /// </summary>
-   public  class InMemoryRepository:IRepository
+    /// <summary>
+    /// Реализация репозитория в памяти <see cref="IRepository"/>
+    /// </summary>
+    public class InMemoryRepository:IRepository
    {
        private readonly Dictionary<Type, Dictionary<int, object>> Data = new Dictionary<Type, Dictionary<int, object>>();
        private readonly Dictionary<Type, int> Id = new Dictionary<Type, int>(); 
@@ -32,12 +32,14 @@ namespace Naftan.Common.Domain.Impl
            return Id[typeof (T)]++;
        }
 
+       /// <inheritdoc/>
        public IEnumerable<TEntity> All<TEntity>() where TEntity : IEntity
        {
            return GetList<TEntity>().Values.OfType<TEntity>();
        }
 
-       public TEntity Get<TEntity>(int id) where TEntity : IEntity
+        /// <inheritdoc/>
+        public TEntity Get<TEntity>(int id) where TEntity : IEntity
        {
            var list = GetList<TEntity>(); 
 
@@ -49,7 +51,8 @@ namespace Naftan.Common.Domain.Impl
            throw new KeyNotFoundException("Сущность с указаным id не найдена");
        }
 
-       public void Save<TEntity>(TEntity entity) where TEntity : IEntity
+        /// <inheritdoc/>
+        public void Save<TEntity>(TEntity entity) where TEntity : IEntity
        {
            var list = GetList<TEntity>();
 
@@ -65,7 +68,8 @@ namespace Naftan.Common.Domain.Impl
 
        }
 
-       public void Remove<TEntity>(TEntity entity) where TEntity : IEntity
+        /// <inheritdoc/>
+        public void Remove<TEntity>(TEntity entity) where TEntity : IEntity
        {
            if (entity.Id != 0)
            {
@@ -73,6 +77,7 @@ namespace Naftan.Common.Domain.Impl
            }
        }
 
+        /// <inheritdoc/>
         public void Remove<TEntity>(int id) where TEntity : IEntity
         {
             if (id != 0)

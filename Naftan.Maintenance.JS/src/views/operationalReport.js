@@ -36,7 +36,7 @@
 
 
         var cssFormat = function (value, obj) {
-            if (obj.state == 4) return "row-silver"
+            if (obj.state == 4 || obj.state == 6) return "row-silver";
             return "";
         }
 
@@ -500,6 +500,9 @@
 
         var item = this.reportTable.getItem(obj.row);
         var isRepair = item.state == 2;
+        var isUnmounted = item.state == 6;
+
+        if (isUnmounted) return false;
 
         switch (obj.column) {
             case "state": {

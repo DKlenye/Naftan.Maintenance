@@ -4,7 +4,7 @@ using Naftan.Common.NHibernate.Mappings;
 
 namespace Naftan.Maintenance.NHibernate.RepairObjects
 {
-    public class RepairObjectMappingOverride:TreeNodeMappingOverride<MaintenanceObject>
+    public class MaintenanceObjectMappingOverride : TreeNodeMappingOverride<MaintenanceObject>
     {
         protected override string HierarchyTableName => "MaintenanceObject_HIERARCHY";
 
@@ -14,7 +14,7 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
 
             mapping.HasMany(x => x.OperatingStates)
                 .Access.ReadOnlyPropertyThroughCamelCaseField()
-                .Cascade.AllDeleteOrphan ()
+                .Cascade.AllDeleteOrphan()
                 .Inverse()
                 .AsSet()
                 .LazyLoad()
@@ -29,36 +29,36 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
                 .BatchSize(250);
 
             mapping.HasMany(x => x.LastMaintenance)
-               .Access.ReadOnlyPropertyThroughCamelCaseField()
-               .Cascade.AllDeleteOrphan()
-               .Inverse()
-               .AsSet()
-               .LazyLoad()
-               .BatchSize(250);
+                .Access.ReadOnlyPropertyThroughCamelCaseField()
+                .Cascade.AllDeleteOrphan()
+                .Inverse()
+                .AsSet()
+                .LazyLoad()
+                .BatchSize(250);
 
             mapping.HasMany(x => x.Usage)
-               .Access.ReadOnlyPropertyThroughCamelCaseField()
-               .Cascade.AllDeleteOrphan()
-               .Inverse()
-               .AsSet()
-               .LazyLoad()
-               .BatchSize(250);
+                .Access.ReadOnlyPropertyThroughCamelCaseField()
+                .Cascade.AllDeleteOrphan()
+                .Inverse()
+                .AsSet()
+                .LazyLoad()
+                .BatchSize(250);
 
             mapping.HasMany(x => x.Maintenance)
-              .Access.ReadOnlyPropertyThroughCamelCaseField()
-              .Cascade.AllDeleteOrphan()
-              .Inverse()
-              .AsSet()
-              .LazyLoad()
-              .BatchSize(250);
+                .Access.ReadOnlyPropertyThroughCamelCaseField()
+                .Cascade.AllDeleteOrphan()
+                .Inverse()
+                .AsSet()
+                .LazyLoad()
+                .BatchSize(250);
 
             mapping.HasMany(x => x.Plans)
-            .Access.ReadOnlyPropertyThroughCamelCaseField()
-            .Cascade.AllDeleteOrphan()
-            .Inverse()
-            .AsSet()
-            .LazyLoad()
-            .BatchSize(250);
+                .Access.ReadOnlyPropertyThroughCamelCaseField()
+                .Cascade.AllDeleteOrphan()
+                .Inverse()
+                .AsSet()
+                .LazyLoad()
+                .BatchSize(250);
 
             mapping.References(x => x.NextMaintenance).Column("NextMaintenance");
 
@@ -67,6 +67,4 @@ namespace Naftan.Maintenance.NHibernate.RepairObjects
             mapping.References(x => x.ReplaceObject).Column("ReplaceObject").ForeignKey("ReplaceObject_FK");
         }
     }
-    
-
 }

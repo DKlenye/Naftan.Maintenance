@@ -7,7 +7,11 @@ namespace Naftan.Maintenance.Domain.UserReferences
     /// </summary>
     public class ReferenceValue:IEntity
     {
+        /// <inheritdoc/>
         public int Id { get; set; }
+        /// <summary>
+        /// Справочник
+        /// </summary>
         public Reference Reference { get; internal set; }
         /// <summary>
         /// Значение справочника

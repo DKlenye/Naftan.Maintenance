@@ -34,13 +34,20 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
 
         public override MaintenanceObject GetEntity(IRepository repository)
         {
+            MaintenanceObject replaceObject = null;
+
+            if (ReplaceObjectId != null)
+            {
+                replaceObject = repository.Get<MaintenanceObject>(ReplaceObjectId.Value);
+            }
 
             var newObject = new MaintenanceObject(
                repository.Get<ObjectGroup>(GroupId),
                TechIndex,
                StartOperating,
                Period==null? new Period(DateTime.Now):new Period(Period.Value),
-               LastMaintenance==null? null: LastMaintenance.Select(x => x.GetEntity(repository))
+               LastMaintenance==null? null: LastMaintenance.Select(x => x.GetEntity(repository)),
+               replaceObject
             );
 
             newObject.Plant = repository.Get<Plant>(PlantId.Value);
@@ -53,6 +60,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
                 repository.Save(parent);
             }
 
+            
+            
             return newObject;
 
         }

@@ -34,6 +34,7 @@ namespace Naftan.Maintenance.Domain.Users
             Email = email;
         }
 
+        ///<inheritdoc/>
         public int Id { get; set; }
 
         /// <summary>

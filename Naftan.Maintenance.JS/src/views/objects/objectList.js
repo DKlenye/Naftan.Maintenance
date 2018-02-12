@@ -108,15 +108,25 @@
                                                     click: function () {
                                                         var item = me.queryView({ name: "objects" }).getSelectedItem() || {};
                                                         if (item) {
-                                                            me.callEvent("onCreateView", [
-                                                                'Новое оборудование',
-                                                                {
-                                                                    view: "view_objecteditor",
-                                                                    mode: 'insert',
-                                                                    replaceObjectId: item.id
-                                                                },
-                                                                'plus-circle'
-                                                            ]);
+
+                                                            if (item.currentOperatingState == 6) {
+                                                                webix.message({
+                                                                    text: "Оборудование " + item.techIndex +" уже демонтировано",
+                                                                    type: "debug"
+                                                                });
+                                                            }
+                                                            else {
+
+                                                                me.callEvent("onCreateView", [
+                                                                    'Новое оборудование',
+                                                                    {
+                                                                        view: "view_objecteditor",
+                                                                        mode: 'insert',
+                                                                        replaceObjectId: item.id
+                                                                    },
+                                                                    'plus-circle'
+                                                                ]);
+                                                            }
                                                         }
                                                     }
                                                 },
