@@ -14,6 +14,9 @@ namespace Naftan.Maintenance.WebApplication
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
+            var formatters = GlobalConfiguration.Configuration.Formatters;
+            formatters.Remove(formatters.XmlFormatter);
+
             var serializer = GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings;
             serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
             serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

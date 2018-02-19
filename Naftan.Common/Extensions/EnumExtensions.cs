@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace Naftan.Common.Extensions
 {
+    /// <summary>
+    /// Расширения для перечислений
+    /// </summary>
     public static class EnumExtensions
     {
         public static T GetAttribute<T>(this Enum value) where T : Attribute

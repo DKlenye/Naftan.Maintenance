@@ -72,12 +72,9 @@
     width: 100%;
 }
 
-.progress header {
+.progress p {
     font-size: 13px;
-}
-
-.progress header span {
-    float: right;
+    margin:0px;
 }
 
 .progress .bar {

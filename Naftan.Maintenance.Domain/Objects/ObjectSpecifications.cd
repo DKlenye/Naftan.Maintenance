@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Объект ремонта">
+    <Position X="6.188" Y="1.333" Height="0.354" Width="1.46" />
+  </Comment>
+  <Comment CommentText="Характеристика объекта">
+    <Position X="10.167" Y="1.5" Height="0.354" Width="1.762" />
+  </Comment>
+  <Comment CommentText="Характеристика группы">
+    <Position X="12.115" Y="3.854" Height="0.354" Width="1.762" />
+  </Comment>
+  <Comment CommentText="Группа">
+    <Position X="9.635" Y="4.063" Height="0.354" Width="1.002" />
+  </Comment>
+  <Comment CommentText="Установка">
+    <Position X="9.656" Y="8.281" Height="0.354" Width="1.002" />
+  </Comment>
+  <Comment CommentText="Цех/Производство">
+    <Position X="12.521" Y="8.26" Height="0.354" Width="1.335" />
+  </Comment>
+  <Comment CommentText="Пользовательский справочник">
+    <Position X="3.583" Y="2.948" Height="0.479" Width="1.387" />
+  </Comment>
+  <Comment CommentText="Значение справочника">
+    <Position X="0.687" Y="4.25" Height="0.354" Width="1.565" />
+  </Comment>
+  <Comment CommentText="Характеристика">
+    <Position X="4.323" Y="0.5" Height="0.354" Width="1.169" />
+  </Comment>
+  <Comment CommentText="Тип характеристики">
+    <Position X="0.562" Y="0.677" Height="0.354" Width="1.44" />
+  </Comment>
+  <Class Name="Naftan.Maintenance.Domain.Objects.ObjectGroup">
+    <Position X="8.75" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AgACAAAQAAAAIACAAIAAgASAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Objects\ObjectGroup.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Specifications" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Objects.MaintenanceObject">
+    <Position X="5.25" Y="1.75" Width="2.5" />
+    <AssociationLine Name="Group" Type="Naftan.Maintenance.Domain.Objects.ObjectGroup">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.079" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>YiAWEEiQAAAIgCCACaYIgIAEAALAhIIgAACyAABIBAA=</HashCode>
+      <FileName>Objects\MaintenanceObject.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Plant" />
+      <Property Name="Group" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Specifications" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Objects.Plant">
+    <Position X="8.75" Y="8.75" Width="1.5" />
+    <AssociationLine Name="Department" Type="Naftan.Maintenance.Domain.Objects.Department">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.068" Y="-0.325" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Objects\Plant.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Department" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Objects.Department">
+    <Position X="11.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Objects\Department.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Specifications.Specification">
+    <Position X="2.75" Y="0.75" Width="1.5" />
+    <AssociationLine Name="Reference" Type="Naftan.Maintenance.Domain.UserReferences.Reference" FixedToPoint="true">
+      <Path>
+        <Point X="3.812" Y="2.046" />
+        <Point X="3.812" Y="3.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.942" Y="1.331" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAACAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Specifications\Specification.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Type" />
+      <Property Name="Reference" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.UserReferences.Reference">
+    <Position X="2.75" Y="3.75" Width="2.25" />
+    <AssociationLine Name="Values" Type="Naftan.Maintenance.Domain.UserReferences.ReferenceValue">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.058" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAACQCgAAQAAAAAACAAAAAgAAAAAAA=</HashCode>
+      <FileName>UserReferences\Reference.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Values" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.UserReferences.ReferenceValue">
+    <Position X="0.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>UserReferences\ReferenceValue.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Specifications.GroupSpecification">
+    <Position X="11.75" Y="4.5" Width="2" />
+    <AssociationLine Name="Specification" Type="Naftan.Maintenance.Domain.Specifications.Specification">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="8.568" Y="-2.669" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAEAAAAAAABAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Specifications\GroupSpecification.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Specification" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Naftan.Maintenance.Domain.Specifications.ObjectSpecification">
+    <Position X="9" Y="2" Width="2" />
+    <AssociationLine Name="Specification" Type="Naftan.Maintenance.Domain.Specifications.Specification" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="10" Y="2" />
+        <Point X="10" Y="1.188" />
+        <Point X="4.25" Y="1.188" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="5.881" Y="-0.19" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAABAgAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Specifications\ObjectSpecification.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Specification" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Enum Name="Naftan.Maintenance.Domain.Specifications.SpecificationType">
+    <Position X="0.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAQAgAAAAQAAAAAAAAAAAAAABAAAAAAAAACA=</HashCode>
+      <FileName>Specifications\SpecificationType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

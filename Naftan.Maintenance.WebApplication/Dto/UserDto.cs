@@ -16,7 +16,8 @@ namespace Naftan.Maintenance.WebApplication.Dto
 
         public IEnumerable<int> Groups { get; set; }
         public IEnumerable<int> Plants { get; set; }
-        
+        public int? Site { get; set; }
+
         public UserDto() { }
         public UserDto(User entity)
         {
@@ -35,6 +36,7 @@ namespace Naftan.Maintenance.WebApplication.Dto
             entity.Name = Name;
             entity.Phone = Phone;
             entity.Email = Email;
+            entity.Site = Site;
 
             entity.ObjectGroups.Clear();
             entity.Plants.Clear();
@@ -50,6 +52,7 @@ namespace Naftan.Maintenance.WebApplication.Dto
             Phone = entity.Phone;
             Name = entity.Name;
             Email = entity.Email;
+            Site = entity.Site;
 
             Groups = entity.ObjectGroups.Select(x => x.Id);
             Plants = entity.Plants.Select(x => x.Id);

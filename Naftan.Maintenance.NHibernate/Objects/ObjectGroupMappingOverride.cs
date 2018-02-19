@@ -4,7 +4,7 @@ using FluentNHibernate.Automapping;
 
 namespace Naftan.Maintenance.NHibernate.RepairObjects
 {
-    public class RepairObjectGroupMappingOverride:TreeNodeMappingOverride<ObjectGroup>
+    public class ObjectGroupMappingOverride:TreeNodeMappingOverride<ObjectGroup>
     {
         protected override string HierarchyTableName => "ObjectGroup_HIERARCHY";
 

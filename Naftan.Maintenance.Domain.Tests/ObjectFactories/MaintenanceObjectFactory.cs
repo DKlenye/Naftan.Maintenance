@@ -136,6 +136,7 @@ namespace Naftan.Maintenance.Domain.Tests.RepairObjectFactories
             Compressor = new MaintenanceObject(kompressorsModels, "КП-1", DateTime.Now);
             Compressor.AddSpecificationsFromGroup();
             Compressor.Specifications.First().Value = "11,2";
+            Compressor.AddChild(ElectroMotor);
 
             repository.Save(Compressor);
         }

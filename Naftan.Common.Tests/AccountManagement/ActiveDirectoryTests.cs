@@ -43,7 +43,7 @@ namespace Naftan.Common.Tests.AccountManagement
         [Test]
         public void GetAccountsByGroup()
         {
-            var accounts = ActiveDirectory.GetAccountsByGroup("Maintenance_Engineer");
+            var accounts = ActiveDirectory.GetAccountsByGroup("Transport_Оператор_АЗС");
             accounts.ToList().ForEach(x=>Console.WriteLine(x.Login));
         }
 

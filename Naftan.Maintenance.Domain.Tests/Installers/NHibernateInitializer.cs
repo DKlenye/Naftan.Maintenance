@@ -5,7 +5,6 @@ using FluentNHibernate.Cfg.Db;
 using Naftan.Common.NHibernate;
 using NHibernate.Cfg;
 using Naftan.Maintenance.NHibernate;
-using System.IO;
 
 namespace Naftan.Maintenance.Domain.Tests
 {
@@ -17,11 +16,12 @@ namespace Naftan.Maintenance.Domain.Tests
             var DomainAssembly = Assembly.Load("Naftan.Maintenance.Domain");
             var CommonAssembly = Assembly.Load("Naftan.Common");
             
-            var msSqlDatabase = MsSqlConfiguration.MsSql2012
+            var msSqlDatabase = MsSqlConfiguration.MsSql2008
                 .UseOuterJoin()
                 .ShowSql()
                 .FormatSql()
-                .ConnectionString("data source=.; initial catalog=maintenance; integrated security=SSPI;")
+                // !!!ВНИМАНИЕ Аккуратнее с настойками базы данных для тестов. Если указать рабочую(боевую) базу данных, то ВСЕ РАБОЧИЕ ДАННЫЕ БУДУТ УДАЛЕНЫ !!!
+                .ConnectionString("data source = db2; initial catalog = maintenance_test; integrated security = SSPI;")
                 .UseReflectionOptimizer()
                 .AdoNetBatchSize(100);
 
@@ -33,7 +33,6 @@ namespace Naftan.Maintenance.Domain.Tests
             FluentConfiguration cfg = Fluently.Configure()
                 .Database(msSqlDatabase)
                 .Mappings(x => x.AutoMappings.Add(automapping)
-                   // .ExportTo(Path.GetTempPath()+"Mappings\\")
             );
                         
             var configuration = cfg.BuildConfiguration();

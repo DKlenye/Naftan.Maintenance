@@ -1,7 +1,7 @@
 ﻿webix.protoUI({
 
     name: 'view_operationalreport',
-    requireCollections: ["department", "plant", "operatingState", "maintenanceReason","maintenanceType"],
+    requireCollections: ["department", "plant", "operatingState", "maintenanceReason", "maintenanceType","groupinterval"],
 
     $init: function (cfg) {
 
@@ -40,6 +40,11 @@
             return "";
         }
 
+        var intervalCollection = webix.collection('groupinterval');
+        var intervalTemplate = function (obj, common, value, config) {
+            return intervalCollection.getItem(obj.objectGroupId)[config.id] || "";
+        }
+
         webix.extend(cfg, {
             rows: [
                 {
@@ -50,6 +55,48 @@
                             value: new Date(),
                             on: {
                                 onChange: webix.bind(this.reload, this)
+                            }
+                        },
+                        {
+                            view: "toggle",
+                            type: "iconButton",
+                            width:170,
+                            offIcon: "eye",
+                            onIcon: "eye-slash",
+                            offLabel: "Показать интервалы",
+                            onLabel: "Скрыть интервалы",
+                            click: function () {
+
+                                var table = me.reportTable;
+                                var handler = this.getValue() == 0 ? 'showColumn' : 'hideColumn';
+
+                                var columns = ["o_min", "t_min", "s_min", "k_min", "o_max", "t_max", "s_max", "k_max"];
+
+                                columns.forEach(function (column) {
+                                    table[handler](column);
+                                });
+
+                            }
+                        },
+                        {
+                            view: "toggle",
+                            type: "iconButton",
+                            width: 170,
+                            offIcon: "eye",
+                            onIcon: "eye-slash",
+                            offLabel: "Показать родителя",
+                            onLabel: "Скрыть родителя",
+                            click: function () {
+
+                                var table = me.reportTable;
+                                var handler = this.getValue() == 0 ? 'showColumn' : 'hideColumn';
+
+                                var columns = ["nextPrcn_parent", "usageParent"];
+
+                                columns.forEach(function (column) {
+                                    table[handler](column);
+                                });
+
                             }
                         },
                         {},
@@ -77,11 +124,27 @@
                         webix.column("id"),
                         {
                             id: "nextPrcn",
-                            header: 'Износ',
+                            header: 'Текущий цикл',
                             template: webix.templates.progress("nextUsageNorm","nextUsageNormMax", "nextUsageFact", "nextMaintenance"),
                             sort: sortByProgress,
-                            width:150
+                            width:130
                         },
+
+                        { id: 'o_min', header: [{ text: 'Осмотр', colspan: 2 }, 'мин'], sort: 'int', width: 60, template: intervalTemplate, hidden:true },
+                        { id: 'o_max', header: ['', 'макс'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                       // { id: 'o_qt', header: ['', 'кол-во'], sort: 'int', width: 70, template: intervalTemplate, css: { "color": "blue" } },
+                        { id: 't_min', header: [{ text: 'Текущий', colspan: 2 }, 'мин'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                        { id: 't_max', header: ['', 'макс'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                       // { id: 't_qt', header: ['', 'кол-во'], sort: 'int', width: 70, template: intervalTemplate, css: { "color": "blue" } },
+                        { id: 's_min', header: [{ text: 'Средний', colspan: 2 }, 'мин'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                        { id: 's_max', header: ['', 'макс'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                        //{ id: 's_qt', header: ['', 'кол-во'], sort: 'int', width: 70, template: intervalTemplate, css: { "color": "blue" } },
+                        { id: 'k_min', header: [{ text: 'Капитальный', colspan: 2 }, 'мин'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                        { id: 'k_max', header: ['', 'макс'], sort: 'int', width: 60, template: intervalTemplate, hidden: true },
+                        //{ id: 'k_qt', header: ['', 'кол-во'], sort: 'int', width: 70, template: intervalTemplate, css: { "color": "blue" } },
+
+
+
                         {
                             id: 'departmentId',
                             header: ['Цех\Производство', { content: "selectFilter", options: webix.collection.options("department", "name", true) }],
@@ -115,16 +178,23 @@
                             cssFormat: cssFormat
                         },
                         {
+                            id: "nextPrcn_parent",
+                            header: [{ text: "Родитель", colspan: 2 },'Текущий цикл'],
+                            template: webix.templates.progress("nextUsageNorm_parent", "nextUsageNormMax_parent", "nextUsageFact_parent", "nextMaintenance_parent"),
+                            width: 130,
+                            hidden: true
+                        },
+                        {
                             id: 'usageParent',
-                            header: [{ text: "Наработка", colspan: 3, css: { "background": colors.usage } }, { text: "Родитель", css: { "background": colors.usage } }],
+                            header: ['','Наработка'],
                             sort: 'int',
                             parseFormat: intFormatter,
-                            width: 80,
-                            cssFormat: cssFormat
+                            width: 90,
+                            hidden: true
                         },
                         {
                             id: 'usageBeforeMaintenance',
-                            header: ['', { text: "До", css: { "background": colors.usage } }],
+                            header: [{ text: "Наработка", colspan: 2, css: { "background": colors.usage } }, { text: "До", css: { "background": colors.usage } }],
                             sort: 'int',
                             editor: "text",
                             editFormat: intFormatter,

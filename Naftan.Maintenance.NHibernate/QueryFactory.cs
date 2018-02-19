@@ -42,6 +42,7 @@ namespace Naftan.Maintenance.NHibernate
 	            o.TechIndex,
 	            p.DepartmentId,
 	            o.PlantId,
+                o.Site,
                 o.CurrentOperatingState,
                 r.Period,
                 o.UsageFromStartup
@@ -128,16 +129,24 @@ namespace Naftan.Maintenance.NHibernate
 	                mt.Designation AS NextMaintenance,
 	                mo.NextUsageNorm,
                     mo.NextUsageNormMax,
-	                mo.NextUsageFact
+	                mo.NextUsageFact,
+                    mt2.Designation AS NextMaintenance_parent,
+	                mo2.NextUsageNorm AS NextUsageNorm_parent,
+                    mo2.NextUsageNormMax AS NextUsageNormMax_parent,
+	                mo2.NextUsageFact AS NextUsageFact_parent
                 from OperationalReport r
                 LEFT JOIN MaintenanceObject mo ON mo.MaintenanceObjectId = r.MaintenanceObjectId
+                LEFT JOIN MaintenanceObject mo2 ON mo.PARENT_ID = mo2.MaintenanceObjectId
+                LEFT JOIN ObjectGroup AS og ON og.ObjectGroupId = mo.ObjectGroupId
+                LEFT JOIN ObjectGroup AS og2 ON og.PARENT_ID = og2.ObjectGroupId
                 LEFT JOIN ObjectSpecification AS os ON mo.MaintenanceObjectId = os.MaintenanceObjectId AND os.SpecificationId = 27
                 LEFT JOIN ReferenceValue rv ON rv.ReferenceValueId = os.Value
                 LEFT JOIN MaintenanceType AS mt ON mt.MaintenanceTypeId = mo.NextMaintenance
+                LEFT JOIN MaintenanceType AS mt2 ON mt2.MaintenanceTypeId = mo2.NextMaintenance
                 LEFT JOIN Plant p ON p.PlantId = mo.PlantId
                 LEFT JOIN MaintenancePlan mp ON mp.MaintenanceObjectId = r.MaintenanceObjectId AND YEAR(mp.MaintenanceDate)*100+MONTH(mp.MaintenanceDate) = r.period
                 {whereClause}
-				ORDER BY p.ReplicationKc, p.ReplicationKu, mo.ReplicationKvo, mo.TechIndex, mo.ReplicationKmrk
+				ORDER BY  p.DepartmentId, p.PlantId, og2.ObjectGroupId, mo.TechIndex
         ";
 
         public IEnumerable<OperationalReportDto> FindOperationalReportAll()
@@ -162,7 +171,7 @@ namespace Naftan.Maintenance.NHibernate
                 INNER JOIN Users u ON u.[login] = :login
                 INNER JOIN UserPlants AS up ON up.UserId = u.UserId AND up.PlantId = mo.PlantId
                 INNER JOIN UserObjectGroups AS ug ON ug.UserId = u.UserId AND ug.ObjectGroupId = mo.ObjectGroupId
-                WHERE r.period = :period
+                WHERE r.period = :period and isnull(mo.Site,0) = isnull(u.Site,isnull(mo.Site,0))
                 "
                 ))
                 .SetParameter("period",period.period)

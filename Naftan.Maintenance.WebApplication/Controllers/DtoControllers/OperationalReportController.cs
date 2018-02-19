@@ -4,6 +4,7 @@ using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Objects;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
@@ -90,8 +91,15 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
         public void SetNextMaintenance()
         {
             repository.All<MaintenanceObject>()
-                .Where(x=>x.Id>= 4735)
-                .ToList().ForEach(x => x.SetNextMaintenance());
+                .Where(x=>x.Id>= 6428)
+                .ToList().ForEach(x => {
+                    try
+                    {
+                        x.SetNextMaintenance();
+                    }
+                    catch (Exception ex){ }
+                   
+                    });
         }
 
         [HttpGet, Route("api/operationalReport/plan")]

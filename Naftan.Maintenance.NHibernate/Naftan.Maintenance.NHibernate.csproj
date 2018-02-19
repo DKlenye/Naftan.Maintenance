@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Naftan.Maintenance.NHibernate.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,10 +55,10 @@
     <Compile Include="ObjectMaintenance\MaintenancePlanMappingOverride.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryFactory.cs" />
-    <Compile Include="RepairObjects\LastMaintenanceMappingOverride.cs" />
-    <Compile Include="RepairObjects\MaintenanceObjectMappingOverride.cs" />
-    <Compile Include="RepairObjects\OperationalReportMappingOverride.cs" />
-    <Compile Include="RepairObjects\RepairObjectGroupMappingOverride.cs" />
+    <Compile Include="Objects\LastMaintenanceMappingOverride.cs" />
+    <Compile Include="Objects\MaintenanceObjectMappingOverride.cs" />
+    <Compile Include="Objects\OperationalReportMappingOverride.cs" />
+    <Compile Include="Objects\ObjectGroupMappingOverride.cs" />
     <Compile Include="Specifications\ObjectSpecificationMappingOverride.cs" />
     <Compile Include="UserReferences\ReferenceMappingOverride.cs" />
     <Compile Include="Users\UserMappingOverride.cs" />

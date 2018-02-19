@@ -71,45 +71,17 @@ namespace Naftan.Maintenance.Domain.Objects
 
         }
 
-        #region Поля используемые для интеграции данных из dbf
-        public int? ReplicationKvo { get; private set; }
-        public int? ReplicationKg { get; private set; }
-        public int? ReplicationKu { get; private set; }
-        public int? ReplicationKc { get; private set; }
-        public int? ReplicationKmrk { get; private set; }
-
-        /// <summary>
-        /// Эксплуатируемость
-        /// 0-"Эксплуатируется"
-        /// 1-"Не эксплуатируется"
-        /// </summary>
-        public int? ReplicationFe { get; private set; } 
-        #endregion
-
+        /// <inheritdoc/>
         public int Id { get; set; }
         /// <summary>
         /// Группа объекта ремонта
         /// </summary>
-        public ObjectGroup Group { get; private set; }
+        public ObjectGroup Group { get; internal set; }
         /// <summary>
         /// Установка
         /// </summary>
         public Plant Plant { get; set; }
-        /// <summary>
-        /// Рабочая среда
-        /// </summary>
-        [Obsolete]
-        public int? EnvironmentId { get; private set; }
-        /// <summary>
-        /// Завод производитель
-        /// </summary>
-        [Obsolete]
-        public int? ManufacturerId { get; private set; }
-        /// <summary>
-        /// Заводской номер
-        /// </summary>
-        [Obsolete]
-        public string FactoryNumber { get; private set; }
+        
         /// <summary>
         /// Инвентарный номер
         /// </summary>
@@ -128,6 +100,11 @@ namespace Naftan.Maintenance.Domain.Objects
         /// Ссылка на оборудование, которое было заменено
         /// </summary>
         public MaintenanceObject ReplaceObject { get; private set; }
+
+        /// <summary>
+        /// Участок (электродвигатели)
+        /// </summary>
+        public int? Site { get; set; }
 
         #region Оперативный отчёт
         /// <summary>
@@ -522,6 +499,12 @@ namespace Naftan.Maintenance.Domain.Objects
 
         public IEnumerable<UsageActual> Usage => usage;
 
+        /// <summary>
+        /// Добавить наработку
+        /// </summary>
+        /// <param name="start">Дата с</param>
+        /// <param name="end">Дата по</param>
+        /// <param name="usage">Наработка</param>
         public void AddUsage(DateTime start, DateTime end, int usage)
         {
             //todo вводимая наработка должная быть в пределах одного периода( потому что отчётный период ил период планирования 1 мес. (уточнить!))
@@ -548,6 +531,10 @@ namespace Naftan.Maintenance.Domain.Objects
             UsageFromStartup  = (UsageFromStartup??0) + usage;
         }
 
+       /// <summary>
+       /// Удалить наработку
+       /// </summary>
+       /// <param name="entity"></param>
         public void RemoveUsage(UsageActual entity)
         {
             //Убрать наработку с начала эксплуатации
@@ -607,6 +594,13 @@ namespace Naftan.Maintenance.Domain.Objects
             }
         }
 
+        /// <summary>
+        /// Добавить обслуживание
+        /// </summary>
+        /// <param name="maintenanceType"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="unplannedReason"></param>
         public void AddMaintenance(
            MaintenanceType maintenanceType,
            DateTime start,
@@ -643,6 +637,10 @@ namespace Naftan.Maintenance.Domain.Objects
 
         }
 
+        /// <summary>
+        /// Удалить обслуживание
+        /// </summary>
+        /// <param name="entity"></param>
         public void RemoveMaintenance(MaintenanceActual entity)
         {
             var lastMaintenanceMap = LastMaintenance.ToDictionary(x => x.MaintenanceType.Id);
@@ -666,7 +664,10 @@ namespace Naftan.Maintenance.Domain.Objects
 
         }
         
-
+        /// <summary>
+        /// Завершить неоконченное обслуживание
+        /// </summary>
+        /// <param name="end"></param>
         public void FinalizeMaintenance(DateTime end)
         {
             if (CurrentOperatingState == OperatingState.Maintenance)
@@ -742,7 +743,7 @@ namespace Naftan.Maintenance.Domain.Objects
         public int? NextUsageFact { get; private set; } 
 
         /// <summary>
-        /// Установка следующего обслуживания(прогноз)
+        /// Установка следующего обслуживания(данные для индикатора следующего ремонта)
         /// </summary>
         public void SetNextMaintenance()
         {

@@ -63,6 +63,11 @@ namespace Naftan.Maintenance.Domain.Users
         public ISet<Plant> Plants { get; set; }
 
         /// <summary>
+        /// Участок электодвигателей, разрешённый для пользователя
+        /// </summary>
+        public int? Site { get; set; }
+
+        /// <summary>
         /// Группы, оазрешённые для пользователя
         /// </summary>
         public ISet<ObjectGroup> ObjectGroups { get; set; }
@@ -78,7 +83,6 @@ namespace Naftan.Maintenance.Domain.Users
 
             return account.Groups.Where(rolesMap.ContainsKey)
                 .Select(x => x.ConvertToEnum<UserRoles>());
-
         }
                 
     }

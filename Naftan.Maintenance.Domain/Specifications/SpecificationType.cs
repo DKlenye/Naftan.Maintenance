@@ -2,6 +2,9 @@
 
 namespace Naftan.Maintenance.Domain.Specifications
 {
+    /// <summary>
+    /// Тип характеристики
+    /// </summary>
     public enum SpecificationType
     {
         [Description("Да/Нет")]

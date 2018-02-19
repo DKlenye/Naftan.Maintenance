@@ -81,8 +81,12 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
 
         }
 
-
+        /// <inheritdoc/>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Объект 
+        /// </summary>
         [Required]
         public MaintenanceObject Object { get; private set; }
 

@@ -2,7 +2,7 @@
 
     name: "view_objecteditor",
 
-    requireCollections: ["reference","maintenanceType", "specification", "plant","department", "objectGroup"],
+    requireCollections: ["reference", "maintenanceType", "specification", "plant", "department", "objectGroup","object"],
 
     $init: function (cfg) {
 
@@ -106,6 +106,7 @@
                                                 },
                                                 collection: webix.collection("object")
                                             },
+                                            { label: "Участок (электродвигатели)", type: "combo", options: [1,2,3], id: "site" },
                                             {
                                                 id: "startOperating", label: "Ввод в эксплуатацию",
                                                 type: 'date',
@@ -299,7 +300,7 @@
                 }
 
                 case "groupId": {
-                    if (me.config.mode == "update") return false; //нельзя править группу когда объект уже сохранён
+                    //if (me.config.mode == "update") return false; //нельзя править группу когда объект уже сохранён
                     break;
                 }
                 case "departmentId": {

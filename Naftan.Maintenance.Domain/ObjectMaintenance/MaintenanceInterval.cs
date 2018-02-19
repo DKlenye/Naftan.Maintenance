@@ -32,10 +32,16 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
 
 
 
-
+        /// <inheritdoc/>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Группа объекта
+        /// </summary>
         public ObjectGroup Group { get; internal set; }
+        /// <summary>
+        /// Вид обслуживания
+        /// </summary>
         public MaintenanceType MaintenanceType { get; set; }
         
         #region По наработке

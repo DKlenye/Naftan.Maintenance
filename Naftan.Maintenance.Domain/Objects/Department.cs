@@ -7,7 +7,12 @@ namespace Naftan.Maintenance.Domain.Objects
     /// </summary>
     public class Department:IEntity
     {
+        /// <inheritdoc/>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Наименование
+        /// </summary>
         public string Name { get; set; }
     }
 }

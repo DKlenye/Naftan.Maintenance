@@ -51,6 +51,7 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
             );
 
             newObject.Plant = repository.Get<Plant>(PlantId.Value);
+            newObject.Site = Site;
 
             if (ParentId != null)
             {
@@ -91,6 +92,8 @@ namespace Naftan.Maintenance.Domain.Dto.Objects
 
             entity.TechIndex = TechIndex;
             entity.Plant = repository.Get<Plant>(PlantId.Value);
+            entity.Site = Site;
+            entity.Group = repository.Get<ObjectGroup>(GroupId);
             SetSpecifications(entity, repository);
 
             //Если введена дата ввода в эксплуатацию, то вводим в эксплуатацию

@@ -1,8 +1,5 @@
 ﻿webix.templates = {
 
-
-    //prop
-
     collection: function (name, property) {
 
         var collection = webix.collection(name);
@@ -64,7 +61,7 @@
 
             diff = diff < 0 ? m - f : diff;
 
-            if (f === null) return "";
+            if (t === null) return "";
 
             var prcn = Math.min(
                 Math.round10((f / n) * 100),
@@ -76,7 +73,7 @@
 
             
             return '<div class="progress">' +
-                '<header>' + f + '<span>' + diff +'&nbsp;&nbsp;'+t+'</span></header>' +
+                '<div><p style="float:left">' + f +'</p><p style="float:right">' + diff + '&nbsp;&nbsp;' + t + '</p><div style="clear: both"></div></div>'+
                 '<div class="bar"><div title="'+prcn+'%" class="percent" style="background:' + color + '; width: '+prcn+'%;">&nbsp;</div></div></div>'
         }
     }

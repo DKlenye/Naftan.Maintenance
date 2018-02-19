@@ -26,7 +26,8 @@
                                 { label: "Логин", id: "login" },
                                 { label: "Фио", type: "text", id: "name" },
                                 { label: "Телефон", type: "text", id: "phone" }, 
-                                { label: "Эл.почта", type: "text", id: "email" }
+                                { label: "Эл.почта", type: "text", id: "email" },
+                                { label: "Участок", type: "combo", options: [1, 2, 3], id: "site" }
                             ]
                         },
                         { view: 'resizer' },

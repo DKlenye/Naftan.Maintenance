@@ -74,13 +74,13 @@
     <Compile Include="OperationalReportTests.cs" />
     <Compile Include="PlanningTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepairObjectFactories\AbstractFactory.cs" />
-    <Compile Include="RepairObjectFactories\MaintenanceObjectFactory.cs" />
-    <Compile Include="RepairObjectFactories\MaintenanceReasonFactory.cs" />
-    <Compile Include="RepairObjectFactories\MaintenanceTypeFactory.cs" />
-    <Compile Include="RepairObjectFactories\MeasureUnitFactory.cs" />
-    <Compile Include="RepairObjectFactories\PlantFactory.cs" />
-    <Compile Include="RepairObjectFactories\SpecificationFactory.cs" />
+    <Compile Include="ObjectFactories\AbstractFactory.cs" />
+    <Compile Include="ObjectFactories\MaintenanceObjectFactory.cs" />
+    <Compile Include="ObjectFactories\MaintenanceReasonFactory.cs" />
+    <Compile Include="ObjectFactories\MaintenanceTypeFactory.cs" />
+    <Compile Include="ObjectFactories\MeasureUnitFactory.cs" />
+    <Compile Include="ObjectFactories\PlantFactory.cs" />
+    <Compile Include="ObjectFactories\SpecificationFactory.cs" />
     <Compile Include="Users\UserPermissionsTests.cs" />
   </ItemGroup>
   <ItemGroup>

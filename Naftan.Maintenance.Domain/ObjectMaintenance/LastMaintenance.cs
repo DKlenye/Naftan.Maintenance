@@ -65,6 +65,10 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
             }
         }
 
+        /// <summary>
+        /// Удалить наработку
+        /// </summary>
+        /// <param name="Usage"></param>
         public void RemoveUsage(int Usage)
         {
             if (UsageFromLastMaintenance != null)

@@ -18,7 +18,5 @@ namespace Naftan.Maintenance.Domain.UserReferences
         /// </summary>
         public string Value { get; set; }
 
-        public int? ReplicationId { get; private set; }
-        public int? Replicationkmrk { get; private set; }
     }
 }

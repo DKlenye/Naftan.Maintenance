@@ -8,7 +8,11 @@ namespace Naftan.Maintenance.Domain.Objects
     /// </summary>
     public class ObjectOperatingState:IEntity
     {
+        /// <inheritdoc/>
         public int Id { get; set; }
+        /// <summary>
+        /// Объект ремонта
+        /// </summary>
         public MaintenanceObject Object { get; set; }
         /// <summary>
         /// Дата изменения состояния

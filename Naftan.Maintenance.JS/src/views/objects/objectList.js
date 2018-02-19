@@ -313,6 +313,12 @@
                 width: 200
             },
             {
+                id: 'site',
+                header: ["Участок", { content: "selectFilter", options: [{ id: "",value:'' }, { id: 1,value:'1' }, { id: 2,value:'2' }, {id:3,value:'3'}] }],
+                sort: "int",
+                width:80
+            },
+            {
                 id: 'period', header: ["Период", { content: "numberFilter" }], sort: 'int', width: 100,
                 template: webix.templates.period()
             },

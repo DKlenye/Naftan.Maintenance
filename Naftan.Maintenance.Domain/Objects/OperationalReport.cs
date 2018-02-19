@@ -10,7 +10,7 @@ namespace Naftan.Maintenance.Domain.Objects
     /// </summary>
     public class OperationalReport:IEntity
     {
-
+        /// <inheritdoc/>
         public int Id { get; set; }
 
         /// <summary>

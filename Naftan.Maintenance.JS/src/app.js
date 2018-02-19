@@ -29,10 +29,7 @@
 
      webix.collection.tree(["objectGroup"]);
 
-     //webix.debug = true;
-
      $.connection.hub.start();
-
 
      webix.ajax()
          .get("/api/user/current")
@@ -65,20 +62,69 @@
                                  css: "header_label"
                              },
                              {},
-                             /*{
-                                 view: "icon", icon: "retweet", click: function () {
-                                     webix.ajax()
-                                         .post("/api/database/update").
-                                         then(function () { webix.message('База обновлена') }, function (e) { webix.message(e.response, 'error') })
-                                 }
-                             },
-                             {
-                                 view: "icon", icon: "database", click: function () {
-                                     webix.ajax()
-                                         .post("/api/database/create").
-                                         then(function () { webix.message('База построена') }, function (e) { webix.message(e.response, 'error') })
-                                 }
-                             },*/
+                             webix.debug ?
+                                 {
+                                     view: "icon", icon: "file", click: function () {
+                                         webix.ajax()
+                                             .post("/api/database/updateScript").
+                                             then(function (e) {
+
+                                                 var win = webix.ui({
+                                                     view: 'window',
+                                                     move: true,
+                                                     resize: true,
+                                                     position: "center",
+                                                     width: 1000,
+                                                     height:800,
+                                                     head: {
+                                                         view: "toolbar", margin: -4, cols: [
+                                                             { view: "label", label: "Скрипт для изменения базы данных" },
+                                                             {
+                                                                 view: "icon", icon: "times-circle",
+                                                                 click: function () { win.close(); }
+                                                             }
+                                                         ]
+                                                     },
+                                                     body: {
+                                                         view: "form",
+                                                         borderless: true,
+                                                         elements: [
+                                                             {
+                                                                 view: "textarea",
+                                                                 value: eval(e.text())
+                                                             }
+                                                         ]
+                                                     }
+                                                 });
+                                                 win.show();
+
+                                             }, function (e) { webix.message(e.response, 'error') })
+                                     }
+                                 } :
+                                 {},
+                             webix.debug ?
+                                 {
+                                     view: "icon", icon: "database", click: function () {
+
+                                         webix.confirm(
+                                             {
+                                                 title: "Обновление базы данных",
+                                                 text: "Будет выполнен скрипт, вносящий изменение в базу данных. Применить изменения?",
+                                                 ok: "Да",
+                                                 cancel: "Нет",
+                                                 type: "alert-error",
+                                                 callback: function (isOk) {
+                                                     if (isOk) {
+                                                         webix.ajax()
+                                                             .post("/api/database/update").
+                                                             then(function () { webix.message('База обновлена') }, function (e) { webix.message(e.response, 'error') })
+                                                     }
+                                                 }
+                                             });
+                                     }
+                                 } :
+                                 {}
+
 
                          ]
                      },

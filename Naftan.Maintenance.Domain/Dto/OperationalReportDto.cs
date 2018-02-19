@@ -28,6 +28,10 @@ namespace Naftan.Maintenance.Domain.Dto
         public int? NextUsageNorm { get; set; }
         public int? NextUsageNormMax { get; set; }
         public int? NextUsageFact { get; set; }
+        public string NextMaintenance_parent { get; set; }
+        public int? NextUsageNorm_parent { get; set; }
+        public int? NextUsageNormMax_parent { get; set; }
+        public int? NextUsageFact_parent { get; set; }
 
     }
 }

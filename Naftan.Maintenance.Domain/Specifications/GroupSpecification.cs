@@ -10,20 +10,26 @@ namespace Naftan.Maintenance.Domain.Specifications
     public class GroupSpecification:IEntity
     {
 
-        [Obsolete]
-        public GroupSpecification()
-        {
-            
-        }
+        protected GroupSpecification() { }
 
         public GroupSpecification(Specification specification)
         {
             Specification = specification;
         }
 
+        /// <inheritdoc/>
         public int Id { get; set; }
+        /// <summary>
+        /// Группа объекта
+        /// </summary>
         public ObjectGroup Group { get; internal set; }
+        /// <summary>
+        /// Характеристика
+        /// </summary>
         public Specification Specification { get; set; }
+        /// <summary>
+        /// Значение по умолчанию
+        /// </summary>
         public string DefaultValue { get; set; }
     }
 }

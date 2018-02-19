@@ -7,6 +7,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
     /// </summary>
     public class MaintenanceReason:IEntity
     {
+        /// <inheritdoc/>
         public int Id { get; set; }
         /// <summary>
         /// Наименование
