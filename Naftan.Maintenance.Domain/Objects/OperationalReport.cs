@@ -67,7 +67,7 @@ namespace Naftan.Maintenance.Domain.Objects
         /// Причина ремонта
         /// </summary>
         public MaintenanceReason ReasonForOffer { get; set; }
-
+        
         /// <summary>
         /// Состояние объекта ремонта
         /// </summary>

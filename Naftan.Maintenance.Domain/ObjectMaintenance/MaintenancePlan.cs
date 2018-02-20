@@ -31,7 +31,6 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
             }
 
             //Фиксируем предыдущий ремонт
-
             var previous = Object.Maintenance.OrderBy(x => x.StartMaintenance).LastOrDefault();
 
             if (previous != null)
@@ -42,6 +41,7 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
                 PreviousMaintenanceType = last.MaintenanceType;
                 PreviousUsage = last.UsageFromLastMaintenance;
             }
+            //Если предыдущего обслуживания мы не нашли, то пытаемся взять дату предыдущего обслуживания в данных с последних ремонтов LastMaintenance
             else
             {
                 var intervals = Object.Intervals.ToList();

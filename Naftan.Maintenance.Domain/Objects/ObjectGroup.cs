@@ -14,7 +14,7 @@ namespace Naftan.Maintenance.Domain.Objects
     {
         private readonly ICollection<GroupSpecification> specifications = new HashSet<GroupSpecification>();
         private readonly ICollection<MaintenanceInterval> intervals = new HashSet<MaintenanceInterval>();
-
+        
         /// <inheritdoc/>
         public int Id { get; set; }
         /// <summary>

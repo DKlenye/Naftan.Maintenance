@@ -64,6 +64,9 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
         
         #region По времени
 
+        /// <summary>
+        /// Временной период
+        /// </summary>
         public TimePeriod? TimePeriod { get; set; }
 
         /// <summary>
@@ -75,11 +78,15 @@ namespace Naftan.Maintenance.Domain.ObjectMaintenance
 
         /// <summary>
         /// Количество в структуре межремонтного цикла
-        /// todo может и не быть, а как тогда определить приоритет ремонтов? по наработке или по временым интервалам
         /// todo появилась идея сделать ссылку на интервал, который включается в более крупный public MaintenanceInterval IncludeInterval{get;set;}
         /// </summary>
         public int QuantityInCycle { get; set; }
 
+        /// <summary>
+        /// Сравнение двух объектов для сортировки коллекции
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public int CompareTo(MaintenanceInterval other)
         {
             if (other == null) return 1;

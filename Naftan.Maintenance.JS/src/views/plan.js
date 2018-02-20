@@ -2,7 +2,7 @@
 
     name: "view_plan",
 
-    requireCollections: ["plant", "department", "maintenanceType","maintenanceReason"],
+    requireCollections: ["plant", "department", "maintenanceType","maintenanceReason","objectGroup"],
 
     $init: function (cfg) {
 
@@ -20,6 +20,12 @@
             b = getPrcn(b);
             return a > b ? 1 : (a < b ? -1 : 0);
         };
+
+        var groups = webix.collection('objectgroup');
+        var groupOptions = groups.find(function (e) { return e.id != 1 && (e.$parent == 0 || e.$parent == 1) })
+            .map(function (e) { return { id: e.id, value: e.name } });
+
+        groupOptions.unshift({ id: 0, value: '' });
 
         webix.extend(cfg, {
             rows: [
@@ -47,6 +53,32 @@
                             template: webix.templates.progress("nextUsageNorm", "nextUsageNormMax", "nextUsageFact", "nextMaintenance"),
                             sort: sortByProgress,
                             width: 150
+                        },
+                        {
+                            id: 'groupId',
+                            header: ["Группа", {
+                                content: "selectFilter", options: groupOptions, compare: function (value, filter, object) {
+
+                                    if (filter == 0) return true;
+
+                                    var group = groups.getItem(value);
+                                    if (group.$parent) {
+                                        return groups.getItem(group.$parent).id == filter;
+                                    }
+                                    return false;
+                                }
+                            }], sort: 'int', width: 200,
+
+                            template: function (obj, common, value, config) {
+                                if (!value) return null;
+
+                                var item = groups.getItem(value);
+
+                                if (item.$parent) {
+                                    return groups.getItem(item.$parent).name;
+                                }
+                                return null;
+                            }
                         },
                         {
                             id:'techIndex', header: ["Тех. индекс", { content: "textFilter" }], sort: 'text', width: 120,

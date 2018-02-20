@@ -539,7 +539,7 @@
         var item = collection.getItem(data.id);
         if (item) {
 
-            //todo переделать, потому что parent меняется, но в дерево не перестраивается
+            //todo переделать, потому что parent меняется, но  дерево не перестраивается
 
             item.name = data.name;
             item.$parent = data.parentGroupId;

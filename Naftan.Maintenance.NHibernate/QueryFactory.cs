@@ -215,11 +215,17 @@ namespace Naftan.Maintenance.NHibernate
                .List<MaintenancePlanDto>();
         }
 
-        public IEnumerable<MaintenancePlanDto> FindMaintenancePlanByPeriod(Period period)
+        public IEnumerable<MaintenancePlanDto> FindMaintenancePlanByParams(Period period, string userLogin)
         {
-            return Session.CreateSQLQuery(planQuery + " WHERE p.MaintenanceDate between :start and :end")
+            return Session.CreateSQLQuery(planQuery + @"
+                INNER JOIN Users u ON u.[login] = :login
+                INNER JOIN UserPlants AS up ON up.UserId = u.UserId AND up.PlantId = mo.PlantId
+                INNER JOIN UserObjectGroups AS ug ON ug.UserId = u.UserId AND ug.ObjectGroupId = mo.ObjectGroupId
+                WHERE  p.MaintenanceDate between :start and :end and isnull(mo.Site,0) = isnull(u.Site,isnull(mo.Site,0))
+                ")
                .SetParameter("start", period.Start())
                .SetParameter("end", period.End())
+               .SetParameter("login", userLogin)
                .SetResultTransformer(Transformers.AliasToBean<MaintenancePlanDto>())
                .List<MaintenancePlanDto>();
         }

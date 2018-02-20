@@ -4,6 +4,7 @@ using System;
 using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Common.Domain;
+using Naftan.Maintenance.Domain.Dto;
 
 namespace Naftan.Maintenance.WebApplication.Dto.ObjectGroups
 {

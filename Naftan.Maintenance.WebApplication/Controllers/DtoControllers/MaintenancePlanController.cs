@@ -4,6 +4,7 @@ using Naftan.Maintenance.Domain;
 using Naftan.Maintenance.Domain.Dto;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
 using System.Web.Http;
 
 namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
@@ -21,7 +22,8 @@ namespace Naftan.Maintenance.WebApplication.Controllers.DtoControllers
                 
         public IEnumerable<MaintenancePlanDto> Get(int id)
         {
-            return query.FindMaintenancePlanByPeriod(new Period(id));
+            var context = UserPrincipal.Current;
+            return query.FindMaintenancePlanByParams(new Period(id),context.SamAccountName);
         }
 
         public void Delete(int id)

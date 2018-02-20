@@ -30,7 +30,7 @@ namespace Naftan.Maintenance.WebApplication.Controllers
 
             new SchemaUpdate(initializer.GetConfiguration())
                 .Execute(
-                    x => script = x,
+                    x => script += x+"\n",
                     doUpdate: false
                 );
 

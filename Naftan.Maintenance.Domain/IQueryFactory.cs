@@ -43,8 +43,9 @@ namespace Naftan.Maintenance.Domain
         /// Получить данные по графику ППР за период
         /// </summary>
         /// <param name="period">период</param>
+        /// <param name="userLogin">логин пользователя</param>
         /// <returns></returns>
-        IEnumerable<MaintenancePlanDto> FindMaintenancePlanByPeriod(Period period);
+        IEnumerable<MaintenancePlanDto> FindMaintenancePlanByParams(Period period, string userLogin);
         /// <summary>
         /// Получить межремонтные интервалы в развёрнутом виде по (О,Т,С,К)
         /// </summary>
