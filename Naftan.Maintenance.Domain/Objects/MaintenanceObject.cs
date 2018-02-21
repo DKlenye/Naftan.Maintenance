@@ -6,6 +6,7 @@ using Naftan.Common.Domain;
 using Naftan.Maintenance.Domain.ObjectMaintenance;
 using Naftan.Maintenance.Domain.Usage;
 using Naftan.Common.Domain.EntityComponents;
+using Naftan.Maintenance.Domain.Users;
 
 namespace Naftan.Maintenance.Domain.Objects
 {
@@ -68,6 +69,30 @@ namespace Naftan.Maintenance.Domain.Objects
                 });
             }
             SetNextMaintenance();
+
+        }
+
+        /// <summary>
+        /// Проверка имеет ли пользователь доступ на редактирование объекта
+        /// </summary>
+        /// <param name="user"></param>
+        public bool IsUserHavePermission(User user)
+        {
+            //Проверяем имеет ли пользователь разрешение на установку
+            var PlantPermission = user.Plants.Select(x => x.Id).Contains(Plant.Id);
+            //Проверяем разрешение на группу объекта
+            var GroupPermission = user.ObjectGroups.Select(x => x.Id).Contains(Group.Id);
+
+            //По умолчанию пользователь имеет доступ ко всем участкам
+            var SitePermission = true;
+
+            //Если у пользователя указан участок, и оборудование имеет принадлежность к участку, то проверяем доступ к участку
+            if (user.Site != null && Site!=null)
+            {
+                SitePermission = user.Site == Site;
+            }
+
+            return PlantPermission && GroupPermission && SitePermission;
 
         }
 

@@ -568,11 +568,17 @@
     },
 
     onErrorHandler: function (e) {
+
+        var error = JSON.parse(e.responseText);
+
         this.unmask();
 
-        webix.message({
-            type: "error",
-            text: e.message || e.response
+        webix.alert({
+            title: "Произошла ошибка",
+            width: 700,
+            text: "При сохранении данных произошла ошибка, возможно вы не имеете доступа для редактирования данных оборудования",
+            type: "alert-error"
+
         });
 
     },
