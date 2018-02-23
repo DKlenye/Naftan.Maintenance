@@ -123,12 +123,21 @@
             var item = reference.getSelectedItem();
             var valuesArray = [];
 
+            var pull = values.data.pull;
+
+            for (var pullId in pull) {
+                if (values.validate(pullId)) {
+                    valuesArray.push(pull[pullId]);
+                }
+            }
+
+            /*
             values.data.each(function (r) {
                 if (values.validate(r.id)) {
                     if(r.id>1e10) delete r.id;
                     valuesArray.push(r);
                 }
-            });
+            });*/
 
             item.values = valuesArray;
             referenceStore.updateItem(item.id, item);

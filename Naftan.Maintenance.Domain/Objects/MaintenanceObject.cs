@@ -78,8 +78,15 @@ namespace Naftan.Maintenance.Domain.Objects
         /// <param name="user"></param>
         public bool IsUserHavePermission(User user)
         {
-            //Проверяем имеет ли пользователь разрешение на установку
-            var PlantPermission = user.Plants.Select(x => x.Id).Contains(Plant.Id);
+            
+            var PlantPermission = true; 
+
+            if (Plant != null)
+            {
+                //Проверяем имеет ли пользователь разрешение на установку
+                user.Plants.Select(x => x.Id).Contains(Plant.Id);
+            }
+
             //Проверяем разрешение на группу объекта
             var GroupPermission = user.ObjectGroups.Select(x => x.Id).Contains(Group.Id);
 

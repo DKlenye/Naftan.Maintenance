@@ -38,7 +38,7 @@ namespace Naftan.Maintenance.WebApplication.Dto
             {
                 Id = reference.Id,
                 Name = reference.Name,
-                Values = reference.Values.Select(v => (ReferenceValueDto)v).ToList()
+                Values = reference.Values.Select(v => (ReferenceValueDto)v).OrderByDescending(x => x.Id).ToList()
             };
         }
 
